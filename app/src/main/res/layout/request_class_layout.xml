@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?dialogBackGround">
+
+    <EditText
+        android:id="@+id/req_topic_edittext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/textbox_outline"
+        android:ems="10"
+        android:hint="topic"
+        android:inputType="textPersonName"
+        android:padding="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/req_subject_txt"
+        app:layout_constraintStart_toStartOf="@+id/req_subject_txt"
+        app:layout_constraintTop_toBottomOf="@+id/req_subject_txt" />
+
+    <TextView
+        android:id="@+id/req_subject_txt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/textbox_outline"
+        android:padding="10dp"
+        android:text="Subject"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/req_teacher_pref_checkbox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Teacher preference"
+        app:layout_constraintEnd_toEndOf="@+id/req_topic_edittext"
+        app:layout_constraintStart_toStartOf="@+id/req_topic_edittext"
+        app:layout_constraintTop_toBottomOf="@+id/req_topic_edittext" />
+
+    <Spinner
+        android:id="@+id/req_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/req_teacher_pref_checkbox"
+        app:layout_constraintStart_toStartOf="@+id/req_teacher_pref_checkbox"
+        app:layout_constraintTop_toBottomOf="@+id/req_teacher_pref_checkbox" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/req_send_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/req_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/textView29" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="8dp"
+        android:text="A notification will be sent to the teacher"
+        android:textColor="@color/primaryColor"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/req_spinner"
+        app:layout_constraintStart_toStartOf="@+id/req_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/req_spinner" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

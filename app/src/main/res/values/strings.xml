@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Padhai madad</string>
+    <string name="class_not_avail">Class not available for your selected slot\nPlease change your slot and try again, or you can request a class</string>
+    <string name="slot_not_avail">Slot not available for your selected subject\nPlease change it from settings and try again</string>
+    <string name="title_activity_class">ClassActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="class_txt">Class</string>
+    <string name="announcements">Announcements</string>
+    <string name="group_chat">Group chat</string>
+</resources>

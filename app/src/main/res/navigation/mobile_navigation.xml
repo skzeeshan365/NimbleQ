@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.reiserx.nimbleq.Activities.Fragments.ClassView.HomeFragment"
+        android:label="@string/class_txt"
+        tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="classID"
+            app:argType="string"
+            android:defaultValue="null" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.reiserx.nimbleq.Activities.Fragments.Announcements.DashboardFragment"
+        android:label="@string/announcements"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.reiserx.nimbleq.Activities.Fragments.GroupChat.NotificationsFragment"
+        android:label="@string/group_chat"
+        tools:layout="@layout/fragment_notifications" />
+</navigation>
