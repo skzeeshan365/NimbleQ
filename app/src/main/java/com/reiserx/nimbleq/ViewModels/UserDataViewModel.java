@@ -4,14 +4,24 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.userType;
 import com.reiserx.nimbleq.Repository.UserDataRepository;
 
-public class UserDataViewModel extends ViewModel implements UserDataRepository.OnRealtimeDbTaskComplete, UserDataRepository.getUsernameComplete, UserDataRepository.getUserTypeComplete {
+import java.util.List;
+
+public class UserDataViewModel extends ViewModel implements UserDataRepository.OnRealtimeDbTaskComplete,
+        UserDataRepository.getUsernameComplete,
+        UserDataRepository.getUserTypeComplete,
+        UserDataRepository.getUserDetailsComplete,
+        UserDataRepository.getTeacherListComplete {
 
     private final MutableLiveData<UserData> userData = new MutableLiveData<>();
     private final MutableLiveData<String> username = new MutableLiveData<>();
     private final MutableLiveData<userType> userTypeMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<userDetails> userDetailsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> teacherListMutableLiveData = new MutableLiveData<>();
+
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userNameError = new MutableLiveData<>();
     private final UserDataRepository firebaseRepo;
@@ -32,8 +42,16 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         return databaseErrorMutableLiveData;
     }
 
+    public MutableLiveData<userDetails> getUserDetailsMutableLiveData() {
+        return userDetailsMutableLiveData;
+    }
+
+    public MutableLiveData<List<String>> getTeacherListMutableLiveData() {
+        return teacherListMutableLiveData;
+    }
+
     public UserDataViewModel() {
-        firebaseRepo = new UserDataRepository(this, this, this);
+        firebaseRepo = new UserDataRepository(this, this, this, this, this);
     }
 
     public void getUserData(String userID) {
@@ -46,6 +64,14 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
 
     public void getUserType(String userID) {
         firebaseRepo.getUserType(userID);
+    }
+
+    public void getUserDetails(String userID) {
+        firebaseRepo.getUserDetails(userID);
+    }
+
+    public void getTeacherList() {
+        firebaseRepo.getTeacherList();
     }
 
     @Override
@@ -61,6 +87,16 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
     @Override
     public void onSuccess(userType userType) {
         userTypeMutableLiveData.setValue(userType);
+    }
+
+    @Override
+    public void onSuccess(userDetails userDetailsList) {
+        userDetailsMutableLiveData.setValue(userDetailsList);
+    }
+
+    @Override
+    public void onSuccess(List<String> teacherList) {
+        teacherListMutableLiveData.setValue(teacherList);
     }
 
     @Override

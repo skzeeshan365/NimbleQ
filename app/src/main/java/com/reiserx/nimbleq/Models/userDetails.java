@@ -1,7 +1,7 @@
 package com.reiserx.nimbleq.Models;
 
 public class userDetails {
-    String grade, schoolName, state, city, gender;
+    String grade, schoolName, state, city, gender, username;
 
     public userDetails(String grade, String schoolName, String state, String city, String gender) {
         this.grade = grade;
@@ -52,5 +52,13 @@ public class userDetails {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

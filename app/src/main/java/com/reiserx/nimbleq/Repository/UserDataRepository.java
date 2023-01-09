@@ -2,30 +2,53 @@ package com.reiserx.nimbleq.Repository;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.userType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserDataRepository {
-    private final DatabaseReference databaseReference;
     private final UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete;
     private final UserDataRepository.getUserTypeComplete getUserTypeComplete;
     private final UserDataRepository.getUsernameComplete getUsernameComplete;
-    private final DatabaseReference userTypeReference;
+    private final UserDataRepository.getUserDetailsComplete getUserDetailsComplete;
+    private final UserDataRepository.getTeacherListComplete getTeacherListComplete;
 
-    public UserDataRepository(UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete, UserDataRepository.getUsernameComplete getUsernameComplete, UserDataRepository.getUserTypeComplete getUserTypeComplete) {
+    private final DatabaseReference userTypeReference;
+    private final DatabaseReference databaseReference;
+    private final CollectionReference collectionReference;
+
+    public UserDataRepository(UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete,
+                              UserDataRepository.getUsernameComplete getUsernameComplete,
+                              UserDataRepository.getUserTypeComplete getUserTypeComplete,
+                              UserDataRepository.getUserDetailsComplete getUserDetailsComplete,
+                              UserDataRepository.getTeacherListComplete getTeacherListComplete) {
+
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.getUsernameComplete = getUsernameComplete;
         this.getUserTypeComplete = getUserTypeComplete;
+        this.getUserDetailsComplete = getUserDetailsComplete;
+        this.getTeacherListComplete = getTeacherListComplete;
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference().child("Data").child("UserData");
         userTypeReference = database.getReference().child("Data").child("Main").child("UserType");
+
+        collectionReference = FirebaseFirestore.getInstance().collection("UserData");
     }
 
     public void getUserData(String userID) {
@@ -87,6 +110,36 @@ public class UserDataRepository {
         });
     }
 
+    public void getTeacherList() {
+        List<String> list = new ArrayList<>();
+        Query query = userTypeReference.orderByChild("teacher");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        list.add(snapshot1.getKey());
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void getUserDetails(String userID) {
+        collectionReference.document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (queryDocumentSnapshots.exists()) {
+                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                getUserDetailsComplete.onSuccess(userDetails);
+            }
+        }).addOnFailureListener(e -> getUserTypeComplete.onFailed(e.toString()));
+    }
+
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(UserData userData);
 
@@ -101,6 +154,18 @@ public class UserDataRepository {
 
     public interface getUserTypeComplete {
         void onSuccess(userType userType);
+
+        void onFailed(String error);
+    }
+
+    public interface getUserDetailsComplete {
+        void onSuccess(userDetails userDetailsList);
+
+        void onFailed(String error);
+    }
+
+    public interface getTeacherListComplete {
+        void onSuccess(List<String> teacherList);
 
         void onFailed(String error);
     }
