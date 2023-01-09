@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database;
     FirebaseUser user;
 
-    ValueEventListener userTypeListener;
-
     SharedPreferences save;
 
     private slotsViewModel viewModel;
@@ -148,9 +146,17 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
             if (subjectAndTimeSlot != null && subjectAndTimeSlot.isCurrent()) {
                 if (subjectAndTimeSlot.getTimeSlot() != null) {
+                    if (binding.slotTimeTxt.getVisibility() == View.GONE && binding.slotSubTxt.getVisibility() == View.GONE) {
+                        binding.slotTimeTxt.setVisibility(View.VISIBLE);
+                        binding.slotSubTxt.setVisibility(View.VISIBLE);
+                    }
                     binding.slotTimeTxt.setText(subjectAndTimeSlot.getTimeSlot());
                     binding.slotSubTxt.setText(subjectAndTimeSlot.getSubject() + " • " + subjectAndTimeSlot.getTopic());
                 } else {
+                    if (binding.slotTimeTxt.getVisibility() == View.GONE && binding.slotSubTxt.getVisibility() == View.GONE) {
+                        binding.slotTimeTxt.setVisibility(View.VISIBLE);
+                        binding.slotSubTxt.setVisibility(View.VISIBLE);
+                    }
                     binding.slotTimeTxt.setText(subjectAndTimeSlot.getSubject());
                     binding.slotSubTxt.setText(subjectAndTimeSlot.getTopic());
                 }
@@ -159,35 +165,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
         viewModel.getDatabaseErrorMutableLiveData().observe(this, error -> Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show());
-
-
-//        DatabaseReference subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForStudents").child(user.getUid());
-//        com.google.firebase.database.Query DB_query = subjectReference.orderByChild("current").equalTo(true);
-//        DB_query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-//                        subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
-//                        if (subjectAndTimeSlot != null && subjectAndTimeSlot.isCurrent()) {
-//                            if (subjectAndTimeSlot.getTimeSlot() != null) {
-//                                binding.slotTimeTxt.setText(subjectAndTimeSlot.getTimeSlot());
-//                                binding.slotSubTxt.setText(subjectAndTimeSlot.getSubject() + " • " + subjectAndTimeSlot.getTopic());
-//                            } else {
-//                                binding.slotTimeTxt.setText(subjectAndTimeSlot.getSubject());
-//                                binding.slotSubTxt.setText(subjectAndTimeSlot.getTopic());
-//                            }
-//                        } else
-//                            binding.slotHolder.setVisibility(View.GONE);
-//                    }
-//                } else
-//                    binding.slotHolder.setVisibility(View.GONE);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
     }
 }

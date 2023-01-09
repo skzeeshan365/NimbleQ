@@ -1,8 +1,10 @@
 package com.reiserx.nimbleq.Activities.Fragments.ClassView;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +17,6 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.exoplayer2.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -51,6 +52,8 @@ public class HomeFragment extends Fragment implements MenuProvider {
     String id;
 
     SnackbarTop snackbarTop;
+
+    private static String MEETING_ID, MEETING_PASSWORD;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -88,13 +91,17 @@ public class HomeFragment extends Fragment implements MenuProvider {
         buttonDesign = new ButtonDesign(getContext());
         buttonDesign.setButtonOutline(binding.button8);
 
+        fetchClass();
+
         classViewModel.getClassState(user.getUid(), id);
         classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
             if (state == 2) {
                 binding.button8.setText("Join meeting");
                 buttonDesign.setButtonOutline(binding.button8);
+                setJoinMeeting();
             } else if (state == 3) {
                 binding.button8.setText("Join class");
+                buttonDesign.setButtonOutline(binding.button8);
                 binding.button8.setOnClickListener(view -> {
                     buttonDesign.buttonFill(binding.button8);
                     classViewModel.setClassState(user.getUid(), id, true);
@@ -103,10 +110,9 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 snackbarTop.showSnackBar("Class joined", true);
                 binding.button8.setText("Join meeting");
                 buttonDesign.setButtonOutline(binding.button8);
+                setJoinMeeting();
             }
         });
-
-        fetchClass();
 
         return root;
     }
@@ -117,7 +123,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
         binding = null;
     }
 
-    void setJoinMeeting(String meetingID, String meetingPass) {
+    void setJoinMeeting() {
         Log.d(CONSTANTS.TAG, "called");
         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
@@ -129,8 +135,8 @@ public class HomeFragment extends Fragment implements MenuProvider {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle("Join meeting");
                     alert.setMessage("Are you sure you want to join this meeting");
-                    alert.setPositiveButton("join", (dialogInterface, i) -> joinMeeting(username, meetingID, meetingPass));
-                    alert.setNegativeButton("cancel", null);
+                    alert.setPositiveButton("join", (dialogInterface, i) -> joinMeeting(username, MEETING_ID, MEETING_PASSWORD));
+                    alert.setNegativeButton("cancel", (dialogInterface, i) -> buttonDesign.setButtonOutline(binding.button8));
                     alert.show();
                 }
             });
@@ -152,6 +158,10 @@ public class HomeFragment extends Fragment implements MenuProvider {
         classViewModel.getClassData(id);
         classViewModel.getClassData().observe(getViewLifecycleOwner(), classModel -> {
             if (classModel != null) {
+
+                MEETING_ID = classModel.getMeetingID();
+                MEETING_PASSWORD = classModel.getMeetingPassword();
+
                 binding.textHome.setText(classModel.getClassName());
                 binding.classSubject.setText(classModel.getSubject());
                 binding.classTopic.setText(classModel.getTopic());
@@ -159,8 +169,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 binding.timeSlot.setText(classModel.getTime_slot());
                 binding.gradeTxt.setText(classModel.getGrade());
                 userDataViewModel.getUsername(classModel.getTeacher_info());
-                if (binding.button8.getText().toString().equals("Join meeting"))
-                    setJoinMeeting(classModel.getMeetingID(), classModel.getMeetingPassword());
+                setJoinMeeting();
                 binding.scrollView.setVisibility(View.VISIBLE);
                 binding.progHolder.setVisibility(View.GONE);
             }
@@ -177,13 +186,15 @@ public class HomeFragment extends Fragment implements MenuProvider {
     }
 
     void joinMeeting(String name, String meetingID, String meeting_password) {
-        MeetingService meetingService = ZoomSDK.getInstance().getMeetingService();
-        JoinMeetingOptions joinMeetingOptions = new JoinMeetingOptions();
-        JoinMeetingParams joinMeetingParams = new JoinMeetingParams();
-        joinMeetingParams.displayName = name;
-        joinMeetingParams.meetingNo = meetingID;
-        joinMeetingParams.password = meeting_password;
-        meetingService.joinMeetingWithParams(getContext(), joinMeetingParams, joinMeetingOptions);
+        if (meetingID != null && meeting_password != null) {
+            MeetingService meetingService = ZoomSDK.getInstance().getMeetingService();
+            JoinMeetingOptions joinMeetingOptions = new JoinMeetingOptions();
+            JoinMeetingParams joinMeetingParams = new JoinMeetingParams();
+            joinMeetingParams.displayName = name;
+            joinMeetingParams.meetingNo = meetingID;
+            joinMeetingParams.password = meeting_password;
+            meetingService.joinMeetingWithParams(getContext(), joinMeetingParams, joinMeetingOptions);
+        }
     }
 
     @Override

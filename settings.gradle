@@ -17,7 +17,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "NimbleQ"
 include ':app'
-include ':commonlib'
+include ':mobilertc'
 include ':mobilertc'
 include ':commonlib'
-include ':mobilertc'
