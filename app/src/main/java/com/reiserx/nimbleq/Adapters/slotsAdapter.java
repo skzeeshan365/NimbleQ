@@ -71,8 +71,8 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
             holder.binding.selectedImg.setVisibility(View.GONE);
             holder.binding.deleteImg.setVisibility(View.GONE);
             holder.binding.editImg.setVisibility(View.GONE);
-            holder.binding.slotTxt.setText(model.getTimeSlot());
-            holder.binding.slotDescTxt.setText(model.getSubject().concat(" • ").concat(model.getTopic()));
+            holder.binding.slotsSubTxt.setText(model.getTimeSlot());
+            holder.binding.slotsDescTxt.setText(model.getSubject().concat(" • ").concat(model.getTopic()));
 
             holder.binding.slotHolder.setOnClickListener(view -> {
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -108,11 +108,11 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                 });
             });
         } else {
-            holder.binding.slotTxt.setText("Slot ".concat(String.valueOf(position + 1)));
+            holder.binding.slotsSubTxt.setText("Slot ".concat(String.valueOf(position + 1)));
             if (model.getTimeSlot() != null)
-                holder.binding.slotDescTxt.setText(model.getTimeSlot().concat(" • ".concat(model.getSubject().concat(" • ".concat(model.getTopic())))));
+                holder.binding.slotsDescTxt.setText(model.getTimeSlot().concat(" • ".concat(model.getSubject().concat(" • ".concat(model.getTopic())))));
             else
-                holder.binding.slotDescTxt.setText(model.getSubject());
+                holder.binding.slotsDescTxt.setText(model.getSubject());
 
             holder.binding.deleteImg.setOnClickListener(view -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(context);

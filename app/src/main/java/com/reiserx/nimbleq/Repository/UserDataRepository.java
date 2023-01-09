@@ -6,18 +6,26 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.Models.userType;
 
 public class UserDataRepository {
     private final DatabaseReference databaseReference;
     private final UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete;
+    private final UserDataRepository.getUserTypeComplete getUserTypeComplete;
     private final UserDataRepository.getUsernameComplete getUsernameComplete;
+    private final DatabaseReference userTypeReference;
 
-    public UserDataRepository(UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete, UserDataRepository.getUsernameComplete getUsernameComplete) {
+    public UserDataRepository(UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete, UserDataRepository.getUsernameComplete getUsernameComplete, UserDataRepository.getUserTypeComplete getUserTypeComplete) {
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.getUsernameComplete = getUsernameComplete;
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
+        this.getUserTypeComplete = getUserTypeComplete;
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference().child("Data").child("UserData");
+        userTypeReference = database.getReference().child("Data").child("Main").child("UserType");
     }
 
     public void getUserData(String userID) {
@@ -60,6 +68,25 @@ public class UserDataRepository {
         });
     }
 
+    public void getUserType(String userID) {
+        userTypeReference.child(userID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    userType userType = snapshot.getValue(com.reiserx.nimbleq.Models.userType.class);
+                    if (userType != null) {
+                        getUserTypeComplete.onSuccess(userType);
+                    } else getUserTypeComplete.onFailed("Data not found");
+                } else getUserTypeComplete.onFailed("Data not found");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                getUserTypeComplete.onFailed(error.toString());
+            }
+        });
+    }
+
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(UserData userData);
 
@@ -68,6 +95,12 @@ public class UserDataRepository {
 
     public interface getUsernameComplete {
         void onSuccess(String username);
+
+        void onFailed(String error);
+    }
+
+    public interface getUserTypeComplete {
+        void onSuccess(userType userType);
 
         void onFailed(String error);
     }

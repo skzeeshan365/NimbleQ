@@ -10,6 +10,8 @@
     <color name="ORANGE_FILLED">#ef5c4e</color>
     <color name="ORANGE_OUTLINE">#ef5c4e</color>
     <color name="primaryDark">#3C3C3C</color>
+    <color name="GREEN">#00B308</color>
+    <color name="RED">#F44336</color>
 
     <!-- NimbleQ colors-->
     <color name="primaryColor">#ef5c4e</color>

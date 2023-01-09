@@ -22,14 +22,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Activities.MainActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
@@ -525,7 +531,7 @@ public class dialogs {
         return 0;
     }
 
-    public void requestClass(String subject, String topic) {
+    public void requestClass(String subject, String topic, String time_slot, String userID) {
 
         AlertDialog alert = new AlertDialog.Builder(context).create();
 
@@ -554,7 +560,6 @@ public class dialogs {
 
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             if (checkBox.isChecked()) {
-                spinner.setEnabled(true);
                 notify_txt.setVisibility(View.VISIBLE);
 
                 teacherList = new ArrayList<>();
@@ -566,7 +571,7 @@ public class dialogs {
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference().child("Data").child("Main").child("UserType");
-                Query query = reference.orderByChild("teacher").equalTo(true || false);
+                Query query = reference.orderByChild("teacher");
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -589,6 +594,7 @@ public class dialogs {
                                     }
                                 });
                             }
+                            spinner.setEnabled(true);
                             names.notifyDataSetChanged();
                         }
                     }
@@ -606,6 +612,8 @@ public class dialogs {
 
         checkBox.setChecked(false);
 
+        CollectionReference reference = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests");
+
         send_btn.setOnClickListener(view -> {
             buttonDesign.buttonFill(send_btn);
             if (topic_edittext.getText().toString().trim().equals("")) {
@@ -613,10 +621,25 @@ public class dialogs {
             } else if (checkBox.isChecked()) {
                 if (spinner.getSelectedItemPosition() == 0)
                     snackbarTop.showSnackBar("Please select teacher preference", false);
-                alert.dismiss();
+                else {
+                    ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, userID);
+                    reference.add(classRequestModel).addOnSuccessListener(documentReference -> {
+                        snackbarTop.showSnackBar("Request submitted", true);
+                        alert.dismiss();
+                    }).addOnFailureListener(e -> {
+                        snackbarTop.showSnackBar(e.toString(), false);
+                        alert.dismiss();
+                    });
+                }
             } else {
-
-                alert.dismiss();
+                ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, userID);
+                reference.add(classRequestModel).addOnSuccessListener(documentReference -> {
+                    snackbarTop.showSnackBar("Request submitted", true);
+                    alert.dismiss();
+                }).addOnFailureListener(e -> {
+                    snackbarTop.showSnackBar(e.toString(), false);
+                    alert.dismiss();
+                });
             }
         });
         alert.setView(mView);

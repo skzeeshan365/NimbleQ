@@ -58,15 +58,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             getUserType();
 
-            binding.viewClass.setOnClickListener(view -> {
-                if (CONSTANTS.student_teacher_flag == 1) {
-                    Intent intent = new Intent(MainActivity.this, ClassListActivity.class);
-                    startActivity(intent);
-                } else if (CONSTANTS.student_teacher_flag == 2) {
-                    Intent intent = new Intent(this, SlotsListActivity.class);
-                    startActivity(intent);
-                }
-            });
+            initializeSlot();
 
             binding.main3rdLayout.setOnClickListener(view -> {
                 if (CONSTANTS.student_teacher_flag == 1) {
@@ -77,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
-            initializeSlot();
             zoomCredentials zoomCredentials = new zoomCredentials(CONSTANTS.SDK_KEY, CONSTANTS.SDK_SECRET);
             initializeZoomSdk(this, zoomCredentials);
 
@@ -87,6 +78,22 @@ public class MainActivity extends AppCompatActivity {
 
             binding.imageView17.setOnClickListener(view -> {
                 Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                startActivity(intent);
+            });
+
+            binding.viewClass.setOnClickListener(view -> {
+                if (CONSTANTS.student_teacher_flag == 1) {
+                    Intent intent = new Intent(MainActivity.this, ClassListActivity.class);
+                    intent.putExtra("isClass", true);
+                    startActivity(intent);
+                } else if (CONSTANTS.student_teacher_flag == 2) {
+                    Intent intent = new Intent(this, SlotsListActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            binding.main4thLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(MainActivity.this, ClassListActivity.class);
                 startActivity(intent);
             });
         }
@@ -120,9 +127,6 @@ public class MainActivity extends AppCompatActivity {
         params.domain = "zoom.us";
         params.enableLog = true;
         ZoomSDKInitializeListener listener = new ZoomSDKInitializeListener() {
-            /**
-             * @param errorCode {@link us.zoom.sdk.ZoomError#ZOOM_ERROR_SUCCESS} if the SDK has been initialized successfully.
-             */
             @Override
             public void onZoomSDKInitializeResult(int errorCode, int internalErrorCode) {
             }
@@ -160,8 +164,11 @@ public class MainActivity extends AppCompatActivity {
                     binding.slotTimeTxt.setText(subjectAndTimeSlot.getSubject());
                     binding.slotSubTxt.setText(subjectAndTimeSlot.getTopic());
                 }
-            } else
-                binding.slotHolder.setVisibility(View.GONE);
+            } else {
+                binding.slotTimeTxt.setVisibility(View.VISIBLE);
+                binding.slotSubTxt.setVisibility(View.GONE);
+                binding.slotTimeTxt.setText("Slot not available, please select a slot from settings");
+            }
         });
 
         viewModel.getDatabaseErrorMutableLiveData().observe(this, error -> Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show());

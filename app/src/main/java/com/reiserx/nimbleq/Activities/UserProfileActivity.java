@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -19,6 +22,8 @@ import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Models.userType;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
+import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityUserProfileBinding;
 
 public class UserProfileActivity extends AppCompatActivity {
@@ -36,6 +41,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     dialogs dialogs;
 
+    UserDataViewModel userDataViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +52,8 @@ public class UserProfileActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         user = auth.getCurrentUser();
+
+        userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
         setTitle("Settings");
 
@@ -75,85 +84,49 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     void getUserInfo() {
-        database.getReference().child("Data").child("UserData").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    UserData userData = snapshot.getValue(UserData.class);
-                    if (userData != null) {
-                        binding.usernameTxt.setText(userData.getUserName());
-                        binding.phoneNumberTxt.setText(userData.getPhoneNumber());
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+        userDataViewModel.getUserData(user.getUid());
+        userDataViewModel.getUserData().observe(this, userData -> {
+            binding.usernameTxt.setText(userData.getUserName());
+            binding.phoneNumberTxt.setText(userData.getPhoneNumber());
         });
     }
 
     void getUserType() {
-        userTypeReference = database.getReference().child("Data").child("Main").child("UserType").child(user.getUid());
-        userTypeListener = userTypeReference.addValueEventListener(new ValueEventListener() {
+        userDataViewModel.getUserType(user.getUid());
+        userDataViewModel.getUserTypeMutableLiveData().observe(this, new Observer<userType>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    userType userType = snapshot.getValue(com.reiserx.nimbleq.Models.userType.class);
-                    if (userType != null) {
-                        studentOrTecher = userType.getCurrentStatus();
-                        if (userType.getCurrentStatus() == 1) {
-                            binding.usertypeTxt.setText("Logged in as learner");
-                            binding.textView17.setText("Tap to switch for teacher");
-                        } else {
-                            binding.usertypeTxt.setText("Logged in as teacher");
-                            binding.textView17.setText("Tap to switch for learner");
-                        }
-                        getSubject();
-                    }
+            public void onChanged(userType userType) {
+                studentOrTecher = userType.getCurrentStatus();
+                if (userType.getCurrentStatus() == 1) {
+                    binding.usertypeTxt.setText("Logged in as learner");
+                    binding.textView17.setText("Tap to switch for teacher");
+                } else {
+                    binding.usertypeTxt.setText("Logged in as teacher");
+                    binding.textView17.setText("Tap to switch for learner");
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+                getSubject();
             }
         });
     }
 
     void getSubject() {
-        Log.d(CONSTANTS.TAG, String.valueOf(studentOrTecher));
+        slotsViewModel slotsViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.slotsViewModel.class);
         if (studentOrTecher == 1) {
-            subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForStudents").child(user.getUid());
+            slotsViewModel.getSubjectForStudents(user.getUid());
         } else if (studentOrTecher == 2)
-            subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForTeacher").child(user.getUid());
+            slotsViewModel.getSubjectForTeachers(user.getUid());
 
-        subjectReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                        subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
-                        if (subjectAndTimeSlot != null && subjectAndTimeSlot.isCurrent()) {
-                            if (subjectAndTimeSlot.getTimeSlot() != null)
-                                binding.subjectAndTimeSlotTxt.setText(subjectAndTimeSlot.getTimeSlot().concat(" • ").concat(subjectAndTimeSlot.getSubject().concat(" • ").concat(subjectAndTimeSlot.getTopic())));
-                            else
-                                binding.subjectAndTimeSlotTxt.setText(subjectAndTimeSlot.getSubject().concat(" • ").concat(subjectAndTimeSlot.getTopic()));
-                        }
-                    }
-                } else {
-                    if (studentOrTecher == 1) {
-                        dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
-                    } else if (studentOrTecher == 2)
-                        dialogs.selectSubjectForTeacherNormal(user.getUid(), false);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+        slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
+            if (subjectAndTimeSlot.getTimeSlot() != null)
+                binding.subjectAndTimeSlotTxt.setText(subjectAndTimeSlot.getTimeSlot().concat(" • ").concat(subjectAndTimeSlot.getSubject().concat(" • ").concat(subjectAndTimeSlot.getTopic())));
+            else
+                binding.subjectAndTimeSlotTxt.setText(subjectAndTimeSlot.getSubject().concat(" • ").concat(subjectAndTimeSlot.getTopic()));
+        });
+        slotsViewModel.getDatabaseErrorMutableLiveData().observe(this, databaseError -> {
+            if (studentOrTecher == 1) {
+                dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
+            } else if (studentOrTecher == 2)
+                dialogs.selectSubjectForTeacherNormal(user.getUid(), false);
         });
     }
 
