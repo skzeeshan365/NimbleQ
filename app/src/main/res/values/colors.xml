@@ -22,4 +22,5 @@
     <color name="NM_BLACK">#130F0F</color>
     <color name="NM_LIGHT">#FEF3EA</color>
     <color name="NM_DARK_BLUE">#003D60</color>
+    <color name="PRIMARY_LIGHT">#FFE3E0</color>
 </resources>

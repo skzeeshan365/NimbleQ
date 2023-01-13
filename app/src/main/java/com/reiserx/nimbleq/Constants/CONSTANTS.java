@@ -3,6 +3,7 @@ package com.reiserx.nimbleq.Constants;
 public class CONSTANTS {
     public static int student_teacher_flag = 0;
     public static String TAG = "hfhsdhfhsdb";
+    public static String TAG2 = "sdsdgdsagsag";
     public static String TEACHERS = "Teachers";
     public static String LEARNERS = "Learners";
     public static String SDK_KEY = "ZbyJ7BTI8a1u64roCICusImzvBJJMgd0jr24";

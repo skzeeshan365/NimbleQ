@@ -68,42 +68,25 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_home"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Class name"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="32dp"
+                android:layout_marginEnd="16dp"
                 app:cardCornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_home">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="@drawable/lt_gradient_1">
 
                     <TextView
                         android:id="@+id/textView27"
@@ -112,6 +95,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:text="Teacher:"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -121,6 +106,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Subject:"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/textView27"
                         app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
@@ -130,6 +117,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Topic:"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/textView28"
                         app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
@@ -140,7 +129,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="16dp"
                         android:text="12:00 a.m"
-                        android:textColor="@color/primaryColor"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -153,6 +142,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:text="TextView"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/textView27"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -163,6 +154,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:text="TextView"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/textView28"
                         app:layout_constraintTop_toBottomOf="@+id/class_teacher" />
 
@@ -173,6 +166,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:text="TextView"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/textView30"
                         app:layout_constraintTop_toBottomOf="@+id/class_subject" />
 
@@ -183,6 +178,8 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="16dp"
                         android:text="Grade:"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/textView30"
                         app:layout_constraintTop_toBottomOf="@+id/textView30" />
@@ -194,6 +191,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:text="TextView"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/textView32"
                         app:layout_constraintTop_toBottomOf="@+id/class_topic" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -204,14 +203,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
                 android:paddingLeft="16dp"
                 android:paddingTop="4dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="4dp"
                 android:text="join class"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/cardView3"
                 app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
             <TextView
@@ -219,9 +217,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:text="Basic info"
+                android:textColor="@color/primaryColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button8" />
+                app:layout_constraintTop_toBottomOf="@+id/divider7" />
 
             <TextView
                 android:id="@+id/class_info"
@@ -235,6 +237,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView37" />
+
+            <View
+                android:id="@+id/divider7"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="1dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button8" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -67,6 +67,9 @@ dependencies {
     implementation project(":mobilertc")
 
     implementation 'com.github.marlonlom:timeago:4.0.3'
+
+    implementation 'com.github.izjumovfs:SwipeToReply:1.0.1'
+    implementation 'com.vdurmont:emoji-java:5.1.1'
 }
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,6 +31,8 @@ import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentHomeBinding;
+
+import java.util.Objects;
 
 import us.zoom.sdk.JoinMeetingOptions;
 import us.zoom.sdk.JoinMeetingParams;
@@ -162,7 +165,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 MEETING_ID = classModel.getMeetingID();
                 MEETING_PASSWORD = classModel.getMeetingPassword();
 
-                binding.textHome.setText(classModel.getClassName());
+                Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(classModel.getClassName());
                 binding.classSubject.setText(classModel.getSubject());
                 binding.classTopic.setText(classModel.getTopic());
                 binding.classInfo.setText(classModel.getClassInfo());
@@ -213,7 +216,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
             Intent intent = new Intent(getContext(), RateAndFeedbackActivity.class);
             intent.putExtra("id", 1);
             intent.putExtra("classID", id);
-            intent.putExtra("Message", "How was your experience in class ".concat(binding.textHome.getText().toString()));
+            intent.putExtra("Message", "How was your experience in class ".concat(Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).getTitle().toString()));
             intent.putExtra("userID", user.getUid());
             getContext().startActivity(intent);
         } else if (menuItem.getItemId() == R.id.leave_class_menu_item) {

@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Repository;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
@@ -52,6 +54,7 @@ public class ClassRepository {
             if (documentSnapshot.exists()) {
                 com.reiserx.nimbleq.Models.classModel models = documentSnapshot.toObject(classModel.class);
                 if (models != null) {
+                    models.setClassID(classID);
                     onRealtimeDbTaskComplete.onSuccess(models);
                 }
             } else {
@@ -139,6 +142,7 @@ public class ClassRepository {
     }
 
     public void getClassRequests(subjectAndTimeSlot subjectAndTimeSlot) {
+        Log.d(CONSTANTS.TAG, subjectAndTimeSlot.getSubject());
         List<ClassRequestModel> requestModelList = new ArrayList<>();
         Query query = reference.collection("ClassRequests")
                 .whereEqualTo("subject", subjectAndTimeSlot.getSubject());

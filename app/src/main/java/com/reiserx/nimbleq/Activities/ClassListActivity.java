@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -14,14 +15,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Adapters.requestClassAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.R;
+import com.reiserx.nimbleq.Repository.UserDataRepository;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityClassListBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassListActivity extends AppCompatActivity {
 
@@ -34,6 +41,8 @@ public class ClassListActivity extends AppCompatActivity {
     FirebaseFirestore firestore;
 
     SnackbarTop snackbarTop;
+
+    classViewModel classViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,15 +73,15 @@ public class ClassListActivity extends AppCompatActivity {
             buttonDesign.buttonFill(binding.progButton);
         });
 
-        boolean isClass = getIntent().getBooleanExtra("isClass", false);
+        int dataType = getIntent().getIntExtra("dataType", 0);
 
         if (!userTypeClass.isUserLearner()) {
-            if (isClass) {
+            if (dataType == 0) {
                 setTitle("Classes");
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
 
-                classViewModel classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+                classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
                 classViewModel.getClassListForTeacher(user.getUid());
                 classViewModel.getClassList().observe(this, classModelList -> {
                     adapter.setClassList(classModelList);
@@ -87,17 +96,17 @@ public class ClassListActivity extends AppCompatActivity {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textView9.setVisibility(View.VISIBLE);
                 });
-            } else {
+            } else if (dataType == 1) {
                 setTitle("Class Requests");
-                requestClassAdapter requestClassAdapter = new requestClassAdapter(this, findViewById(android.R.id.content));
+                requestClassAdapter requestClassAdapter = new requestClassAdapter(this, findViewById(android.R.id.content), user.getUid());
                 binding.recycler.setAdapter(requestClassAdapter);
 
                 slotsViewModel slotsViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.slotsViewModel.class);
 
-                slotsViewModel.getSubjectForStudents(user.getUid());
+                slotsViewModel.getSubjectForTeachers(user.getUid());
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
 
-                    classViewModel classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+                    classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
                     classViewModel.getClassRequests(subjectAndTimeSlot);
                     classViewModel.getClassRequestMutableLiveData().observe(this, classRequestModels -> {
                         requestClassAdapter.setData(classRequestModels);
@@ -114,9 +123,11 @@ public class ClassListActivity extends AppCompatActivity {
                         snackbarTop.showSnackBar(s, false);
                     });
                 });
+            } else if (dataType == 2) {
+
             }
         } else {
-            if (isClass) {
+            if (dataType == 0) {
                 setTitle("Classes");
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
@@ -126,7 +137,7 @@ public class ClassListActivity extends AppCompatActivity {
                 slotsViewModel.getSubjectForStudents(user.getUid());
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
 
-                    classViewModel classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+                    classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
                     classViewModel.getClassList(subjectAndTimeSlot);
                     classViewModel.getClassList().observe(this, classModelList -> {
                         if (!classModelList.isEmpty()) {
@@ -156,10 +167,10 @@ public class ClassListActivity extends AppCompatActivity {
                     });
                     requestClass(subjectAndTimeSlot.getSubject(), subjectAndTimeSlot.getTopic(), subjectAndTimeSlot.getTimeSlot());
                 });
-            } else {
+            } else if (dataType == 1) {
                 setTitle("Class Requests");
 
-                requestClassAdapter requestClassAdapter = new requestClassAdapter(this, findViewById(android.R.id.content));
+                requestClassAdapter requestClassAdapter = new requestClassAdapter(this, findViewById(android.R.id.content), user.getUid());
                 binding.recycler.setAdapter(requestClassAdapter);
 
                 slotsViewModel slotsViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.slotsViewModel.class);
@@ -167,7 +178,7 @@ public class ClassListActivity extends AppCompatActivity {
                 slotsViewModel.getSubjectForStudents(user.getUid());
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
 
-                    classViewModel classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+                    classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
                     classViewModel.getClassRequests(subjectAndTimeSlot);
                     classViewModel.getClassRequestMutableLiveData().observe(this, classRequestModels -> {
                         requestClassAdapter.setData(classRequestModels);
@@ -184,6 +195,40 @@ public class ClassListActivity extends AppCompatActivity {
                         snackbarTop.showSnackBar(s, false);
                     });
                 });
+            } else if (dataType == 2) {
+
+                setTitle("Joined classes");
+                classListAdapter adapter = new classListAdapter(this);
+                binding.recycler.setAdapter(adapter);
+
+                List<classModel> datas = new ArrayList<>();
+                UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+                classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+
+                userDataViewModel.getAllJoinedClasses(user.getUid());
+                userDataViewModel.getLisStringMutableLiveData().observe(this, stringList -> {
+                    datas.clear();
+                    for (int i = 0; i < stringList.size(); ++i) {
+                        classViewModel.getClassData(stringList.get(i));
+                    }
+                    classViewModel.getClassData().observe(this, classModel -> {
+                        datas.add(classModel);
+                        Log.d(CONSTANTS.TAG, String.valueOf(datas.size()));
+                        adapter.setClassList(datas);
+                        adapter.notifyDataSetChanged();
+                        if (binding.recycler.getVisibility() == View.GONE && binding.progHolder.getVisibility() == View.VISIBLE) {
+                            binding.recycler.setVisibility(View.VISIBLE);
+                            binding.progHolder.setVisibility(View.GONE);
+                        }
+                    });
+                    classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
+                        binding.textView9.setText(s);
+                        binding.recycler.setVisibility(View.GONE);
+                        binding.progHolder.setVisibility(View.VISIBLE);
+                        binding.progressBar2.setVisibility(View.GONE);
+                        binding.textView9.setVisibility(View.VISIBLE);
+                    });
+                });
             }
         }
     }
@@ -191,7 +236,7 @@ public class ClassListActivity extends AppCompatActivity {
     void requestClass(String subject, String topic, String timeslot) {
         binding.progButton.setOnClickListener(view -> {
             dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
-            dialogs.requestClass(subject, topic, timeslot);
+            dialogs.requestClass(subject, topic, timeslot, user.getUid());
         });
     }
 }

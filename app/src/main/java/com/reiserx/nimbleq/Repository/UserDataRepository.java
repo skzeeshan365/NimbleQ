@@ -26,27 +26,29 @@ public class UserDataRepository {
     private final UserDataRepository.getUserTypeComplete getUserTypeComplete;
     private final UserDataRepository.getUsernameComplete getUsernameComplete;
     private final UserDataRepository.getUserDetailsComplete getUserDetailsComplete;
-    private final UserDataRepository.getTeacherListComplete getTeacherListComplete;
+    private final UserDataRepository.getDataAsListString getDataAsListString;
 
     private final DatabaseReference userTypeReference;
     private final DatabaseReference databaseReference;
+    private final DatabaseReference classJoinReference;
     private final CollectionReference collectionReference;
 
     public UserDataRepository(UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete,
                               UserDataRepository.getUsernameComplete getUsernameComplete,
                               UserDataRepository.getUserTypeComplete getUserTypeComplete,
                               UserDataRepository.getUserDetailsComplete getUserDetailsComplete,
-                              UserDataRepository.getTeacherListComplete getTeacherListComplete) {
+                              UserDataRepository.getDataAsListString getDataAsListString) {
 
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.getUsernameComplete = getUsernameComplete;
         this.getUserTypeComplete = getUserTypeComplete;
         this.getUserDetailsComplete = getUserDetailsComplete;
-        this.getTeacherListComplete = getTeacherListComplete;
+        this.getDataAsListString = getDataAsListString;
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference().child("Data").child("UserData");
         userTypeReference = database.getReference().child("Data").child("Main").child("UserType");
+        classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
 
         collectionReference = FirebaseFirestore.getInstance().collection("UserData");
     }
@@ -140,6 +142,27 @@ public class UserDataRepository {
         }).addOnFailureListener(e -> getUserTypeComplete.onFailed(e.toString()));
     }
 
+    public void getAllJoinedClasses(String userID) {
+        List<String> data = new ArrayList<>();
+        com.google.firebase.database.Query query = classJoinReference.orderByChild(userID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1: snapshot.getChildren()) {
+                        data.add(snapshot1.getKey());
+                    }
+                    getDataAsListString.onSuccess(data);
+                } else getDataAsListString.onFailed("No data available");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                getDataAsListString.onFailed(error.toString());
+            }
+        });
+    }
+
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(UserData userData);
 
@@ -164,8 +187,8 @@ public class UserDataRepository {
         void onFailed(String error);
     }
 
-    public interface getTeacherListComplete {
-        void onSuccess(List<String> teacherList);
+    public interface getDataAsListString {
+        void onSuccess(List<String> stringList);
 
         void onFailed(String error);
     }

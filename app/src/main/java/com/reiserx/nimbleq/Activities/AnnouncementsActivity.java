@@ -110,7 +110,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
 
                 announcementsModel announcementsModel = new announcementsModel(binding.titile.getText().toString(), binding.message.getText().toString(), classID, currentTime);
 
-                db_reference.child(db_reference.getKey()).setValue(announcementsModel).addOnSuccessListener(unused -> {
+                db_reference.push().setValue(announcementsModel).addOnSuccessListener(unused -> {
                     AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
                     alert.setTitle("Success");
                     alert.setMessage("Announce has been uploaded");

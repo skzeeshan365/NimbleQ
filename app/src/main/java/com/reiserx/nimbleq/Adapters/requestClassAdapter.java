@@ -69,17 +69,20 @@ public class requestClassAdapter extends RecyclerView.Adapter<requestClassAdapte
         holder.binding.reqSubTxt.setText(model.getTimeSlot());
         holder.binding.reqDescTxt.setText(model.getSubject().concat(" • ".concat(model.getTopic())));
 
-        if (model.isAccepted()) {
-            holder.binding.status.setText("Class allotted");
-            holder.binding.status.setTextColor(context.getColor(R.color.GREEN));
-        } else {
-            holder.binding.status.setText("Pending");
-            holder.binding.status.setTextColor(context.getColor(R.color.RED));
-        }
-
         if (model.getStudentID().equals(userID)) {
+            holder.binding.status.setVisibility(View.VISIBLE);
             holder.binding.deleteImg.setVisibility(View.VISIBLE);
-        } else holder.binding.deleteImg.setVisibility(View.GONE);
+            if (model.isAccepted()) {
+                holder.binding.status.setText("Class allotted");
+                holder.binding.status.setTextColor(context.getColor(R.color.GREEN));
+            } else {
+                holder.binding.status.setText("Pending");
+                holder.binding.status.setTextColor(context.getColor(R.color.RED));
+            }
+        } else {
+            holder.binding.deleteImg.setVisibility(View.GONE);
+            holder.binding.status.setVisibility(View.GONE);
+        }
     }
 
     @Override

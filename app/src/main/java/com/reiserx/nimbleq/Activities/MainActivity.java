@@ -14,9 +14,9 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
+import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityMainBinding;
 
@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser user;
 
     SharedPreferences save;
+
+    UserTypeClass userTypeClass;
 
     private slotsViewModel viewModel;
 
@@ -56,25 +58,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
+            //Main logic starts
+            userTypeClass = new UserTypeClass(this);
+
             getUserType();
 
             initializeSlot();
 
-            binding.main3rdLayout.setOnClickListener(view -> {
-                if (CONSTANTS.student_teacher_flag == 1) {
-
-                } else if (CONSTANTS.student_teacher_flag == 2) {
-                    Intent intent = new Intent(this, ClassListActivity.class);
-                    intent.putExtra("isTeacher", true);
-                    startActivity(intent);
-                }
-            });
             zoomCredentials zoomCredentials = new zoomCredentials(CONSTANTS.SDK_KEY, CONSTANTS.SDK_SECRET);
             initializeZoomSdk(this, zoomCredentials);
-
-            binding.main4thLayout.setOnClickListener(view -> {
-
-            });
 
             binding.imageView17.setOnClickListener(view -> {
                 Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
@@ -82,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
             });
 
             binding.viewClass.setOnClickListener(view -> {
-                if (CONSTANTS.student_teacher_flag == 1) {
+                if (userTypeClass.isUserLearner()) {
                     Intent intent = new Intent(MainActivity.this, ClassListActivity.class);
-                    intent.putExtra("isClass", true);
+                    intent.putExtra("dataType", 0);
                     startActivity(intent);
-                } else if (CONSTANTS.student_teacher_flag == 2) {
+                } else if (!userTypeClass.isUserLearner()) {
                     Intent intent = new Intent(this, SlotsListActivity.class);
                     startActivity(intent);
                 }
@@ -94,21 +86,57 @@ public class MainActivity extends AppCompatActivity {
 
             binding.main4thLayout.setOnClickListener(view -> {
                 Intent intent = new Intent(MainActivity.this, ClassListActivity.class);
+                intent.putExtra("dataType", 1);
                 startActivity(intent);
+            });
+
+            binding.main3rdLayout.setOnClickListener(view -> {
+                if (userTypeClass.isUserLearner()) {
+                    Intent intent = new Intent(this, ClassListActivity.class);
+                    intent.putExtra("dataType", 2);
+                    startActivity(intent);
+                } else if (!userTypeClass.isUserLearner()) {
+                    Intent intent = new Intent(this, ClassListActivity.class);
+                    startActivity(intent);
+                }
             });
         }
     }
 
     void getUserType() {
-        CONSTANTS.student_teacher_flag = save.getInt("userType", 0);
-        if (save.getInt("userType", 0) == 1) {
+        if (userTypeClass.isUserLearner()) {
+
+            //holder 1
             binding.classTxt.setText("View class");
             binding.classDesc.setText("Click to view avaibale classes");
-        } else if (save.getInt("userType", 0) == 2) {
+            //holder 1
+
+            //holder 3
+            binding.classTxt2.setText("View joined classes");
+            binding.classDesc2.setText("Click to view classes you have joined");
+            //holder 3
+
+            //holder 4
+            binding.classTxt3.setText("View your class requests");
+            binding.classDesc3.setText("Click to view your class requests");
+            //holder 4
+
+        } else if (!userTypeClass.isUserLearner()) {
+
+            //holder 1
             binding.classTxt.setText("Create class");
-            binding.classDesc.setText("Click to view slots classes");
+            binding.classDesc.setText("Click to view available class slots");
+            //holder 1
+
+            //holder 3
             binding.classTxt2.setText("View your classes");
-            binding.classDesc2.setText("Click to classes you have created");
+            binding.classDesc2.setText("Click to view classes you have created");
+            //holder 3
+
+            //holder 4
+            binding.classTxt3.setText("View class requests");
+            binding.classDesc3.setText("Click to view available class requests");
+            //holder 4
         }
     }
 

@@ -14,13 +14,13 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         UserDataRepository.getUsernameComplete,
         UserDataRepository.getUserTypeComplete,
         UserDataRepository.getUserDetailsComplete,
-        UserDataRepository.getTeacherListComplete {
+        UserDataRepository.getDataAsListString {
 
     private final MutableLiveData<UserData> userData = new MutableLiveData<>();
     private final MutableLiveData<String> username = new MutableLiveData<>();
     private final MutableLiveData<userType> userTypeMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<userDetails> userDetailsMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<String>> teacherListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> LisStringMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userNameError = new MutableLiveData<>();
@@ -46,8 +46,8 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         return userDetailsMutableLiveData;
     }
 
-    public MutableLiveData<List<String>> getTeacherListMutableLiveData() {
-        return teacherListMutableLiveData;
+    public MutableLiveData<List<String>> getLisStringMutableLiveData() {
+        return LisStringMutableLiveData;
     }
 
     public UserDataViewModel() {
@@ -74,6 +74,10 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         firebaseRepo.getTeacherList();
     }
 
+    public void getAllJoinedClasses(String userID) {
+        firebaseRepo.getAllJoinedClasses(userID);
+    }
+
     @Override
     public void onSuccess(UserData userDatas) {
         userData.setValue(userDatas);
@@ -96,7 +100,7 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
 
     @Override
     public void onSuccess(List<String> teacherList) {
-        teacherListMutableLiveData.setValue(teacherList);
+        LisStringMutableLiveData.setValue(teacherList);
     }
 
     @Override
