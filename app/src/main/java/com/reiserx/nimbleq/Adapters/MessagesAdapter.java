@@ -18,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,12 +26,15 @@ import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.ViewModels.ChatsViewModel;
 import com.reiserx.nimbleq.databinding.ItemReceiveBinding;
+import com.reiserx.nimbleq.databinding.ItemReceiveFileBinding;
 import com.reiserx.nimbleq.databinding.ItemReceiveImageBinding;
 import com.reiserx.nimbleq.databinding.ItemSendBinding;
+import com.reiserx.nimbleq.databinding.ItemSendFileBinding;
 import com.reiserx.nimbleq.databinding.ItemSendImageBinding;
 import com.vdurmont.emoji.EmojiManager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -48,11 +49,14 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     String uid, rec_uid;
     ChatsViewModel chatsViewModel;
     MessagesAdapter adapter;
+    int i = 0;
 
     final int ITEM_SENT_MESSAGE = 1;
     final int ITEM_RECEIVE_MESSAGE = 2;
     final int ITEM_SENT_IMAGE = 3;
     final int ITEM_RECEIVE_IMAGE = 4;
+    final int ITEM_SENT_FILE = 5;
+    final int ITEM_RECEIVE_FILE = 6;
 
     public void setData(List<Message> messages) {
         this.messages = messages;
@@ -68,10 +72,16 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     }
 
     public void addData(Message message) {
-        Message msg = messages.get(messages.size() - 1);
-        if (!msg.getMessageId().equals(message.getMessageId())) {
-            messages.add(message);
-            notifyItemInserted(messages.size());
+        if (messages != null) {
+            Message msg = messages.get(messages.size() - 1);
+            if (!msg.getMessageId().equals(message.getMessageId())) {
+                messages.add(message);
+                notifyItemInserted(messages.size());
+            }
+        } else {
+            messages = new ArrayList<>();
+                messages.add(message);
+                notifyItemInserted(messages.size());
         }
     }
 
@@ -102,12 +112,18 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         } else if (viewType == ITEM_SENT_IMAGE) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_send_image, parent, false);
             return new SentViewHolderImage(view);
+        } else if (viewType == ITEM_SENT_FILE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_send_file, parent, false);
+            return new SentViewHolderFile(view);
         } else if (viewType == ITEM_RECEIVE_MESSAGE) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_receive, parent, false);
-            return new ReceiverViewHolder(view);
-        } else {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_receive, parent, false);
+                return new ReceiverViewHolder(view);
+        } else if (viewType == ITEM_RECEIVE_IMAGE) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_receive_image, parent, false);
             return new ReceiverViewHolderImage(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_receive_file, parent, false);
+            return new ReceiverViewHolderFile(view);
         }
     }
 
@@ -115,13 +131,19 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     public int getItemViewType(int position) {
         Message message = messages.get(position);
         if (Objects.equals(FirebaseAuth.getInstance().getUid(), message.getSenderId())) {
-            if (message.getImageUrl() == null) {
-                return ITEM_SENT_MESSAGE;
-            } else return ITEM_SENT_IMAGE;
+            if (message.getImageUrl() != null) {
+                if (message.getFilename().endsWith(".jpg") || message.getFilename().endsWith(".jpeg") || message.getFilename().endsWith(".png"))
+                    return ITEM_SENT_IMAGE;
+                else
+                    return ITEM_SENT_FILE;
+            } else return ITEM_SENT_MESSAGE;
         } else {
-            if (message.getImageUrl() == null) {
-                return ITEM_RECEIVE_MESSAGE;
-            } else return ITEM_RECEIVE_IMAGE;
+            if (message.getImageUrl() != null) {
+                if (message.getFilename().endsWith(".jpg") || message.getFilename().endsWith(".jpeg") || message.getFilename().endsWith(".png"))
+                    return ITEM_RECEIVE_IMAGE;
+                else
+                    return ITEM_RECEIVE_FILE;
+            } else return ITEM_RECEIVE_MESSAGE;
         }
     }
 
@@ -235,6 +257,45 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.GONE);
                 viewHolder.binding.replyName.setVisibility(View.GONE);
             }
+        } else if (holder.getClass() == SentViewHolderFile.class) {
+            SentViewHolderFile viewHolder = (SentViewHolderFile) holder;
+
+            viewHolder.binding.filenameTxt.setText(message.getFilename());
+
+            if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
+                viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
+                viewHolder.binding.replyName.setVisibility(View.VISIBLE);
+                viewHolder.binding.replyMsgAdapter.setText(message.getReplymsg());
+                viewHolder.binding.replyMsgAdapter.setOnClickListener(view -> clickReply(message.getReplyid()));
+                viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
+
+                if (message.getReplyuid().equals(uid)) {
+                    viewHolder.binding.replyName.setText("me");
+                } else viewHolder.binding.replyName.setText(message.getReplyname());
+            } else {
+                viewHolder.binding.replyMsgAdapter.setVisibility(View.GONE);
+                viewHolder.binding.replyName.setVisibility(View.GONE);
+            }
+        } else if (holder.getClass() == ReceiverViewHolderFile.class) {
+            ReceiverViewHolderFile viewHolder = (ReceiverViewHolderFile) holder;
+
+            viewHolder.binding.filenameTxt.setText(message.getFilename());
+            viewHolder.binding.username.setText(message.getSenderName());
+
+            if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
+                viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
+                viewHolder.binding.replyName.setVisibility(View.VISIBLE);
+                viewHolder.binding.replyMsgAdapter.setText(message.getReplymsg());
+                viewHolder.binding.replyMsgAdapter.setOnClickListener(view -> clickReply(message.getReplyid()));
+                viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
+
+                if (message.getReplyuid().equals(uid)) {
+                    viewHolder.binding.replyName.setText("me");
+                } else viewHolder.binding.replyName.setText(message.getReplyname());
+            } else {
+                viewHolder.binding.replyMsgAdapter.setVisibility(View.GONE);
+                viewHolder.binding.replyName.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -284,6 +345,26 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         public ReceiverViewHolderImage(@NonNull View itemView) {
             super(itemView);
             binding = ItemReceiveImageBinding.bind(itemView);
+        }
+    }
+
+    public class SentViewHolderFile extends RecyclerView.ViewHolder {
+
+        ItemSendFileBinding binding;
+
+        public SentViewHolderFile(@NonNull View itemView) {
+            super(itemView);
+            binding = ItemSendFileBinding.bind(itemView);
+        }
+    }
+
+    public class ReceiverViewHolderFile extends RecyclerView.ViewHolder {
+
+        ItemReceiveFileBinding binding;
+
+        public ReceiverViewHolderFile(@NonNull View itemView) {
+            super(itemView);
+            binding = ItemReceiveFileBinding.bind(itemView);
         }
     }
 
@@ -348,5 +429,10 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
         alert.setNegativeButton("cancel", null);
         alert.show();
+    }
+
+    public void setFilter(List<Message> FilteredDataList) {
+        messages = FilteredDataList;
+        notifyDataSetChanged();
     }
 }

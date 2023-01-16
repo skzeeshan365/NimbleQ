@@ -5,7 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 public class Message {
     private String messageId, message, senderId, senderName, timeStamp, replymsg, replyuid, replyid, replyname;
     long queryStamp;
-    String imageUrl;
+    String imageUrl, filename;
     DocumentSnapshot snapshot;
 
     public Message(String message, String senderId, String senderName, String timeStamp, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
@@ -28,10 +28,16 @@ public class Message {
         this.queryStamp = queryStamp;
     }
 
-    public Message() {
+    public Message(String imageUrl, String filename, String senderId, String senderName, String timeStamp, long queryStamp) {
+        this.imageUrl = imageUrl;
+        this.filename = filename;
+        this.senderId = senderId;
+        this.timeStamp = timeStamp;
+        this.senderName = senderName;
+        this.queryStamp = queryStamp;
     }
 
-    public Message(String messageId, String message, String senderId, String senderName, String imageUrl, String timeStamp, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
+    public Message(String imageUrl, String filename, String senderId, String senderName, String timeStamp, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
         this.message = message;
         this.senderId = senderId;
         this.timeStamp = timeStamp;
@@ -40,8 +46,10 @@ public class Message {
         this.replyid = replyid;
         this.replyname = replyname;
         this.senderName = senderName;
-        this.imageUrl = imageUrl;
         this.queryStamp = queryStamp;
+    }
+
+    public Message() {
     }
 
     public void setMessageId(String messageId) {
@@ -138,5 +146,13 @@ public class Message {
 
     public void setQueryStamp(long queryStamp) {
         this.queryStamp = queryStamp;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

@@ -59,7 +59,6 @@ public class ChatsRepository {
                     data.add(message);
                 }
                 lastVisible = queryDocumentSnapshots.getDocuments().get(0);
-                Log.d(CONSTANTS.TAG2, String.valueOf(lastVisible.getData()));
                 onLoadMessagesComplete.onSuccess(data);
             } else onLoadMessagesComplete.onFailure("No message available");
         }).addOnFailureListener(e -> {
@@ -68,21 +67,21 @@ public class ChatsRepository {
     }
 
     public void getAllMessages(String classID, MessagesAdapter adapter) {
+        adapter.getList().clear();
         List<Message> data = new ArrayList<>();
         Query query = reference.document(classID).collection("Groupchat").orderBy("queryStamp");
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
-                data.clear();
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                     Message message = documentSnapshot.toObject(Message.class);
                     message.setMessageId(documentSnapshot.getId());
-                    adapter.addData(message);
+                    data.add(message);
                 }
                 lastVisible = queryDocumentSnapshots.getDocuments().get(0);
-                adapter.notifyDataSetChanged();
-            } else onLoadMessagesComplete.onFailure("No message available");
+                onGetAllMessagesComplete.onComplete(data);
+            } else onGetAllMessagesComplete.onFailure("No message available");
         }).addOnFailureListener(e -> {
-            onLoadMessagesComplete.onFailure(e.toString());
+            onGetAllMessagesComplete.onFailure(e.toString());
         });
     }
 
@@ -113,8 +112,6 @@ public class ChatsRepository {
     }
 
     public void paginateMessages(String classID, MessagesAdapter list) {
-        Log.d(CONSTANTS.TAG2, String.valueOf(lastVisible.getData()));
-        List<Message> data = new ArrayList<>();
         Query query = reference.document(classID).collection("Groupchat").orderBy("queryStamp", Query.Direction.DESCENDING).startAfter(lastVisible).limit(5);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
