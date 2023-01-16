@@ -40,11 +40,7 @@ public class ChatsRepository {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
         reference.document(classID).collection("Groupchat").document(String.valueOf(currentTime))
-                .set(message).addOnSuccessListener(documentReference -> {
-                    onMessageSubmitted.onSuccess(null);
-                }).addOnFailureListener(e -> {
-                    onMessageSubmitted.onFailure(e.toString());
-                });
+                .set(message).addOnSuccessListener(documentReference -> onMessageSubmitted.onSuccess(null)).addOnFailureListener(e -> onMessageSubmitted.onFailure(e.toString()));
     }
 
     public void getMessages(String classID, int limit) {
@@ -55,15 +51,15 @@ public class ChatsRepository {
                 data.clear();
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                     Message message = documentSnapshot.toObject(Message.class);
-                    message.setMessageId(documentSnapshot.getId());
+                    if (message != null) {
+                        message.setMessageId(documentSnapshot.getId());
+                    }
                     data.add(message);
                 }
                 lastVisible = queryDocumentSnapshots.getDocuments().get(0);
                 onLoadMessagesComplete.onSuccess(data);
             } else onLoadMessagesComplete.onFailure("No message available");
-        }).addOnFailureListener(e -> {
-            onLoadMessagesComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onLoadMessagesComplete.onFailure(e.toString()));
     }
 
     public void getAllMessages(String classID, MessagesAdapter adapter) {
@@ -75,15 +71,15 @@ public class ChatsRepository {
             if (!queryDocumentSnapshots.isEmpty()) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                     Message message = documentSnapshot.toObject(Message.class);
-                    message.setMessageId(documentSnapshot.getId());
+                    if (message != null) {
+                        message.setMessageId(documentSnapshot.getId());
+                    }
                     data.add(message);
                 }
                 lastVisible = queryDocumentSnapshots.getDocuments().get(0);
                 onGetAllMessagesComplete.onComplete(data);
             } else onGetAllMessagesComplete.onFailure("No message available");
-        }).addOnFailureListener(e -> {
-            onGetAllMessagesComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetAllMessagesComplete.onFailure(e.toString()));
     }
 
     public void getLatestMessages(String classID) {
@@ -108,7 +104,9 @@ public class ChatsRepository {
 
                     onGetLatestMessageComplete.onSuccess(message);
                 } else onGetLatestMessageComplete.onFailure("No message available");
-            } else onGetLatestMessageComplete.onFailure(error.toString());
+            } else if (error != null) {
+                onGetLatestMessageComplete.onFailure(error.toString());
+            }
         });
     }
 
@@ -118,14 +116,16 @@ public class ChatsRepository {
             if (!queryDocumentSnapshots.isEmpty()) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                     message = documentSnapshot.toObject(Message.class);
-                    message.setMessageId(documentSnapshot.getId());
-                    list.addDataAt0(message);
+                    if (message != null) {
+                        message.setMessageId(documentSnapshot.getId());
+                    }
+                    if (message != null) {
+                        list.addDataAt0(message);
+                    }
                 }
                 lastVisible = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
             } else onGetLatestMessageComplete.onFailure("No message available");
-        }).addOnFailureListener(e -> {
-            onGetLatestMessageComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetLatestMessageComplete.onFailure(e.toString()));
     }
 
     public interface OnMessageSubmitted {

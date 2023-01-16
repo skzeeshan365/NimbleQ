@@ -1,6 +1,8 @@
 package com.reiserx.nimbleq.Adapters.Announcements;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +23,16 @@ import java.util.List;
 public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdapter.UsersViewHolder> {
 
     private List<announcementsModel> parentItemList;
+    Context context;
 
     public void setParentItemList(List<announcementsModel> parentItemList) {
         this.parentItemList = parentItemList;
     }
+
+    public announcementsAdapter(Context context) {
+        this.context = context;
+    }
+
 
     @NonNull
     @Override
@@ -39,7 +47,7 @@ public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdap
         announcementsModel model = parentItemList.get(position);
 
         holder.binding.name.setText(model.getName());
-        holder.binding.data.setText(model.getInfo());
+        holder.binding.data.setContent(model.getInfo());
 
         Log.d(CONSTANTS.TAG, String.valueOf(model.getTimeStamp()));
         holder.binding.elementHolder.setOnClickListener(view -> {

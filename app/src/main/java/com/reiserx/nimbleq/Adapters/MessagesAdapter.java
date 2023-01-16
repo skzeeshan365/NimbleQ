@@ -165,7 +165,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             aa.setDuration(400);
 
             viewHolder.binding.timeSent.setText(message.getTimeStamp());
-            viewHolder.binding.message.setText(message.getMessage());
+            viewHolder.binding.message.setContent(message.getMessage());
 
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
                 viewHolder.binding.replyName.setVisibility(View.VISIBLE);
@@ -199,7 +199,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             aa.setDuration(400);
 
             viewHolder.binding.timeRec.setText(message.getTimeStamp());
-            viewHolder.binding.messageReceive.setText(message.getMessage());
+            viewHolder.binding.messageReceive.setContent(message.getMessage());
             viewHolder.binding.username.setText(message.getSenderName());
 
             if (viewHolder.binding.messageReceive.getText().toString().equals("")) {
@@ -235,9 +235,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                     .load(message.getImageUrl())
                     .thumbnail(0.01f)
                     .into(viewHolder.binding.img);
-            viewHolder.binding.img.setOnClickListener(view -> {
-                checkFile(message.getImageUrl(), message.getFilename());
-            });
+            viewHolder.binding.img.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
                 viewHolder.binding.replyName.setVisibility(View.VISIBLE);
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
@@ -264,9 +262,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             Glide.with(context)
                     .load(message.getImageUrl())
                     .into(viewHolder.binding.imgRec);
-            viewHolder.binding.imgRec.setOnClickListener(view -> {
-                checkFile(message.getImageUrl(), message.getFilename());
-            });
+            viewHolder.binding.imgRec.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
                 viewHolder.binding.replyName.setVisibility(View.VISIBLE);
@@ -292,9 +288,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             viewHolder.binding.filenameTxt.setText(message.getFilename());
 
-            viewHolder.binding.fileHolder.setOnClickListener(view -> {
-                checkFile(message.getImageUrl(), message.getFilename());
-            });
+            viewHolder.binding.fileHolder.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
 
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
@@ -322,9 +316,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             viewHolder.binding.filenameTxt.setText(message.getFilename());
             viewHolder.binding.username.setText(message.getSenderName());
 
-            viewHolder.binding.recFileHolder.setOnClickListener(view -> {
-                checkFile(message.getImageUrl(), message.getFilename());
-            });
+            viewHolder.binding.recFileHolder.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
 
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
@@ -453,7 +445,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         alert.setMessage("Are you sure you want to delete this message");
         alert.setPositiveButton("delete", (dialogInterface, i) -> {
             Calendar c = Calendar.getInstance();
-            String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
+            @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
             HashMap<String, Object> map = new HashMap<>();
             map.put("message", "This message was deleted");
             map.put("timeStamp", senttime);
@@ -478,6 +470,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         alert.show();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilter(List<Message> FilteredDataList) {
         messages = FilteredDataList;
         notifyDataSetChanged();

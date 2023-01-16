@@ -26,8 +26,16 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type.
+            minifyEnabled true
+
+            // Includes the default ProGuard rules files that are packaged with
+            // the Android Gradle plugin. To learn more, go to the section about
+            // R8 configuration files.
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -76,6 +84,8 @@ dependencies {
     implementation 'io.github.sangcomz:fishbun:1.1.1'
 
     implementation 'com.mindorks.android:prdownloader:0.6.0'
+
+    implementation 'com.github.AhmMhd:SeeMoreTextView-Android:1.0.0'
 }
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'

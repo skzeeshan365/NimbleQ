@@ -27,7 +27,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,6 +89,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
     boolean enabled = false, enableLatest = false;
 
+    @SuppressLint("NotifyDataSetChanged")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
@@ -114,12 +114,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
         userDataViewModel.getUsername(user.getUid());
         userDataViewModel.getUserName().observe(getViewLifecycleOwner(), s -> senderName = s);
-        userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                snackbarTop.showSnackBar(s, false);
-            }
-        });
+        userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
 
         binding.sendButton.setOnClickListener(view -> sendMessage());
 
@@ -153,27 +148,25 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 } else
                     snackbarTop.showSnackBar("Failed to get mime type", false);
             });
-            alert.setNegativeButton("Images", (dialogInterface, i) -> {
-                FishBun.with(NotificationsFragment.this)
-                        .setImageAdapter(new GlideAdapter())
-                        .setIsUseDetailView(true)
-                        .setMaxCount(5)
-                        .setMinCount(1)
-                        .setPickerSpanCount(2)
-                        .setAlbumSpanCount(1, 2)
-                        .setButtonInAlbumActivity(false)
-                        .setCamera(true)
-                        .setReachLimitAutomaticClose(true)
-                        .setAllViewTitle("All")
-                        .setActionBarTitle("Image Library")
-                        .textOnImagesSelectionLimitReached("Limit Reached!")
-                        .textOnNothingSelected("Nothing Selected")
-                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                        .isStartInAllView(false)
-                        .exceptMimeType(listOf(MimeType.GIF))
-                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                        .startAlbumWithOnActivityResult(100);
-            });
+            alert.setNegativeButton("Images", (dialogInterface, i) -> FishBun.with(NotificationsFragment.this)
+                    .setImageAdapter(new GlideAdapter())
+                    .setIsUseDetailView(true)
+                    .setMaxCount(5)
+                    .setMinCount(1)
+                    .setPickerSpanCount(2)
+                    .setAlbumSpanCount(1, 2)
+                    .setButtonInAlbumActivity(false)
+                    .setCamera(true)
+                    .setReachLimitAutomaticClose(true)
+                    .setAllViewTitle("All")
+                    .setActionBarTitle("Image Library")
+                    .textOnImagesSelectionLimitReached("Limit Reached!")
+                    .textOnNothingSelected("Nothing Selected")
+                    .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                    .isStartInAllView(false)
+                    .exceptMimeType(listOf(MimeType.GIF))
+                    .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                    .startAlbumWithOnActivityResult(100));
             alert.show();
         });
 
@@ -217,7 +210,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
         if (!MessageTxt.equals("")) {
             Calendar c = Calendar.getInstance();
-            String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
+            @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
 
             Calendar cal = Calendar.getInstance();
             long currentTime = cal.getTimeInMillis();
@@ -240,6 +233,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         } else Toast.makeText(getContext(), "Please type a message", Toast.LENGTH_SHORT).show();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void getMessages() {
         chatsViewModel.getMessages(classID, 15);
         chatsViewModel.getMessageListMutableLiveData().observe(getViewLifecycleOwner(), messages -> {
@@ -407,9 +401,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 = (SearchView) MenuItemCompat
                 .getActionView(searchViewItem);
 
-        searchView.setOnSearchClickListener(view -> {
-            chatsViewModel.getAllMessages(classID, adapter);
-        });
+        searchView.setOnSearchClickListener(view -> chatsViewModel.getAllMessages(classID, adapter));
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
 
@@ -430,9 +422,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.post_announcements) {
 
-        }
         return false;
     }
 
@@ -449,7 +439,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                         messages = dataFromDataList.getMessage().toLowerCase();
                         name = dataFromDataList.getSenderName().toLowerCase();
                         replyMessage = dataFromDataList.getReplymsg().toLowerCase();
-                        if (messages.contains(newText) || name.contains(newText)) {
+                        if (messages.contains(newText) || name.contains(newText) || replyMessage.contains(newTexts)) {
                             filteredDataList.add(dataFromDataList);
                         }
                     } else {
@@ -486,9 +476,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
     void getMimeTypes() {
         AdministrationViewModel administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         administrationViewModel.getMimeTypes();
-        administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> {
-            mimetype = stringList.toArray(new String[0]);
-        });
+        administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> mimetype = stringList.toArray(new String[0]));
         administrationViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
 
     }

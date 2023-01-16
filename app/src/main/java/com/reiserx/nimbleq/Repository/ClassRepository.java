@@ -61,17 +61,9 @@ public class ClassRepository {
 
     public void setClassJoinState(String userID, String classID, boolean join) {
         if (join) {
-            classJoinReference.child(classID).child(userID).setValue(userID).addOnSuccessListener(unused -> {
-                OnClassJoinStateChanged.onSuccess(1);
-            }).addOnFailureListener(e -> {
-                OnClassJoinStateChanged.onGetClassStateFailure(e.toString());
-            });
+            classJoinReference.child(classID).child(userID).setValue(userID).addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(1)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
         } else {
-            classJoinReference.child(classID).child(userID).removeValue().addOnSuccessListener(unused -> {
-                OnClassJoinStateChanged.onSuccess(3);
-            }).addOnFailureListener(e -> {
-                OnClassJoinStateChanged.onGetClassStateFailure(e.toString());
-            });
+            classJoinReference.child(classID).child(userID).removeValue().addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(3)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
         }
     }
 
@@ -110,9 +102,7 @@ public class ClassRepository {
                     OnGetClassListComplete.onSuccess(data);
                 } else OnGetClassListComplete.onGetClassListFailure("Class not available");
             } else OnGetClassListComplete.onGetClassListFailure("Class not available");
-        }).addOnFailureListener(e -> {
-            OnGetClassListComplete.onGetClassListFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> OnGetClassListComplete.onGetClassListFailure(e.toString()));
     }
 
     public void getClassListForTeacher(String userID) {

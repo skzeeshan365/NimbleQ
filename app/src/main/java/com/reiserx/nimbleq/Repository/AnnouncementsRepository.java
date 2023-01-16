@@ -50,7 +50,7 @@ public class AnnouncementsRepository {
                         Map<String, linkModel> namelist = ds.child("AnnouncementLinks").getValue(mapType);
 
                         if (namelist != null) {
-                            List<linkModel> list = new ArrayList<linkModel>(namelist.values());
+                            List<linkModel> list = new ArrayList<>(namelist.values());
                             announcementsModel.setLinkModels(list);
                         }
                         parentItemList.add(announcementsModel);

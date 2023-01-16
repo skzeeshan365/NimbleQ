@@ -61,7 +61,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
         layoutManager.setReverseLayout(false);
         layoutManager.setStackFromEnd(true);
         binding.recycler.setLayoutManager(layoutManager);
-        adapter = new announcementsAdapter();
+        adapter = new announcementsAdapter(requireContext().getApplicationContext());
         binding.recycler.setAdapter(adapter);
 
         buttonDesign = new ButtonDesign(getContext());

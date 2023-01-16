@@ -73,7 +73,7 @@
                 android:focusable="true"
                 android:padding="5dp">
 
-                <TextView
+                <com.abdulhakeem.seemoretextview.SeeMoreTextView
                     android:id="@+id/message_receive"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
