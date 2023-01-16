@@ -2,9 +2,7 @@ package com.reiserx.nimbleq.ViewModels;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.reiserx.nimbleq.Adapters.MessagesAdapter;
 import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.Repository.ChatsRepository;
@@ -25,6 +23,7 @@ public class ChatsViewModel extends ViewModel implements ChatsRepository.OnMessa
     public MutableLiveData<Void> getMessageMutableLiveData() {
         return messageMutableLiveData;
     }
+
     public MutableLiveData<List<Message>> getMessageListMutableLiveData() {
         return messageListMutableLiveData;
     }
@@ -36,6 +35,7 @@ public class ChatsViewModel extends ViewModel implements ChatsRepository.OnMessa
     public MutableLiveData<List<Message>> getAllMessagesListMutableLiveData() {
         return allMessagesListMutableLiveData;
     }
+
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }

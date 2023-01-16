@@ -41,10 +41,10 @@ public class ChatsRepository {
         long currentTime = cal.getTimeInMillis();
         reference.document(classID).collection("Groupchat").document(String.valueOf(currentTime))
                 .set(message).addOnSuccessListener(documentReference -> {
-            onMessageSubmitted.onSuccess(null);
-        }).addOnFailureListener(e -> {
-            onMessageSubmitted.onFailure(e.toString());
-        });
+                    onMessageSubmitted.onSuccess(null);
+                }).addOnFailureListener(e -> {
+                    onMessageSubmitted.onFailure(e.toString());
+                });
     }
 
     public void getMessages(String classID, int limit) {
@@ -67,7 +67,8 @@ public class ChatsRepository {
     }
 
     public void getAllMessages(String classID, MessagesAdapter adapter) {
-        adapter.getList().clear();
+        if (adapter.getList() != null)
+            adapter.getList().clear();
         List<Message> data = new ArrayList<>();
         Query query = reference.document(classID).collection("Groupchat").orderBy("queryStamp");
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -120,7 +121,7 @@ public class ChatsRepository {
                     message.setMessageId(documentSnapshot.getId());
                     list.addDataAt0(message);
                 }
-                lastVisible = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size()-1);
+                lastVisible = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
             } else onGetLatestMessageComplete.onFailure("No message available");
         }).addOnFailureListener(e -> {
             onGetLatestMessageComplete.onFailure(e.toString());
@@ -135,16 +136,19 @@ public class ChatsRepository {
 
     public interface OnLoadMessagesComplete {
         void onSuccess(List<Message> messages);
+
         void onFailure(String error);
     }
 
     public interface OnGetLatestMessageComplete {
         void onSuccess(Message message);
+
         void onFailure(String error);
     }
 
     public interface onGetAllMessagesComplete {
         void onComplete(List<Message> messages);
+
         void onFailure(String error);
     }
 }

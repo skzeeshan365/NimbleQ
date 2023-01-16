@@ -31,6 +31,7 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     public MutableLiveData<Integer> getClassState() {
         return classState;
     }
+
     public MutableLiveData<List<classModel>> getClassList() {
         return classList;
     }
@@ -51,6 +52,7 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     public void getClassData(String classID) {
         firebaseRepo.getClassData(classID);
     }
+
     public void setClassState(String userID, String classID, boolean join) {
         firebaseRepo.setClassJoinState(userID, classID, join);
     }

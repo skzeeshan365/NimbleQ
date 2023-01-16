@@ -8,6 +8,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.downloader.PRDownloader;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.ActivityClassBinding;
@@ -34,6 +35,8 @@ public class ClassActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_class);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        PRDownloader.initialize(getApplicationContext());
     }
 
 }

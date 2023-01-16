@@ -3,20 +3,16 @@ package com.reiserx.nimbleq.Repository;
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.classModel;
@@ -80,19 +76,19 @@ public class ClassRepository {
     }
 
     public void getClassJoinState(String userID, String classID) {
-            classJoinReference.child(classID).child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists())
-                        OnClassJoinStateChanged.onSuccess(2);
-                    else OnClassJoinStateChanged.onSuccess(3);
-                }
+        classJoinReference.child(classID).child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                    OnClassJoinStateChanged.onSuccess(2);
+                else OnClassJoinStateChanged.onSuccess(3);
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    OnClassJoinStateChanged.onGetClassStateFailure(error.toString());
-                }
-            });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                OnClassJoinStateChanged.onGetClassStateFailure(error.toString());
+            }
+        });
     }
 
     public void getClassList(subjectAndTimeSlot subjectAndTimeSlot) {
@@ -171,6 +167,7 @@ public class ClassRepository {
 
     public interface OnClassJoinStateChanged {
         void onSuccess(int state);
+
         void onGetClassStateFailure(String error);
     }
 

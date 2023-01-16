@@ -4,9 +4,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.StorageReference;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -36,26 +33,26 @@ public class downloadFiles {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-                try {
-                    URL u = new URL(url);
-                    URLConnection conn = u.openConnection();
-                    int contentLength = conn.getContentLength();
+            try {
+                URL u = new URL(url);
+                URLConnection conn = u.openConnection();
+                int contentLength = conn.getContentLength();
 
-                    DataInputStream stream = new DataInputStream(u.openStream());
+                DataInputStream stream = new DataInputStream(u.openStream());
 
-                    byte[] buffer = new byte[contentLength];
-                    stream.readFully(buffer);
-                    stream.close();
+                byte[] buffer = new byte[contentLength];
+                stream.readFully(buffer);
+                stream.close();
 
-                    DataOutputStream fos = new DataOutputStream(new FileOutputStream(outputFile));
-                    fos.write(buffer);
-                    fos.flush();
-                    fos.close();
-                } catch(FileNotFoundException e) {
-                    return; // swallow a 404
+                DataOutputStream fos = new DataOutputStream(new FileOutputStream(outputFile));
+                fos.write(buffer);
+                fos.flush();
+                fos.close();
+            } catch (FileNotFoundException e) {
+                return; // swallow a 404
             } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                e.printStackTrace();
+            }
             handler.post(() -> {
                 if (outputFile.exists()) {
 

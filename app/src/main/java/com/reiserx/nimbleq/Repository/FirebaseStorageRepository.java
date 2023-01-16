@@ -7,30 +7,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
-import android.view.View;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.reiserx.nimbleq.Adapters.MessagesAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.Message;
-import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.Models.remoteFileModel;
 import com.reiserx.nimbleq.Utils.fileSize;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -70,7 +55,7 @@ public class FirebaseStorageRepository {
     }
 
     @SuppressLint("Range")
-    public String getFileName(Context context, Uri uri){
+    public String getFileName(Context context, Uri uri) {
         if (uri.toString().startsWith("content://")) {
             Cursor cursor = null;
             try {
@@ -92,7 +77,7 @@ public class FirebaseStorageRepository {
         fileSize fileSize = new fileSize();
         AssetFileDescriptor fileDescriptor = null;
         try {
-            fileDescriptor = context.getContentResolver().openAssetFileDescriptor(uri , "r");
+            fileDescriptor = context.getContentResolver().openAssetFileDescriptor(uri, "r");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -103,12 +88,13 @@ public class FirebaseStorageRepository {
         } else
             return false;
         String calFileSize = fileSize.getFileSize(fileSizes);
-        String number  = calFileSize.replaceAll("[^0-9]", "");
+        String number = calFileSize.replaceAll("[^0-9]", "");
 
-        if (calFileSize.contains("KB") || calFileSize.contains("MB"))
-            return Integer.parseInt(number) > max;
-        else
-            return false;
+        Log.d(CONSTANTS.TAG2, calFileSize);
+        Log.d(CONSTANTS.TAG2, String.valueOf(fileSizes));
+        if (calFileSize.contains("MB"))
+            return Integer.parseInt(number) < max;
+        else return calFileSize.contains("KB");
     }
 
     public interface OnFileUploaded {

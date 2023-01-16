@@ -6,10 +6,7 @@ import android.net.Uri;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.reiserx.nimbleq.Adapters.MessagesAdapter;
-import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.Models.remoteFileModel;
-import com.reiserx.nimbleq.Repository.ChatsRepository;
 import com.reiserx.nimbleq.Repository.FirebaseStorageRepository;
 
 import java.util.List;
@@ -32,6 +29,7 @@ public class FirebaseStorageViewModel extends ViewModel implements FirebaseStora
     public void uploadMultipleImages(Context context, String userID, List<Uri> list) {
         firebaseStorage.uploadMultipleImages(context, userID, list);
     }
+
     public FirebaseStorageViewModel() {
         firebaseStorage = new FirebaseStorageRepository(this);
     }

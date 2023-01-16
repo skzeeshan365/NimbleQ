@@ -54,7 +54,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="5dp"
-            android:clickable="true"
             android:focusable="true"
             android:minHeight="48dp"
             app:cardCornerRadius="25dp"
@@ -64,6 +63,7 @@
             app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/rec_fileHolder"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"

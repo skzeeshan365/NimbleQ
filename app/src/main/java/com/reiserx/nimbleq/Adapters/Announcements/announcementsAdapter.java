@@ -77,4 +77,9 @@ public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdap
             binding = AnnouncementsLayoutBinding.bind(itemView);
         }
     }
+
+    public void setFilter(List<announcementsModel> FilteredDataList) {
+        parentItemList = FilteredDataList;
+        notifyDataSetChanged();
+    }
 }

@@ -3,17 +3,11 @@ package com.reiserx.nimbleq.Activities.Fragments.GroupChat;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
-import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -42,16 +36,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.capybaralabs.swipetoreply.SwipeController;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.Query;
-import com.reiserx.nimbleq.Activities.AnnouncementsActivity;
 import com.reiserx.nimbleq.Adapters.MessagesAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.FileUtil;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
-import com.reiserx.nimbleq.Utils.fileSize;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.ChatsViewModel;
 import com.reiserx.nimbleq.ViewModels.FirebaseStorageViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
@@ -60,13 +51,10 @@ import com.sangcomz.fishbun.FishBun;
 import com.sangcomz.fishbun.MimeType;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 public class NotificationsFragment extends Fragment implements MenuProvider {
 
@@ -84,7 +72,9 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
     LinearLayoutManager layoutManager;
     MessagesAdapter adapter;
-    ArrayList<Message> filteredDataList, dataList;
+    ArrayList<Message> filteredDataList;
+    ArrayList<Message> dataList;
+    List<Message> data;
 
     Message message;
 
@@ -95,6 +85,10 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
     ArrayList<Uri> path;
 
     String newText;
+
+    String[] mimetype;
+
+    boolean enabled = false, enableLatest = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -107,6 +101,12 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+
+        binding.recyclerView.setVisibility(View.GONE);
+        binding.progHolder.setVisibility(View.VISIBLE);
+        binding.progressBar2.setVisibility(View.VISIBLE);
+        binding.textView9.setVisibility(View.GONE);
+        binding.progButton.setVisibility(View.GONE);
 
         snackbarTop = new SnackbarTop(root);
 
@@ -130,7 +130,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         layoutManager.setReverseLayout(false);
         layoutManager.setStackFromEnd(true);
         binding.recyclerView.setLayoutManager(layoutManager);
-        adapter = new MessagesAdapter(getContext(), binding.recyclerView, classID, user.getUid(), chatsViewModel);
+        adapter = new MessagesAdapter(getContext(), binding.recyclerView, classID, user.getUid(), chatsViewModel, data);
         adapter.setAdapter(adapter);
         binding.replyHolder.setVisibility(View.GONE);
 
@@ -139,18 +139,21 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         scrollListener();
 
         binding.attachImg.setOnClickListener(v -> {
+
             AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
             alert.setMessage("Send a photo");
             alert.setPositiveButton("gallery", (dialogInterface, i) -> {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                String[] mimetypes = {"audio/*", "application/pdf", "text/plain", "application/html", "application/json"};
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                startActivityForResult(intent, 101);
+                if (mimetype != null) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
+                    startActivityForResult(intent, 101);
+                } else
+                    snackbarTop.showSnackBar("Failed to get mime type", false);
             });
-            alert.setNegativeButton("camera", (dialogInterface, i) -> {
+            alert.setNegativeButton("Images", (dialogInterface, i) -> {
                 FishBun.with(NotificationsFragment.this)
                         .setImageAdapter(new GlideAdapter())
                         .setIsUseDetailView(true)
@@ -174,15 +177,27 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
             alert.show();
         });
 
+        chatsViewModel.getAllMessagesListMutableLiveData().observe(getViewLifecycleOwner(), messages -> {
+            adapter.setData(messages);
+            dataList.clear();
+            dataList.addAll(messages);
+            binding.recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        });
+
         chatsViewModel.getLatestMessages(classID);
         chatsViewModel.getLatestMessageListMutableLiveData().observe(getViewLifecycleOwner(), message -> {
-            adapter.addData(message);
-            binding.recyclerView.setAdapter(adapter);
+            if (enableLatest) {
+                adapter.addData(message);
+                binding.recyclerView.setAdapter(adapter);
 
-            if (adapter.getItemCount() > 50) {
-                chatsViewModel.getMessages(classID, 15);
+                if (adapter.getItemCount() > 50) {
+                    chatsViewModel.getMessages(classID, 15);
+                }
             }
         });
+
+        getMimeTypes();
 
         swipeController(adapter.getList());
 
@@ -228,9 +243,14 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
     private void getMessages() {
         chatsViewModel.getMessages(classID, 15);
         chatsViewModel.getMessageListMutableLiveData().observe(getViewLifecycleOwner(), messages -> {
+            Log.d(CONSTANTS.TAG2, "get messages");
             adapter.setData(messages);
+            dataList.addAll(messages);
             binding.recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+            enableLatest = true;
+            binding.recyclerView.setVisibility(View.VISIBLE);
+            binding.progHolder.setVisibility(View.GONE);
         });
     }
 
@@ -338,12 +358,12 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 if (resultCode == RESULT_OK) {
                     path.clear();
                     if (data != null) {
-                        if(null != data.getClipData()) {
-                            for(int i = 0; i < data.getClipData().getItemCount(); i++) {
-                                    path.add(data.getClipData().getItemAt(i).getUri());
+                        if (null != data.getClipData()) {
+                            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                                path.add(data.getClipData().getItemAt(i).getUri());
                             }
                         } else {
-                                path.add(data.getData());
+                            path.add(data.getData());
                         }
                         firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
 
@@ -389,11 +409,6 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
         searchView.setOnSearchClickListener(view -> {
             chatsViewModel.getAllMessages(classID, adapter);
-            chatsViewModel.getAllMessagesListMutableLiveData().observe(getViewLifecycleOwner(), messages -> {
-                adapter.setData(messages);
-                binding.recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            });
         });
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
@@ -405,8 +420,9 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        filteredDataList = filter(adapter.getList(), newText);
+                        filteredDataList = filter(dataList, newText);
                         adapter.setFilter(filteredDataList);
+                        enabled = true;
                         return false;
                     }
                 });
@@ -458,10 +474,22 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                     }
                 }
             }
-            if (filteredDataList.isEmpty()) {
-                chatsViewModel.getAllMessages(classID, adapter);
+            if (enabled) {
+                if (filteredDataList.isEmpty()) {
+                    chatsViewModel.getAllMessages(classID, adapter);
+                }
             }
         }
         return filteredDataList;
+    }
+
+    void getMimeTypes() {
+        AdministrationViewModel administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        administrationViewModel.getMimeTypes();
+        administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> {
+            mimetype = stringList.toArray(new String[0]);
+        });
+        administrationViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
+
     }
 }
