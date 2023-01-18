@@ -3,10 +3,11 @@ package com.reiserx.nimbleq.Models;
 public class UserData {
     String uid, phoneNumber, userName, FCM_TOKEN;
 
-    public UserData(String uid, String phoneNumber, String userName) {
+    public UserData(String uid, String phoneNumber, String userName, String FCM_TOKEN) {
         this.uid = uid;
         this.phoneNumber = phoneNumber;
         this.userName = userName;
+        this.FCM_TOKEN = FCM_TOKEN;
     }
 
     public UserData() {

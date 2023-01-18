@@ -79,6 +79,24 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
             this.userData = userData;
 
+            if (user.getUid().equals(userData.getUid())) {
+                binding.button8.setText("Join meeting");
+                buttonDesign.setButtonOutline(binding.button8);
+                binding.button8.setOnClickListener(view -> {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("Join class as Host");
+                    alert.setMessage("Joining class as host is not supported in this app\nYou have to join it from zoom app\nMEETING ID: "+MEETING_ID+"\nMEETING PASSWORD: "+MEETING_PASSWORD);
+                    alert.setPositiveButton("open", (dialogInterface, i) -> {
+                        PackageManager pm = requireContext().getPackageManager();
+                        Intent intent = pm.getLaunchIntentForPackage("us.zoom.videomeetings");
+                        if (intent != null) {
+                            startActivity(intent);
+                        }
+                    });
+                    alert.setNegativeButton("cancel", null);
+                    alert.show();
+                });
+            } else {
                 classViewModel.getClassState(user.getUid(), id);
                 classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
                     if (state == 2) {
@@ -99,6 +117,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                         setJoinMeeting();
                     }
                 });
+            }
         });
 
         userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {

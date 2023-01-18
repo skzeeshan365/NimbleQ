@@ -2,6 +2,8 @@ package com.reiserx.nimbleq.Repository;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.exoplayer2.util.Log;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -10,6 +12,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.userType;
@@ -159,6 +163,15 @@ public class UserDataRepository {
                 getDataAsListString.onFailed(error.toString());
             }
         });
+    }
+
+    public void updateFCMToken(String userID) {
+        FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+        fcm.getToken().addOnSuccessListener(s -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("FCM_TOKEN", s);
+            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).updateChildren(map);
+        }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
     }
 
     public interface OnRealtimeDbTaskComplete {

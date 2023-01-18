@@ -18,6 +18,7 @@ import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityMainBinding;
 
@@ -73,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
                 startActivity(intent);
             });
+
+            UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+            userDataViewModel.updateFCMToken(user.getUid());
 
             binding.viewClass.setOnClickListener(view -> {
                 if (userTypeClass.isUserLearner()) {

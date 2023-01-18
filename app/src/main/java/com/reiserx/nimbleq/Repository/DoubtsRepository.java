@@ -1,13 +1,10 @@
 package com.reiserx.nimbleq.Repository;
 
-import static com.reiserx.nimbleq.Constants.CONSTANTS.TAG;
-
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,13 +19,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.reiserx.nimbleq.Adapters.Doubts.DoubtsAdapter;
-import com.reiserx.nimbleq.Adapters.MessagesAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
-import com.reiserx.nimbleq.Models.Message;
-import com.reiserx.nimbleq.Models.remoteLinks;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -94,40 +88,45 @@ public class DoubtsRepository {
     }
 
     public void getDoubtsForTeacher(String subject) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
         List<DoubtsModel> doubtsModelList = new ArrayList<>();
         Query query = reference.collection("DoubtList")
                 .whereEqualTo("subject", subject)
                 .orderBy("timeStamp", Query.Direction.DESCENDING)
-                .limit(5);
+                .limit(20);
         query.get().addOnCompleteListener(queryDocumentSnapshots -> {
             if (queryDocumentSnapshots.isSuccessful() && !queryDocumentSnapshots.getResult().isEmpty()) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getResult()) {
                     DoubtsModel doubtsModel = documentSnapshot.toObject(DoubtsModel.class);
                     if (doubtsModel != null) {
-                        reference.collection("DoubtList").document(documentSnapshot.getId()).collection("linkModels").get().addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                QuerySnapshot snapshot = task.getResult();
-                                if (snapshot != null) {
-                                    List<linkModel> linkModels = snapshot.toObjects(linkModel.class);
+                        if (!doubtsModel.getUserID().equals(user.getUid())) {
+                            reference.collection("DoubtList").document(documentSnapshot.getId()).collection("linkModels").get().addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    QuerySnapshot snapshot = task.getResult();
+                                    if (snapshot != null) {
+                                        List<linkModel> linkModels = snapshot.toObjects(linkModel.class);
 
-                                    Query query1 = reference.collection("AnswerList").whereEqualTo("doubt_ID", documentSnapshot.getId()).orderBy("timeStamp", Query.Direction.DESCENDING);
-                                    AggregateQuery countQuery = query1.count();
-                                    countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            AggregateQuerySnapshot snapshot1 = task1.getResult();
-                                            doubtsModel.setAnswerCount(snapshot1.getCount());
-                                            doubtsModel.setLinkModels(linkModels);
-                                            doubtsModel.setId(documentSnapshot.getId());
-                                            doubtsModelList.add(doubtsModel);
+                                        Query query1 = reference.collection("AnswerList").whereEqualTo("doubt_ID", documentSnapshot.getId()).orderBy("timeStamp", Query.Direction.DESCENDING);
+                                        AggregateQuery countQuery = query1.count();
+                                        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
+                                            if (task1.isSuccessful()) {
+                                                AggregateQuerySnapshot snapshot1 = task1.getResult();
+                                                doubtsModel.setAnswerCount(snapshot1.getCount());
+                                                doubtsModel.setLinkModels(linkModels);
+                                                doubtsModel.setId(documentSnapshot.getId());
+                                                doubtsModelList.add(doubtsModel);
 
-                                            onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
-                                        } else {
-                                            onGetDoubtsComplete.onFailure(task1.getException().toString());
-                                        }
-                                    });
+                                                onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
+                                            } else {
+                                                onGetDoubtsComplete.onFailure(task1.getException().toString());
+                                            }
+                                        });
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else
+                            onGetDoubtsComplete.onFailure("Doubts not available");
                     }
                 }
                 lastVisible = queryDocumentSnapshots.getResult().getDocuments().get(queryDocumentSnapshots.getResult().size() - 1);
@@ -144,7 +143,7 @@ public class DoubtsRepository {
                 .whereEqualTo("userID", userID)
                 .orderBy("timeStamp", Query.Direction.DESCENDING);
         query.get().addOnCompleteListener(queryDocumentSnapshots -> {
-            if (queryDocumentSnapshots.isSuccessful()) {
+            if (queryDocumentSnapshots.isSuccessful() && !queryDocumentSnapshots.getResult().isEmpty()) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getResult()) {
                     DoubtsModel doubtsModel = documentSnapshot.toObject(DoubtsModel.class);
                     if (doubtsModel != null) {
@@ -196,25 +195,25 @@ public class DoubtsRepository {
                                     List<linkModel> linkModels = snapshot.toObjects(linkModel.class);
                                     answerModel.setLinkModels(linkModels);
                                     answerModel.setId(documentSnapshot.getId());
-                                        databaseReference.child(answerModel.getTEACHER_UID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.exists()) {
-                                                    String username = snapshot.getValue(String.class);
-                                                    if (username != null) {
-                                                        answerModel.setTeacherName(username);
-                                                        answerModelList.add(answerModel);
-                                                        Log.d(CONSTANTS.TAG2, "exist");
-                                                    }
+                                    databaseReference.child(answerModel.getTEACHER_UID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.exists()) {
+                                                String username = snapshot.getValue(String.class);
+                                                if (username != null) {
+                                                    answerModel.setTeacherName(username);
+                                                    answerModelList.add(answerModel);
+                                                    Log.d(CONSTANTS.TAG2, "exist");
                                                 }
-                                                onGetAnswerComplete.onSuccess(answerModelList);
                                             }
+                                            onGetAnswerComplete.onSuccess(answerModelList);
+                                        }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                onGetAnswerComplete.onFailure(error.toString());
-                                            }
-                                        });
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            onGetAnswerComplete.onFailure(error.toString());
+                                        }
+                                    });
                                 } else
                                     onGetAnswerComplete.onFailure("Answers not available");
                             } else
@@ -233,12 +232,12 @@ public class DoubtsRepository {
     public void paginateMessages(String subject, DoubtsAdapter adapter) {
         if (lastVisible != null) {
             Log.d(CONSTANTS.TAG2, String.valueOf(lastVisible));
-        List<DoubtsModel> doubtsModelList = new ArrayList<>();
-        Query query = reference.collection("DoubtList")
-                .whereEqualTo("subject", subject)
-                .orderBy("timeStamp", Query.Direction.DESCENDING)
-                .startAfter(lastVisible)
-                .limit(5);
+            List<DoubtsModel> doubtsModelList = new ArrayList<>();
+            Query query = reference.collection("DoubtList")
+                    .whereEqualTo("subject", subject)
+                    .orderBy("timeStamp", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible)
+                    .limit(5);
             query.get().addOnCompleteListener(queryDocumentSnapshots -> {
                 if (queryDocumentSnapshots.isSuccessful() && !queryDocumentSnapshots.getResult().isEmpty()) {
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getResult()) {

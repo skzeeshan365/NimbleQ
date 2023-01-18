@@ -88,6 +88,8 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
         } else {
             if (Integer.parseInt(data.get("requestCode")) == 1) {
                 notificationUtils.sendClassUpdat(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
+            } else if (Integer.parseInt(data.get("requestCode")) == 2) {
+                notificationUtils.sendAnswerUpdates(FirebaseMessagingServices.this, title, content, Integer.parseInt(id), data.get("payload"));
             }
         }
     }

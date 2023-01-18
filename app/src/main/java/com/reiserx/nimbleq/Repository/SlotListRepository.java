@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -12,8 +13,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
+import com.zipow.videobox.ptapp.mm.enums.CodeSnippetOption;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,13 +41,14 @@ public class SlotListRepository {
                         slotReference.child(Objects.requireNonNull(snapshot1.getKey())).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                data.clear();
+
                                 if (snapshot.exists()) {
                                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                         subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
                                         if (subjectAndTimeSlot != null) {
                                             if (subjectAndTimeSlot.getSubject().equals(save.getString("subject", null)))
                                                 data.add(subjectAndTimeSlot);
+
                                         }
                                     }
                                     onRealtimeDbTaskComplete.onSuccess(data);

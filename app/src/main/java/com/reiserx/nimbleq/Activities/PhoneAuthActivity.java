@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -19,10 +21,12 @@ import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.ActivityPhoneAuthBinding;
 
 import java.util.Objects;
@@ -115,6 +119,9 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     } else {
                         snackbarTop.showSnackBar("Login successful", true);
                         isRegister = false;
+                        FirebaseUser user = auth.getCurrentUser();
+                        UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+                        userDataViewModel.updateFCMToken(user.getUid());
                     }
                     TransitionManager.beginDelayedTransition(binding.cardHolder, new AutoTransition());
                     binding.continueBtn.setVisibility(View.VISIBLE);
@@ -143,9 +150,13 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     private void process() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        reference = database.getReference().child("Data").child("UserData").child(auth.getUid());
-        FirebaseUser user = auth.getCurrentUser();
-        UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), username);
-        reference.setValue(userData);
+        FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+
+        fcm.getToken().addOnSuccessListener(s -> {
+            reference = database.getReference().child("Data").child("UserData").child(auth.getUid());
+            FirebaseUser user = auth.getCurrentUser();
+            UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), username, s);
+            reference.setValue(userData);
+        });
     }
 }

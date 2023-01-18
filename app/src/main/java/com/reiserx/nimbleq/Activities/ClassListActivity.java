@@ -206,12 +206,11 @@ public class ClassListActivity extends AppCompatActivity {
                 userDataViewModel.getAllJoinedClasses(user.getUid());
                 userDataViewModel.getLisStringMutableLiveData().observe(this, stringList -> {
                     datas.clear();
-                    for (int i = 0; i < stringList.size(); ++i) {
-                        classViewModel.getClassData(stringList.get(i));
+                    for (String id : stringList) {
+                        classViewModel.getClassData(id);
                     }
                     classViewModel.getClassData().observe(this, classModel -> {
                         datas.add(classModel);
-                        Log.d(CONSTANTS.TAG, String.valueOf(datas.size()));
                         adapter.setClassList(datas);
                         adapter.notifyDataSetChanged();
                         if (binding.recycler.getVisibility() == View.GONE && binding.progHolder.getVisibility() == View.VISIBLE) {

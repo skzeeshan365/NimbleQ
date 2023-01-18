@@ -46,7 +46,8 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
         holder.binding.className.setText(model.getClassName());
         holder.binding.subTopic.setText(model.getSubject() + " • " + model.getTopic());
         holder.binding.timeSlotTxt.setText(model.getTime_slot());
-        holder.binding.teacherTxt.setText("Teacher ".concat(model.getTeacher_name()));
+        if (model.getTeacher_name() != null)
+            holder.binding.teacherTxt.setText("Teacher ".concat(model.getTeacher_name()));
 
         holder.binding.classHolder.setOnClickListener(view -> {
             Intent intent = new Intent(context, ClassActivity.class);

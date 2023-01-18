@@ -78,6 +78,10 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         firebaseRepo.getAllJoinedClasses(userID);
     }
 
+    public void updateFCMToken(String userID) {
+        firebaseRepo.updateFCMToken(userID);
+    }
+
     @Override
     public void onSuccess(UserData userDatas) {
         userData.setValue(userDatas);

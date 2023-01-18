@@ -29,6 +29,7 @@ import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
+import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.databinding.AnnouncementsLayoutBinding;
 import com.reiserx.nimbleq.databinding.DoubtsLayoutBinding;
 import com.reiserx.nimbleq.databinding.ListLoadingLayoutBinding;
@@ -134,7 +135,10 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
             childAdapter.notifyDataSetChanged();
 
             if (loading) {
-                viewHolder.binding.progressBar5.setVisibility(View.VISIBLE);
+                if (doubtsModelList.size() > 10)
+                    viewHolder.binding.progressBar5.setVisibility(View.VISIBLE);
+                else
+                    viewHolder.binding.progressBar5.setVisibility(View.GONE);
             } else
                 viewHolder.binding.progressBar5.setVisibility(View.GONE);
         }
@@ -142,10 +146,11 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position == doubtsModelList.size() - 1)
-            return LOADING_ITEM;
-        else
-            return DATA_ITEM;
+        UserTypeClass userTypeClass = new UserTypeClass(context);
+            if (position == doubtsModelList.size() - 1 && !userTypeClass.isUserLearner())
+                return LOADING_ITEM;
+            else
+                return DATA_ITEM;
     }
 
     @Override

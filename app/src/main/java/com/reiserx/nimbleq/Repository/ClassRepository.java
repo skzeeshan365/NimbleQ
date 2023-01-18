@@ -83,7 +83,7 @@ public class ClassRepository {
                         String username = snapshot.getValue(String.class);
                         if (username != null) {
                             Notify notify = new Notify(context);
-                            notify.classJoinPayload("A learner left your class", username.concat(" has joined your class"), token, 1);
+                            notify.classJoinPayload("New learner in your class ", username.concat(" has joined your class"), token, 1);
                         }
                     }
                 }
@@ -102,7 +102,7 @@ public class ClassRepository {
                         String username = snapshot.getValue(String.class);
                         if (username != null) {
                             Notify notify = new Notify(context);
-                            notify.classJoinPayload("New learner in your class", username.concat(" has left your class"), token, 1);
+                            notify.classJoinPayload("A learner left your class", username.concat(" has left your class"), token, 1);
                         }
                     }
                 }
@@ -134,8 +134,7 @@ public class ClassRepository {
         List<classModel> data = new ArrayList<>();
         query = reference.collection("ClassInfo")
                 .whereEqualTo("subject", subjectAndTimeSlot.getSubject())
-                .whereEqualTo("time_slot", subjectAndTimeSlot.getTimeSlot())
-                .whereNotEqualTo("teacher_info", userID);
+                .whereEqualTo("time_slot", subjectAndTimeSlot.getTimeSlot());
 
         query.get().addOnSuccessListener(task -> {
             if (task != null) {
@@ -144,25 +143,28 @@ public class ClassRepository {
                         classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                         if (classModel != null) {
                             classModel.setClassID(document.getId());
+                            if (!classModel.getTeacher_info().equals(userID)) {
 
-                            userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.exists()) {
-                                        String username = snapshot.getValue(String.class);
-                                        if (username != null) {
-                                            classModel.setTeacher_name(username);
-                                            data.add(classModel);
+                                userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {
+                                            String username = snapshot.getValue(String.class);
+                                            if (username != null) {
+                                                classModel.setTeacher_name(username);
+                                                data.add(classModel);
+                                            }
                                         }
+                                        OnGetClassListComplete.onSuccess(data);
                                     }
-                                    OnGetClassListComplete.onSuccess(data);
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    OnGetClassListComplete.onGetClassListFailure(error.toString());
-                                }
-                            });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        OnGetClassListComplete.onGetClassListFailure(error.toString());
+                                    }
+                                });
+                            } else
+                                OnGetClassListComplete.onGetClassListFailure("Class not available");
                         }
                     }
                 } else OnGetClassListComplete.onGetClassListFailure("Class not available");

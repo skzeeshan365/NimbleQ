@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.R;
 
 import org.json.JSONException;
@@ -35,6 +37,7 @@ public class Notify {
     public void announcementsPayload(String title, String msg, String to, int i) {
         JSONObject dataJson = new JSONObject();
         try {
+            json = new JSONObject();
             dataJson.put("title", title);
             dataJson.put("content", msg);
             dataJson.put("id", String.valueOf(getRandom(0, 100)));
@@ -65,7 +68,7 @@ public class Notify {
                 Response response = client.newCall(request).execute();
                 String res = Objects.requireNonNull(response.body()).string();
                 Log.d(TAG, res);
-
+                json = null;
             } catch (Exception e) {
                 Log.d(TAG, e.toString());
                 Log.d(TAG, e.getMessage());
@@ -83,11 +86,34 @@ public class Notify {
     public void classJoinPayload(String name, String msg, String to, int i) {
         JSONObject dataJson = new JSONObject();
         try {
+            json = new JSONObject();
             dataJson.put("title", name);
             dataJson.put("content", msg);
             dataJson.put("id", String.valueOf(getRandom(0, 100)));
             dataJson.put("requestCode", 1);
             dataJson.put("isTopic", false);
+            json.put("data", dataJson);
+            json.put("to", to);
+
+            postNotification();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void submitAnswerPayload(String title, String msg, String to, DoubtsModel doubtsModel) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            Gson gson = new Gson();
+            String payload = gson.toJson(doubtsModel);
+
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", 2);
+            dataJson.put("isTopic", false);
+            dataJson.put("payload", payload);
             json.put("data", dataJson);
             json.put("to", to);
 

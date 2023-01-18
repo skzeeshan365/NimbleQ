@@ -66,10 +66,9 @@ public class SlotsListActivity extends AppCompatActivity {
 
         viewModel.getSlotList(this);
         viewModel.getSlotListMutableData().observe(this, datas -> {
-            Log.d(CONSTANTS.TAG, String.valueOf(datas.size()));
+            Log.d(CONSTANTS.TAG2, String.valueOf(datas.size()));
             if (!datas.isEmpty()) {
                 adapter.setSlotListData(datas);
-                removeDuplicates();
                 adapter.notifyDataSetChanged();
                 binding.recycler.setVisibility(View.VISIBLE);
                 binding.progHolder.setVisibility(View.GONE);

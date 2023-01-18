@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,13 +30,16 @@ import com.reiserx.nimbleq.Adapters.fileListAdapter;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
+import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
+import com.reiserx.nimbleq.Utils.Notify;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.ViewModels.DoubtsViewModel;
 import com.reiserx.nimbleq.ViewModels.FirebaseStorageViewModel;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.FragmentSubmitAnswerBinding;
 import com.sangcomz.fishbun.FishBun;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
@@ -52,6 +56,7 @@ public class SubmitAnswerFragment extends Fragment {
 
     FirebaseStorageViewModel firebaseStorageViewModel;
     DoubtsViewModel doubtsViewModel;
+    UserDataViewModel userDataViewModel;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -63,7 +68,7 @@ public class SubmitAnswerFragment extends Fragment {
 
     SnackbarTop snackbarTop;
 
-    String displayName;
+    String displayName, userName;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,9 +78,13 @@ public class SubmitAnswerFragment extends Fragment {
         firebaseStorageViewModel = new ViewModelProvider(this).get(FirebaseStorageViewModel.class);
         doubtsViewModel = new ViewModelProvider(this).get(DoubtsViewModel.class);
 
+        userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
+        userDataViewModel.getUsername(user.getUid());
+        userDataViewModel.getUserName().observe(getViewLifecycleOwner(), s -> userName = s);
         data = new ArrayList<>();
         links = new ArrayList<>();
         layoutManager = new LinearLayoutManager(getContext());
@@ -113,18 +122,23 @@ public class SubmitAnswerFragment extends Fragment {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
             DoubtsModel doubtsModel = sharedPreferenceClass.getDoubtInfo();
 
-            AnswerModel answerModel = new AnswerModel(doubtsModel.getId(), binding.answerDescTxt.getText().toString().trim(), user.getUid());
+            userDataViewModel.getUserData(doubtsModel.getUserID());
+            userDataViewModel.getUserData().observe(getViewLifecycleOwner(), userData -> {
+                AnswerModel answerModel = new AnswerModel(doubtsModel.getId(), binding.answerDescTxt.getText().toString().trim(), user.getUid());
 
-            doubtsViewModel.submitAnswer(answerModel, links);
-            doubtsViewModel.getAnswerSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
-                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                alert.setTitle("Success");
-                alert.setMessage("Answer has been submitted");
-                alert.setPositiveButton("close", (dialogInterface, i) -> requireActivity().onBackPressed());
-                alert.setCancelable(false);
-                alert.show();
+                doubtsViewModel.submitAnswer(answerModel, links);
+                doubtsViewModel.getAnswerSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
+                    Notify notify = new Notify(getContext());
+                    notify.submitAnswerPayload(userName.concat(" has answered your doubt"), binding.answerDescTxt.getText().toString().trim(), userData.getFCM_TOKEN(), doubtsModel);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                    alert.setTitle("Success");
+                    alert.setMessage("Answer has been submitted");
+                    alert.setPositiveButton("close", (dialogInterface, i) -> requireActivity().onBackPressed());
+                    alert.setCancelable(false);
+                    alert.show();
+                });
+                doubtsViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
             });
-            doubtsViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
         }
     }
 
