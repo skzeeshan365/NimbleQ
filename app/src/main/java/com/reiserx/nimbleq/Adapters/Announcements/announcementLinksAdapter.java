@@ -1,6 +1,7 @@
 package com.reiserx.nimbleq.Adapters.Announcements;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.R;
+import com.reiserx.nimbleq.Utils.FileOperations;
 import com.reiserx.nimbleq.databinding.FileViewLayoutBinding;
 
 import java.util.Collections;
@@ -18,6 +20,11 @@ import java.util.List;
 public class announcementLinksAdapter extends RecyclerView.Adapter<announcementLinksAdapter.UsersViewHolder> {
 
     private List<linkModel> childItemList;
+    Context context;
+
+    public announcementLinksAdapter(Context context) {
+        this.context = context;
+    }
 
     public void setChildItemList(List<linkModel> childItemList) {
         this.childItemList = childItemList;
@@ -29,6 +36,7 @@ public class announcementLinksAdapter extends RecyclerView.Adapter<announcementL
     @Override
     public announcementLinksAdapter.UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.file_view_layout, parent, false);
+        context = parent.getContext();
         return new announcementLinksAdapter.UsersViewHolder(view);
     }
 
@@ -43,6 +51,11 @@ public class announcementLinksAdapter extends RecyclerView.Adapter<announcementL
 
         holder.binding.imageView16.setVisibility(View.GONE);
         holder.binding.progressBar4.setVisibility(View.GONE);
+
+        holder.binding.fileHolder.setOnClickListener(view -> {
+            FileOperations fileOperations = new FileOperations(context.getApplicationContext());
+            fileOperations.checkFile(childItem.getLink(), childItem.getFilename(), true);
+        });
     }
 
     @Override

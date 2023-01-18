@@ -46,8 +46,8 @@ public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdap
     public void onBindViewHolder(@NonNull announcementsAdapter.UsersViewHolder holder, int position) {
         announcementsModel model = parentItemList.get(position);
 
-        holder.binding.name.setText(model.getName());
-        holder.binding.data.setContent(model.getInfo());
+        holder.binding.dSubject.setText(model.getName());
+        holder.binding.dData.setContent(model.getInfo());
 
         Log.d(CONSTANTS.TAG, String.valueOf(model.getTimeStamp()));
         holder.binding.elementHolder.setOnClickListener(view -> {
@@ -58,7 +58,7 @@ public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdap
 
         holder.binding.recycler.setHasFixedSize(true);
         holder.binding.recycler.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
-        announcementLinksAdapter childAdapter = new announcementLinksAdapter();
+        announcementLinksAdapter childAdapter = new announcementLinksAdapter(context);
         if (model.getLinkModels() != null) {
             childAdapter.setChildItemList(model.getLinkModels());
         }

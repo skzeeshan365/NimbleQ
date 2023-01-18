@@ -22,12 +22,15 @@ public class fileListAdapter extends RecyclerView.Adapter<fileListAdapter.UsersV
     ArrayList<fileTypeModel> users;
     View done;
     fileListAdapter adapter;
+    int dataType;
+    boolean check;
 
 
-    public fileListAdapter(Context context, ArrayList<fileTypeModel> users, fileListAdapter adapter) {
+    public fileListAdapter(Context context, ArrayList<fileTypeModel> users, fileListAdapter adapter, int i) {
         this.context = context;
         this.users = users;
         this.adapter = adapter;
+        this.dataType = i;
     }
 
     @NonNull
@@ -43,7 +46,8 @@ public class fileListAdapter extends RecyclerView.Adapter<fileListAdapter.UsersV
         fileTypeModel model = users.get(position);
         holder.binding.textView33.setText(model.getFilename());
 
-        checkFile(model.getFilePath(), holder);
+        if (dataType == 2)
+            checkFile(model.getFilePath(), holder);
 
         if (model.isUploaded()) {
             holder.binding.imageView16.setVisibility(View.VISIBLE);
@@ -103,5 +107,16 @@ public class fileListAdapter extends RecyclerView.Adapter<fileListAdapter.UsersV
             holder.binding.imageView15.setImageResource(R.drawable.ic_baseline_picture_as_pdf_24);
         else if (file.getName().endsWith(".txt"))
             holder.binding.imageView15.setImageResource(R.drawable.ic_baseline_insert_drive_file_24);
+    }
+
+    public boolean isElementExist(String fileName) {
+        check = false;
+        for (fileTypeModel fileTypeModel : users) {
+            if (fileTypeModel.getFilename().equals(fileName)) {
+                check = true;
+                break;
+            }
+        }
+        return check;
     }
 }

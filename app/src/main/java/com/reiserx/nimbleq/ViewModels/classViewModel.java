@@ -1,5 +1,7 @@
 package com.reiserx.nimbleq.ViewModels;
 
+import android.content.Context;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -53,16 +55,16 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.getClassData(classID);
     }
 
-    public void setClassState(String userID, String classID, boolean join) {
-        firebaseRepo.setClassJoinState(userID, classID, join);
+    public void setClassState(String userID, String classID, String token, boolean join, Context context) {
+        firebaseRepo.setClassJoinState(userID, classID, token, join, context);
     }
 
     public void getClassState(String userID, String classID) {
         firebaseRepo.getClassJoinState(userID, classID);
     }
 
-    public void getClassList(subjectAndTimeSlot subjectAndTimeSlot) {
-        firebaseRepo.getClassList(subjectAndTimeSlot);
+    public void getClassList(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
+        firebaseRepo.getClassList(subjectAndTimeSlot, userID);
     }
 
     public void getClassListForTeacher(String userID) {

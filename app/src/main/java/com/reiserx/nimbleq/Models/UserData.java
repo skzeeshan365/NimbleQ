@@ -1,7 +1,7 @@
 package com.reiserx.nimbleq.Models;
 
 public class UserData {
-    String uid, phoneNumber, userName;
+    String uid, phoneNumber, userName, FCM_TOKEN;
 
     public UserData(String uid, String phoneNumber, String userName) {
         this.uid = uid;
@@ -34,5 +34,13 @@ public class UserData {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getFCM_TOKEN() {
+        return FCM_TOKEN;
+    }
+
+    public void setFCM_TOKEN(String FCM_TOKEN) {
+        this.FCM_TOKEN = FCM_TOKEN;
     }
 }

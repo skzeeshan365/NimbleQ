@@ -59,6 +59,32 @@ public class FileDownloader {
                 });
     }
 
+    public void downloadWithoutProgress(String url, String path, String fileName) {
+        PRDownloader.download(url, path, fileName).build()
+                .setOnStartOrResumeListener(() -> {
+                })
+                .setOnPauseListener(() -> {
+
+                })
+                .setOnCancelListener(() -> {
+
+                })
+                .setOnProgressListener(progress -> {
+
+                })
+                .start(new OnDownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
+                        openFile(context, path.concat("/".concat(fileName)));
+                    }
+
+                    @Override
+                    public void onError(Error error) {
+                        Log.d(CONSTANTS.TAG2, error.toString());
+                    }
+                });
+    }
+
     private void openFile(Context context, String filePath) {
         File file = new File(filePath);
         Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(context.getApplicationContext()), BuildConfig.APPLICATION_ID + ".provider", file);

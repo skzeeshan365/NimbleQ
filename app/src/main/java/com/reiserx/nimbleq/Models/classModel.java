@@ -3,6 +3,7 @@ package com.reiserx.nimbleq.Models;
 public class classModel {
     private String className, subject, topic, classInfo, grade, time_slot, teacher_info, meetingID, meetingPassword;
     String classID;
+    String teacher_name;
 
     public classModel(String className, String subject, String topic, String classInfo, String grade, String time_slot, String teacher_info, String meetingID, String meetingPassword) {
         this.className = className;
@@ -97,5 +98,13 @@ public class classModel {
 
     public void setClassID(String classID) {
         this.classID = classID;
+    }
+
+    public String getTeacher_name() {
+        return teacher_name;
+    }
+
+    public void setTeacher_name(String teacher_name) {
+        this.teacher_name = teacher_name;
     }
 }

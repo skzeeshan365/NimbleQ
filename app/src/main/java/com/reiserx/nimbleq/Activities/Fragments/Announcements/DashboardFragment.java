@@ -134,7 +134,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
                 .getActionView(searchViewItem);
 
         searchView.setOnSearchClickListener(view -> {
-
+            enabled = true;
         });
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
@@ -148,7 +148,6 @@ public class DashboardFragment extends Fragment implements MenuProvider {
                     public boolean onQueryTextChange(String newText) {
                         filteredDataList = filter(dataList, newText);
                         adapter.setFilter(filteredDataList);
-                        enabled = true;
                         return false;
                     }
                 });

@@ -15,7 +15,9 @@ import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.userType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserDataRepository {
     private final UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete;

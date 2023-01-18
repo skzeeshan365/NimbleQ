@@ -7,7 +7,8 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
@@ -29,6 +30,11 @@
         android:theme="@style/Theme.NimbleQ"
         tools:replace="android:allowBackup"
         tools:targetApi="31">
+        <activity
+            android:name=".Activities.Doubts.DoubtsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_doubts"
+            android:theme="@style/Theme.NimbleQ.NoActionBar" />
         <activity
             android:name=".Activities.AnnouncementsActivity"
             android:exported="false" />
@@ -73,6 +79,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Services.FirebaseMessagingServices"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_baseline_circle_notifications_24" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/white" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

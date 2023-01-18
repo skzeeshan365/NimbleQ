@@ -49,14 +49,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/zoom_email_edittext" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/login_zoom_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/zoom_password_edittext" />
 </androidx.constraintlayout.widget.ConstraintLayout>

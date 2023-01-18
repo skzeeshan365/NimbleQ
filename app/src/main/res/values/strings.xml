@@ -10,4 +10,18 @@
     <string name="class_txt">Class</string>
     <string name="announcements">Announcements</string>
     <string name="group_chat">Group chat</string>
+    <string name="title_activity_doubts">DoubtsActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="fcm">https://fcm.googleapis.com/fcm/send</string>
+    <string name="serverKey">key=AAAAVVqD7RA:APA91bEIMoIX_3MiDKU_lrhRYNzZ-G9RllmpeJM9HBl0tNYaA3r_ReIRaiUFmLaL3NBb0OWMTsilQoNIQOEWiC7E1ASJ1AefkM1omRHt0oVbCAf592BU12kJgiLQ7bEoaQmTegp035rA</string>
 </resources>

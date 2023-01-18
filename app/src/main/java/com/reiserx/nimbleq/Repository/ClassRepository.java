@@ -1,5 +1,10 @@
 package com.reiserx.nimbleq.Repository;
 
+import static android.content.ContentValues.TAG;
+
+import android.content.Context;
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
@@ -13,10 +18,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
+import com.reiserx.nimbleq.Utils.NotificationUtils;
+import com.reiserx.nimbleq.Utils.Notify;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +36,7 @@ public class ClassRepository {
     private final ClassRepository.onGetClassRequestComplete onGetClassRequestComplete;
     private final DocumentReference reference;
     private final DatabaseReference classJoinReference;
+    private final DatabaseReference userDataReference;
     Query query;
 
     public ClassRepository(ClassRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete,
@@ -41,6 +50,7 @@ public class ClassRepository {
         this.onGetClassRequestComplete = onGetClassRequestComplete;
         reference = FirebaseFirestore.getInstance().collection("Main").document("Class");
         classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
+        userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
     }
 
     public void getClassData(String classID) {
@@ -59,11 +69,48 @@ public class ClassRepository {
         }).addOnFailureListener(e -> onRealtimeDbTaskComplete.onFailure(e.toString()));
     }
 
-    public void setClassJoinState(String userID, String classID, boolean join) {
+    public void setClassJoinState(String userID, String classID, String token, boolean join, Context context) {
         if (join) {
             classJoinReference.child(classID).child(userID).setValue(userID).addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(1)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
+
+            FirebaseMessaging fm = FirebaseMessaging.getInstance();
+            fm.subscribeToTopic(classID);
+
+            userDataReference.child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        String username = snapshot.getValue(String.class);
+                        if (username != null) {
+                            Notify notify = new Notify(context);
+                            notify.classJoinPayload("A learner left your class", username.concat(" has joined your class"), token, 1);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
         } else {
             classJoinReference.child(classID).child(userID).removeValue().addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(3)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
+
+            userDataReference.child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        String username = snapshot.getValue(String.class);
+                        if (username != null) {
+                            Notify notify = new Notify(context);
+                            notify.classJoinPayload("New learner in your class", username.concat(" has left your class"), token, 1);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
         }
     }
 
@@ -83,11 +130,12 @@ public class ClassRepository {
         });
     }
 
-    public void getClassList(subjectAndTimeSlot subjectAndTimeSlot) {
+    public void getClassList(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
         List<classModel> data = new ArrayList<>();
         query = reference.collection("ClassInfo")
                 .whereEqualTo("subject", subjectAndTimeSlot.getSubject())
-                .whereEqualTo("time_slot", subjectAndTimeSlot.getTimeSlot());
+                .whereEqualTo("time_slot", subjectAndTimeSlot.getTimeSlot())
+                .whereNotEqualTo("teacher_info", userID);
 
         query.get().addOnSuccessListener(task -> {
             if (task != null) {
@@ -96,10 +144,27 @@ public class ClassRepository {
                         classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                         if (classModel != null) {
                             classModel.setClassID(document.getId());
-                            data.add(classModel);
+
+                            userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        String username = snapshot.getValue(String.class);
+                                        if (username != null) {
+                                            classModel.setTeacher_name(username);
+                                            data.add(classModel);
+                                        }
+                                    }
+                                    OnGetClassListComplete.onSuccess(data);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    OnGetClassListComplete.onGetClassListFailure(error.toString());
+                                }
+                            });
                         }
                     }
-                    OnGetClassListComplete.onSuccess(data);
                 } else OnGetClassListComplete.onGetClassListFailure("Class not available");
             } else OnGetClassListComplete.onGetClassListFailure("Class not available");
         }).addOnFailureListener(e -> OnGetClassListComplete.onGetClassListFailure(e.toString()));
@@ -116,12 +181,29 @@ public class ClassRepository {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                     classModel.setClassID(document.getId());
-                    data.add(classModel);
+
+                    userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String username = snapshot.getValue(String.class);
+                                if (username != null) {
+                                    classModel.setTeacher_name(username);
+                                    data.add(classModel);
+                                }
+                            }
+                            if (!data.isEmpty())
+                                OnGetClassListComplete.onSuccess(data);
+                            else
+                                OnGetClassListComplete.onGetClassListFailure("Class not available");
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            OnGetClassListComplete.onGetClassListFailure(error.toString());
+                        }
+                    });
                 }
-                if (!data.isEmpty())
-                    OnGetClassListComplete.onSuccess(data);
-                else
-                    OnGetClassListComplete.onGetClassListFailure("Class not available");
             } else
                 OnGetClassListComplete.onGetClassListFailure("Failed to get class list");
         });

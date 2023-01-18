@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/FirstFragment">
+
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="com.reiserx.nimbleq.Activities.Doubts.FirstFragment"
+        android:label="Doubts"
+        tools:layout="@layout/fragment_first">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_ViewDoubtsFragment"
+            app:destination="@id/ViewDoubtsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SecondFragment"
+        android:name="com.reiserx.nimbleq.Activities.Doubts.SecondFragment"
+        android:label="Post Doubts"
+        tools:layout="@layout/fragment_second">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ViewDoubtsFragment"
+        android:name="com.reiserx.nimbleq.Activities.Doubts.ViewDoubtsFragment"
+        android:label="View Doubts"
+        tools:layout="@layout/fragment_view_doubts">
+        <action
+            android:id="@+id/action_ViewDoubtsFragment_to_SubmitAnswerFragment"
+            app:destination="@id/SubmitAnswerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/SubmitAnswerFragment"
+        android:name="com.reiserx.nimbleq.Activities.Doubts.SubmitAnswerFragment"
+        android:label="Submit answer"
+        tools:layout="@layout/fragment_submit_answer">
+    </fragment>
+</navigation>

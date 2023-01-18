@@ -8,10 +8,16 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.Models.remoteFileModel;
+import com.reiserx.nimbleq.Models.uploadProgressModel;
 import com.reiserx.nimbleq.Utils.fileSize;
 
 import java.io.File;
@@ -21,13 +27,16 @@ import java.util.List;
 
 public class FirebaseStorageRepository {
     private final FirebaseStorageRepository.OnFileUploaded onFileUploaded;
+    private final FirebaseStorageRepository.OnSingleFileUploaded onFileSingleUploaded;
 
     private final StorageReference reference;
 
     String displayName;
 
-    public FirebaseStorageRepository(FirebaseStorageRepository.OnFileUploaded onFileUploaded) {
+    public FirebaseStorageRepository(FirebaseStorageRepository.OnFileUploaded onFileUploaded, FirebaseStorageRepository.OnSingleFileUploaded onFileSingleUploaded) {
         this.onFileUploaded = onFileUploaded;
+        this.onFileSingleUploaded = onFileSingleUploaded;
+
         reference = FirebaseStorage.getInstance().getReference().child("Data").child("Main");
     }
 
@@ -52,6 +61,36 @@ public class FirebaseStorageRepository {
             } else
                 onFileUploaded.onFailure("Failed to upload file ".concat(getFileName(context, uri)));
         }
+    }
+
+    public void uploadSingleFile(Context context, String userID, Uri uri) {
+        if (filePermitted(context, 50, uri)) {
+            Calendar cal = Calendar.getInstance();
+            long currentTime = cal.getTimeInMillis();
+
+            String fileName = getFileName(context, uri);
+
+            fileTypeModel model = new fileTypeModel(fileName, false);
+            onFileSingleUploaded.onPreUpload(model);
+
+            Log.d(CONSTANTS.TAG2, fileName);
+
+            reference.child(userID).child(String.valueOf(currentTime)).putFile(uri).addOnProgressListener(snapshot -> {
+                double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                uploadProgressModel uploadProgressModel = new uploadProgressModel((int) progress, fileName);
+                onFileSingleUploaded.onProgress(uploadProgressModel);
+            }).addOnSuccessListener(taskSnapshot -> {
+
+                reference.child(userID).child(String.valueOf(currentTime)).getDownloadUrl().addOnSuccessListener(uri1 -> {
+                    remoteFileModel remoteFileModel = new remoteFileModel(fileName, uri1.toString());
+                    onFileSingleUploaded.onUploadSuccess(remoteFileModel);
+                }).addOnFailureListener(e -> onFileSingleUploaded.onFailure(e.toString()));
+
+            }).addOnFailureListener(e -> {
+                onFileSingleUploaded.onFailure(e.toString());
+            });
+        } else
+            onFileSingleUploaded.onFailure("Failed to upload file ".concat(getFileName(context, uri)));
     }
 
     @SuppressLint("Range")
@@ -99,6 +138,16 @@ public class FirebaseStorageRepository {
 
     public interface OnFileUploaded {
         void onSuccess(remoteFileModel remoteFileModel);
+
+        void onFailure(String error);
+    }
+
+    public interface OnSingleFileUploaded {
+        void onUploadSuccess(remoteFileModel remoteFileModel);
+
+        void onPreUpload(fileTypeModel fileTypeModel);
+
+        void onProgress(uploadProgressModel uploadProgressModel);
 
         void onFailure(String error);
     }

@@ -29,6 +29,7 @@ import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.FileUtil;
+import com.reiserx.nimbleq.Utils.Notify;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.databinding.ActivityAnnouncementsBinding;
 
@@ -86,7 +87,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
         links = new ArrayList<>();
         layoutManager = new LinearLayoutManager(this);
         binding.recyclerView2.setLayoutManager(layoutManager);
-        adapter = new fileListAdapter(this, data, adapter);
+        adapter = new fileListAdapter(this, data, adapter, 2);
         binding.recyclerView2.setAdapter(adapter);
 
         binding.attachHolder.setVisibility(View.GONE);
@@ -100,6 +101,8 @@ public class AnnouncementsActivity extends AppCompatActivity {
             db_reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Announcements").child(classID);
             buttonDesign.buttonFill(binding.button9);
 
+            Notify notify = new Notify(this);
+
             if (binding.titile.getText().toString().trim().equals(""))
                 binding.titile.setError("Field required");
             else if (binding.message.getText().toString().trim().equals(""))
@@ -111,6 +114,9 @@ public class AnnouncementsActivity extends AppCompatActivity {
                 announcementsModel announcementsModel = new announcementsModel(binding.titile.getText().toString(), binding.message.getText().toString(), classID, currentTime);
 
                 db_reference.push().setValue(announcementsModel).addOnSuccessListener(unused -> {
+
+                    notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID, 1);
+
                     AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
                     alert.setTitle("Success");
                     alert.setMessage("Announce has been uploaded");
@@ -139,6 +145,9 @@ public class AnnouncementsActivity extends AppCompatActivity {
                             linkModel.setId(key);
                             FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Announcements").child(classID).child(key).child("AnnouncementLinks").push().setValue(linkModel);
                         }
+
+                        notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID, 1);
+
                         AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
                         alert.setTitle("Success");
                         alert.setMessage("Announce has been uploaded");
@@ -192,7 +201,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case 12:
-                if (data != null) {
+                if (datas != null) {
                     if (datas.getData() != null) {
                         ArrayList<String> filepath = new ArrayList<>();
                         importedFile = datas.getData();

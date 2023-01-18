@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Activities.Fragments.ClassView;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Activities.RateAndFeedbackActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
@@ -55,6 +57,8 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
     SnackbarTop snackbarTop;
 
+    UserData userData;
+
     private static String MEETING_ID, MEETING_PASSWORD;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,8 +74,31 @@ public class HomeFragment extends Fragment implements MenuProvider {
         binding.textView9.setVisibility(View.GONE);
         binding.progButton.setVisibility(View.GONE);
 
-        userDataViewModel.getUserName().observe(getViewLifecycleOwner(), username -> {
-            binding.classTeacher.setText(username);
+        userDataViewModel.getUserData().observe(getViewLifecycleOwner(), userData -> {
+            binding.classTeacher.setText(userData.getUserName());
+
+            this.userData = userData;
+
+                classViewModel.getClassState(user.getUid(), id);
+                classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
+                    if (state == 2) {
+                        binding.button8.setText("Join meeting");
+                        buttonDesign.setButtonOutline(binding.button8);
+                        setJoinMeeting();
+                    } else if (state == 3) {
+                        binding.button8.setText("Join class");
+                        buttonDesign.setButtonOutline(binding.button8);
+                        binding.button8.setOnClickListener(view -> {
+                            buttonDesign.buttonFill(binding.button8);
+                            classViewModel.setClassState(user.getUid(), id, userData.getFCM_TOKEN(), true, getContext());
+                        });
+                    } else if (state == 1) {
+                        snackbarTop.showSnackBar("Class joined", true);
+                        binding.button8.setText("Join meeting");
+                        buttonDesign.setButtonOutline(binding.button8);
+                        setJoinMeeting();
+                    }
+                });
         });
 
         userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
@@ -94,27 +121,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
         buttonDesign.setButtonOutline(binding.button8);
 
         fetchClass();
-
-        classViewModel.getClassState(user.getUid(), id);
-        classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
-            if (state == 2) {
-                binding.button8.setText("Join meeting");
-                buttonDesign.setButtonOutline(binding.button8);
-                setJoinMeeting();
-            } else if (state == 3) {
-                binding.button8.setText("Join class");
-                buttonDesign.setButtonOutline(binding.button8);
-                binding.button8.setOnClickListener(view -> {
-                    buttonDesign.buttonFill(binding.button8);
-                    classViewModel.setClassState(user.getUid(), id, true);
-                });
-            } else if (state == 1) {
-                snackbarTop.showSnackBar("Class joined", true);
-                binding.button8.setText("Join meeting");
-                buttonDesign.setButtonOutline(binding.button8);
-                setJoinMeeting();
-            }
-        });
 
         return root;
     }
@@ -170,7 +176,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 binding.classInfo.setText(classModel.getClassInfo());
                 binding.timeSlot.setText(classModel.getTime_slot());
                 binding.gradeTxt.setText(classModel.getGrade());
-                userDataViewModel.getUsername(classModel.getTeacher_info());
+                userDataViewModel.getUserData(classModel.getTeacher_info());
                 setJoinMeeting();
                 binding.scrollView.setVisibility(View.VISIBLE);
                 binding.progHolder.setVisibility(View.GONE);
@@ -222,7 +228,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
             AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
             alert.setTitle("Leave class");
             alert.setMessage("Are you sure you want to leave this class\nAfter leaving you will not receive any updates about this class");
-            alert.setPositiveButton("leave", (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, false));
+            alert.setPositiveButton("leave", (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, userData.getFCM_TOKEN(), false, getContext()));
             alert.setNegativeButton("cancel", null);
             alert.show();
         }

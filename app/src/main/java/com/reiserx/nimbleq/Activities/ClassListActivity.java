@@ -136,7 +136,7 @@ public class ClassListActivity extends AppCompatActivity {
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
 
                     classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
-                    classViewModel.getClassList(subjectAndTimeSlot);
+                    classViewModel.getClassList(subjectAndTimeSlot, user.getUid());
                     classViewModel.getClassList().observe(this, classModelList -> {
                         if (!classModelList.isEmpty()) {
                             adapter.setClassList(classModelList);

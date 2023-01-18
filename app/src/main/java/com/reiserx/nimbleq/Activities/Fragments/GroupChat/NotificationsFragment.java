@@ -148,25 +148,27 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 } else
                     snackbarTop.showSnackBar("Failed to get mime type", false);
             });
-            alert.setNegativeButton("Images", (dialogInterface, i) -> FishBun.with(NotificationsFragment.this)
-                    .setImageAdapter(new GlideAdapter())
-                    .setIsUseDetailView(true)
-                    .setMaxCount(5)
-                    .setMinCount(1)
-                    .setPickerSpanCount(2)
-                    .setAlbumSpanCount(1, 2)
-                    .setButtonInAlbumActivity(false)
-                    .setCamera(true)
-                    .setReachLimitAutomaticClose(true)
-                    .setAllViewTitle("All")
-                    .setActionBarTitle("Image Library")
-                    .textOnImagesSelectionLimitReached("Limit Reached!")
-                    .textOnNothingSelected("Nothing Selected")
-                    .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                    .isStartInAllView(false)
-                    .exceptMimeType(listOf(MimeType.GIF))
-                    .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                    .startAlbumWithOnActivityResult(100));
+            alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                FishBun.with(NotificationsFragment.this)
+                        .setImageAdapter(new GlideAdapter())
+                        .setIsUseDetailView(true)
+                        .setMaxCount(5)
+                        .setMinCount(1)
+                        .setPickerSpanCount(2)
+                        .setAlbumSpanCount(1, 2)
+                        .setButtonInAlbumActivity(false)
+                        .setCamera(true)
+                        .setReachLimitAutomaticClose(true)
+                        .setAllViewTitle("All")
+                        .setActionBarTitle("Image Library")
+                        .textOnImagesSelectionLimitReached("Limit Reached!")
+                        .textOnNothingSelected("Nothing Selected")
+                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                        .isStartInAllView(false)
+                        .exceptMimeType(listOf(MimeType.GIF))
+                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                        .startAlbumWithOnActivityResult(100);
+            });
             alert.show();
         });
 
@@ -478,6 +480,5 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         administrationViewModel.getMimeTypes();
         administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> mimetype = stringList.toArray(new String[0]));
         administrationViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
-
     }
 }

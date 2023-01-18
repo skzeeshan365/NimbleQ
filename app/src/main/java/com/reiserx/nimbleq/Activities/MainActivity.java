@@ -14,6 +14,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
@@ -100,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+
+            binding.doubtsLt.setOnClickListener(view -> {
+                Intent intent = new Intent(this, DoubtsActivity.class);
+                startActivity(intent);
+            });
         }
     }
 
@@ -110,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
             binding.classTxt.setText("View class");
             binding.classDesc.setText("Click to view avaibale classes");
             //holder 1
+
+            //holder 2
+            binding.classTxt3.setText("Solve doubts");
+            binding.classDesc3.setText("Click to solve your doubts");
+            //holder 2
 
             //holder 3
             binding.classTxt2.setText("View joined classes");
@@ -127,6 +138,11 @@ public class MainActivity extends AppCompatActivity {
             binding.classTxt.setText("Create class");
             binding.classDesc.setText("Click to view available class slots");
             //holder 1
+
+            //holder 2
+            binding.classTxt3.setText("Solve doubts");
+            binding.classDesc3.setText("Click to solve your doubts");
+            //holder 2
 
             //holder 3
             binding.classTxt2.setText("View your classes");
