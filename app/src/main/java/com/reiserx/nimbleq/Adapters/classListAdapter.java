@@ -51,9 +51,15 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
         if (model.getTeacher_name() != null)
             holder.binding.teacherTxt.setText("Teacher ".concat(model.getTeacher_name()));
 
-        String rating = String.format("%.1f", model.getRating());
-        holder.binding.ratingRxt.setText(rating);
-        holder.binding.ratingBar.setRating(Float.parseFloat(rating)/5);
+        if (model.getRating() > 0) {
+            String rating = String.format("%.1f", model.getRating());
+            holder.binding.ratingRxt.setText(rating);
+            holder.binding.ratingBar.setRating(Float.parseFloat(rating) / 5);
+        } else  {
+            holder.binding.ratingRxt.setText("0");
+            holder.binding.ratingBar.setRating(0);
+        }
+        Log.d(CONSTANTS.TAG2, String.valueOf(model.getRating()));
 
         holder.binding.classHolder.setOnClickListener(view -> {
             Intent intent = new Intent(context, ClassActivity.class);

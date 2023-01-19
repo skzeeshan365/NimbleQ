@@ -88,6 +88,10 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.setTeacherRating(teacherID, userID, ratingModel);
     }
 
+    public void getAllJoinedClasses(String userID) {
+        firebaseRepo.getAllJoinedClasses(userID);
+    }
+
     @Override
     public void onSuccess(classModel classModel) {
         classData.setValue(classModel);

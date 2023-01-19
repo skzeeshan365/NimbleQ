@@ -199,32 +199,23 @@ public class ClassListActivity extends AppCompatActivity {
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
 
-                List<classModel> datas = new ArrayList<>();
-                UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
                 classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
 
-                userDataViewModel.getAllJoinedClasses(user.getUid());
-                userDataViewModel.getLisStringMutableLiveData().observe(this, stringList -> {
-                    datas.clear();
-                    for (String id : stringList) {
-                        classViewModel.getClassData(id);
-                    }
-                    classViewModel.getClassData().observe(this, classModel -> {
-                        datas.add(classModel);
-                        adapter.setClassList(datas);
+                classViewModel.getAllJoinedClasses(user.getUid());
+                classViewModel.getClassList().observe(this, classModelList -> {
+                        adapter.setClassList(classModelList);
                         adapter.notifyDataSetChanged();
                         if (binding.recycler.getVisibility() == View.GONE && binding.progHolder.getVisibility() == View.VISIBLE) {
                             binding.recycler.setVisibility(View.VISIBLE);
                             binding.progHolder.setVisibility(View.GONE);
                         }
-                    });
-                    classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
-                        binding.textView9.setText(s);
-                        binding.recycler.setVisibility(View.GONE);
-                        binding.progHolder.setVisibility(View.VISIBLE);
-                        binding.progressBar2.setVisibility(View.GONE);
-                        binding.textView9.setVisibility(View.VISIBLE);
-                    });
+                });
+                classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
+                    binding.textView9.setText(s);
+                    binding.recycler.setVisibility(View.GONE);
+                    binding.progHolder.setVisibility(View.VISIBLE);
+                    binding.progressBar2.setVisibility(View.GONE);
+                    binding.textView9.setVisibility(View.VISIBLE);
                 });
             }
         }
