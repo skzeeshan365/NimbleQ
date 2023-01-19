@@ -3,6 +3,7 @@ package com.reiserx.nimbleq.Adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.reiserx.nimbleq.Activities.ClassActivity;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.ClassListLayoutBinding;
@@ -38,7 +40,7 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
         return new UsersViewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
     public void onBindViewHolder(@NonNull classListAdapter.UsersViewHolder holder, int position) {
         classModel model = users.get(position);
@@ -48,6 +50,10 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
         holder.binding.timeSlotTxt.setText(model.getTime_slot());
         if (model.getTeacher_name() != null)
             holder.binding.teacherTxt.setText("Teacher ".concat(model.getTeacher_name()));
+
+        String rating = String.format("%.1f", model.getRating());
+        holder.binding.ratingRxt.setText(rating);
+        holder.binding.ratingBar.setRating(Float.parseFloat(rating)/5);
 
         holder.binding.classHolder.setOnClickListener(view -> {
             Intent intent = new Intent(context, ClassActivity.class);

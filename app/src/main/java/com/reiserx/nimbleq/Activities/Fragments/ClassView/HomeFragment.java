@@ -242,7 +242,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
             intent.putExtra("classID", id);
             intent.putExtra("Message", "How was your experience in class ".concat(Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).getTitle().toString()));
             intent.putExtra("userID", user.getUid());
-            getContext().startActivity(intent);
+            requireContext().startActivity(intent);
         } else if (menuItem.getItemId() == R.id.leave_class_menu_item) {
             AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
             alert.setTitle("Leave class");

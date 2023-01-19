@@ -66,7 +66,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
 
         buttonDesign = new ButtonDesign(getContext());
 
-        id = getActivity().getIntent().getExtras().getString("classID");
+        id = requireActivity().getIntent().getExtras().getString("classID");
 
         userTypeClass = new UserTypeClass(requireContext());
 

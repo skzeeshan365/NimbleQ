@@ -1,21 +1,30 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hsalf.smileyrating.SmileyRating;
+import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
+import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityRateAndFeedbackBinding;
 
 public class RateAndFeedbackActivity extends AppCompatActivity {
 
     ActivityRateAndFeedbackBinding binding;
+
+    String classID;
+    String teacherID;
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +37,9 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
         ButtonDesign buttonDesign = new ButtonDesign(this);
         buttonDesign.setButtonOutline(binding.button3);
 
+        int state = getIntent().getExtras().getInt("id");
+         userID = getIntent().getExtras().getString("userID");
+
         binding.smileRating.setSmileySelectedListener(type -> {
             if (SmileyRating.Type.OKAY == type || SmileyRating.Type.BAD == type || SmileyRating.Type.TERRIBLE == type) {
                 TransitionManager.beginDelayedTransition(binding.baseCardview, new AutoTransition());
@@ -37,14 +49,18 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
                 binding.hiddenView.setVisibility(View.GONE);
             }
             int rating = type.getRating();
-        });
 
-        binding.button3.setOnClickListener(view -> {
-            buttonDesign.buttonFill(binding.button3);
+            binding.button3.setOnClickListener(view -> {
+                buttonDesign.buttonFill(binding.button3);
+            if (binding.editTextTextPersonName3.getText().toString().trim().equals("")) {
+                RatingModel ratingModel = new RatingModel(rating, userID);
+                updateRating(state, ratingModel);
+            } else {
+                RatingModel ratingModel = new RatingModel(rating, userID, binding.editTextTextPersonName3.getText().toString().trim());
+                updateRating(state, ratingModel);
+            }
+            });
         });
-
-        int state = getIntent().getExtras().getInt("id");
-        String userID = getIntent().getExtras().getString("userID");
 
         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
@@ -54,15 +70,33 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
         });
         if (state == 1) {
             String message = getIntent().getExtras().getString("Message");
-            String classID = getIntent().getExtras().getString("classID");
+            classID = getIntent().getExtras().getString("classID");
             binding.msgTxtRate.setText(message);
         } else if (state == 2) {
             String message = getIntent().getExtras().getString("Message");
-            String teacherID = getIntent().getExtras().getString("teacherID");
+            teacherID = getIntent().getExtras().getString("teacherID");
             userDataViewModel.getUsername(teacherID);
             userDataViewModel.getUserName().observe(this, s -> {
                 binding.msgTxtRate.setText(message.concat(" ".concat(s)));
             });
         }
+    }
+
+    void updateRating(int state, RatingModel ratingModel) {
+        classViewModel classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+        if (state == 1) {
+            classViewModel.setClassRating(classID, userID, ratingModel);
+        } else if (state == 2) {
+            classViewModel.setTeacherRating(teacherID, userID, ratingModel);
+        }
+        classViewModel.getRatingSubmittedMutableLiveData().observe(this, unused -> {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Feedback submitted");
+            alert.setMessage("Thanks for submitting your feedback");
+            alert.setPositiveButton("close", (dialogInterface, i) -> {
+                finish();
+            });
+            alert.show();
+        });
     }
 }

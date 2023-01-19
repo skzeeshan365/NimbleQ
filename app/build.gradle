@@ -95,6 +95,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.11'
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
+
+    implementation 'com.iarcuschin:simpleratingbar:0.1.5'
 }
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'

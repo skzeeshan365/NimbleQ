@@ -8,6 +8,10 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,9 +22,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
+import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Utils.NotificationUtils;
@@ -30,24 +36,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClassRepository {
+
     private final ClassRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete;
     private final ClassRepository.OnClassJoinStateChanged OnClassJoinStateChanged;
     private final ClassRepository.OnGetClassListComplete OnGetClassListComplete;
     private final ClassRepository.onGetClassRequestComplete onGetClassRequestComplete;
+    private final ClassRepository.OnRatingSubmitted onRatingSubmitted;
+
     private final DocumentReference reference;
     private final DatabaseReference classJoinReference;
     private final DatabaseReference userDataReference;
     Query query;
 
+    float rating1, rating2, rating3, rating4, rating5, result;
+
     public ClassRepository(ClassRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete,
                            ClassRepository.OnClassJoinStateChanged OnClassJoinStateChanged,
                            ClassRepository.OnGetClassListComplete OnGetClassListComplete,
-                           ClassRepository.onGetClassRequestComplete onGetClassRequestComplete) {
+                           ClassRepository.onGetClassRequestComplete onGetClassRequestComplete,
+                           ClassRepository.OnRatingSubmitted onRatingSubmitted) {
 
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.OnClassJoinStateChanged = OnClassJoinStateChanged;
         this.OnGetClassListComplete = OnGetClassListComplete;
         this.onGetClassRequestComplete = onGetClassRequestComplete;
+        this.onRatingSubmitted = onRatingSubmitted;
+
+
         reference = FirebaseFirestore.getInstance().collection("Main").document("Class");
         classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -145,23 +160,31 @@ public class ClassRepository {
                             classModel.setClassID(document.getId());
                             if (!classModel.getTeacher_info().equals(userID)) {
 
-                                userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if (snapshot.exists()) {
-                                            String username = snapshot.getValue(String.class);
-                                            if (username != null) {
-                                                classModel.setTeacher_name(username);
-                                                data.add(classModel);
-                                            }
+                                reference.collection("ClassRating").get().addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        QuerySnapshot snapshot = task1.getResult();
+                                        if (snapshot != null) {
+                                            classModel.setRating(calculateRating(snapshot.toObjects(RatingModel.class)));
                                         }
-                                        OnGetClassListComplete.onSuccess(data);
                                     }
+                                    userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.exists()) {
+                                                String username = snapshot.getValue(String.class);
+                                                if (username != null) {
+                                                    classModel.setTeacher_name(username);
+                                                    data.add(classModel);
+                                                }
+                                            }
+                                            OnGetClassListComplete.onSuccess(data);
+                                        }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        OnGetClassListComplete.onGetClassListFailure(error.toString());
-                                    }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            OnGetClassListComplete.onGetClassListFailure(error.toString());
+                                        }
+                                    });
                                 });
                             } else
                                 OnGetClassListComplete.onGetClassListFailure("Class not available");
@@ -233,6 +256,45 @@ public class ClassRepository {
         }).addOnFailureListener(e -> onGetClassRequestComplete.onGetClassListFailure(e.toString()));
     }
 
+    public void setClassRating(String classID, String userID, RatingModel ratingModel) {
+        reference.collection("ClassRating").document(userID).set(ratingModel).addOnSuccessListener(unused -> {
+            onRatingSubmitted.onSuccess(null);
+        }).addOnFailureListener(e -> {
+            onRatingSubmitted.onFailure(e.toString());
+        });
+    }
+
+    public void setTeacherRating(String teacherID, String userID, RatingModel ratingModel) {
+        reference.collection("TeacherRating").document(userID).set(ratingModel).addOnSuccessListener(unused -> {
+            onRatingSubmitted.onSuccess(null);
+        }).addOnFailureListener(e -> {
+            onRatingSubmitted.onFailure(e.toString());
+        });
+    }
+
+    float calculateRating(List<RatingModel> ratingModelList) {
+        for (RatingModel ratingModel : ratingModelList) {
+            switch (ratingModel.getRating()) {
+                case 1:
+                    rating1++;
+                    break;
+                case 2:
+                    rating2++;
+                    break;
+                case 3:
+                    rating3++;
+                    break;
+                case 4:
+                    rating4++;
+                    break;
+                case 5:
+                    rating5++;
+                    break;
+            }
+        }
+        return  (5*rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1)/(rating5+rating4+rating3+rating2+rating1);
+    }
+
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(classModel classModel);
 
@@ -255,5 +317,11 @@ public class ClassRepository {
         void onGetClassRequestsSuccess(List<ClassRequestModel> classModelList);
 
         void onGetClassListFailure(String error);
+    }
+
+    public interface OnRatingSubmitted {
+        void onSuccess(Void voids);
+
+        void onFailure(String error);
     }
 }
