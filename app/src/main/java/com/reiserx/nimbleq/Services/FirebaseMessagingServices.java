@@ -16,13 +16,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.reiserx.nimbleq.Utils.NotificationUtils;
+import com.reiserx.nimbleq.Utils.Notify;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseMessagingServices extends FirebaseMessagingService {
-
 
     String TAG = "FCMMessage.logs";
 
@@ -70,7 +70,7 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             if (snapshot1.exists()) {
                                 if (remoteMessage.getFrom().equals("/topics/".concat(snapshot1.getKey()))) {
-                                    if (Integer.parseInt(data.get("requestCode")) == 1)
+                                    if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION)
                                         notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, "Class announcement", title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
                                 }
                             }
@@ -86,10 +86,12 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
                 }
             });
         } else {
-            if (Integer.parseInt(data.get("requestCode")) == 1) {
-                notificationUtils.sendClassUpdat(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
-            } else if (Integer.parseInt(data.get("requestCode")) == 2) {
+            if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_SMALL_TEXT_NOTIFICATION) {
+                notificationUtils.smallTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
+            } else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_ANSWER_UPDATE_NOTIFICATION) {
                 notificationUtils.sendAnswerUpdates(FirebaseMessagingServices.this, title, content, Integer.parseInt(id), data.get("payload"));
+            } else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_BIG_TEXT_NOTIFICATION) {
+                notificationUtils.bigTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id), data.get("payload"));
             }
         }
     }

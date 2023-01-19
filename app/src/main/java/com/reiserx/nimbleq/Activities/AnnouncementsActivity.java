@@ -115,7 +115,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
 
                 db_reference.push().setValue(announcementsModel).addOnSuccessListener(unused -> {
 
-                    notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID, 1);
+                    notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID);
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
                     alert.setTitle("Success");
@@ -146,7 +146,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
                             FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Announcements").child(classID).child(key).child("AnnouncementLinks").push().setValue(linkModel);
                         }
 
-                        notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID, 1);
+                        notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID);
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
                         alert.setTitle("Success");

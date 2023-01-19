@@ -27,6 +27,13 @@ public class Notify {
 
     Context context;
     JSONObject json;
+
+    public static int NORMAL_SMALL_TEXT_NOTIFICATION = 1;
+    public static int NORMAL_BIG_TEXT_NOTIFICATION = 3;
+    public static int NORMAL_ANSWER_UPDATE_NOTIFICATION = 2;
+
+    public static int TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION = 1;
+
     public Notify(Context context) {
         this.context = context;
         json = new JSONObject();
@@ -34,14 +41,14 @@ public class Notify {
 
     String TAG = "jkfhsb";
 
-    public void announcementsPayload(String title, String msg, String to, int i) {
+    public void announcementsPayload(String title, String msg, String to) {
         JSONObject dataJson = new JSONObject();
         try {
             json = new JSONObject();
             dataJson.put("title", title);
             dataJson.put("content", msg);
             dataJson.put("id", String.valueOf(getRandom(0, 100)));
-            dataJson.put("requestCode", i);
+            dataJson.put("requestCode", TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION);
             dataJson.put("isTopic", true);
             json.put("data", dataJson);
             json.put("to", "/topics/".concat(to));
@@ -90,7 +97,7 @@ public class Notify {
             dataJson.put("title", name);
             dataJson.put("content", msg);
             dataJson.put("id", String.valueOf(getRandom(0, 100)));
-            dataJson.put("requestCode", 1);
+            dataJson.put("requestCode", NORMAL_SMALL_TEXT_NOTIFICATION);
             dataJson.put("isTopic", false);
             json.put("data", dataJson);
             json.put("to", to);
@@ -111,7 +118,7 @@ public class Notify {
             dataJson.put("title", title);
             dataJson.put("content", msg);
             dataJson.put("id", String.valueOf(getRandom(0, 100)));
-            dataJson.put("requestCode", 2);
+            dataJson.put("requestCode", NORMAL_ANSWER_UPDATE_NOTIFICATION);
             dataJson.put("isTopic", false);
             dataJson.put("payload", payload);
             json.put("data", dataJson);
@@ -122,4 +129,23 @@ public class Notify {
             e.printStackTrace();
         }
     }
+
+    public void classReviewPayload(String title, String msg, String to) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", NORMAL_BIG_TEXT_NOTIFICATION);
+            dataJson.put("isTopic", false);
+            json.put("data", dataJson);
+            json.put("to", to);
+
+            postNotification();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

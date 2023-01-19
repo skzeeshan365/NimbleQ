@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class NotificationUtils {
 
-    public void sendClassUpdat(Context context, String title, String content, int id) {
+    public void smallTextNotification(Context context, String title, String content, int id) {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channel_id = "NimbleQ2";
@@ -139,6 +139,38 @@ public class NotificationUtils {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentText(content)
                 .setContentIntent(contentIntent)
+                .setContentTitle(title)
+                .setContentInfo("info")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(content));
+
+
+        // Gets an instance of the NotificationManager service
+        notificationManager.notify(id, notify_bulder.build());
+    }
+
+    public void bigTextNotification(Context context, String title, String content, int id, String payload) {
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String channel_id = "NimbleQ1";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            @SuppressLint("WrongConstant")
+            NotificationChannel notificationChannel = new NotificationChannel(channel_id, "Class updates", NotificationManager.IMPORTANCE_MAX);
+            notificationChannel.setDescription("service");
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 5000, 1000});
+            notificationChannel.enableVibration(true);
+
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        NotificationCompat.Builder notify_bulder = new NotificationCompat.Builder(context, channel_id);
+        notify_bulder.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_baseline_account_circle_24)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setContentText(content)
                 .setContentTitle(title)
                 .setContentInfo("info")
                 .setStyle(new NotificationCompat.BigTextStyle()

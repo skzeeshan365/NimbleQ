@@ -27,6 +27,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.RatingModel;
+import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Utils.NotificationUtils;
@@ -316,16 +317,26 @@ public class ClassRepository {
         }).addOnFailureListener(e -> onGetClassRequestComplete.onGetClassListFailure(e.toString()));
     }
 
-    public void setClassRating(String classID, String userID, RatingModel ratingModel) {
-        reference.collection("Ratings").document("ClassRating").collection(classID).document(userID).set(ratingModel).addOnSuccessListener(unused -> {
+    public void setClassRating(String classID, String className, UserData userID, RatingModel ratingModel, String token, Context context) {
+        reference.collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
+            Notify notify = new Notify(context);
+            if (ratingModel.getFeedback() == null)
+                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating"), token);
+            else
+                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating with \nfeedback: "+ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> {
             onRatingSubmitted.onFailure(e.toString());
         });
     }
 
-    public void setTeacherRating(String teacherID, String userID, RatingModel ratingModel) {
-        reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID).set(ratingModel).addOnSuccessListener(unused -> {
+    public void setTeacherRating(String teacherID, UserData userID, RatingModel ratingModel, String token, Context context) {
+        reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
+            Notify notify = new Notify(context);
+            if (ratingModel.getFeedback() == null)
+                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating"), token);
+            else
+                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating with \nfeedback: "+ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> {
             onRatingSubmitted.onFailure(e.toString());

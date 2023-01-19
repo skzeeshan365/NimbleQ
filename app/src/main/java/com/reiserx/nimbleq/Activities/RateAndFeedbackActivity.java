@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hsalf.smileyrating.SmileyRating;
 import com.reiserx.nimbleq.Models.RatingModel;
+import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
@@ -23,8 +24,9 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
     ActivityRateAndFeedbackBinding binding;
 
     String classID;
-    String teacherID;
+    String teacherID, token, className;
     String userID;
+    UserData userData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,8 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
         buttonDesign.setButtonOutline(binding.button3);
 
         int state = getIntent().getExtras().getInt("id");
-         userID = getIntent().getExtras().getString("userID");
+        userID = getIntent().getExtras().getString("userID");
+        token = getIntent().getExtras().getString("token");
 
         binding.smileRating.setSmileySelectedListener(type -> {
             if (SmileyRating.Type.OKAY == type || SmileyRating.Type.BAD == type || SmileyRating.Type.TERRIBLE == type) {
@@ -64,13 +67,15 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
 
         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
-        userDataViewModel.getUsername(userID);
-        userDataViewModel.getUserName().observe(this, s -> {
-            binding.usernameTxtRate.setText("hey, ".concat(s));
+        userDataViewModel.getUserData(userID);
+        userDataViewModel.getUserData().observe(this, userData -> {
+            binding.usernameTxtRate.setText("hey, ".concat(userData.getUserName()));
+            this.userData = userData;
         });
         if (state == 1) {
             String message = getIntent().getExtras().getString("Message");
             classID = getIntent().getExtras().getString("classID");
+            className = getIntent().getExtras().getString("classname");
             binding.msgTxtRate.setText(message);
         } else if (state == 2) {
             String message = getIntent().getExtras().getString("Message");
@@ -85,9 +90,9 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
     void updateRating(int state, RatingModel ratingModel) {
         classViewModel classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
         if (state == 1) {
-            classViewModel.setClassRating(classID, userID, ratingModel);
+            classViewModel.setClassRating(classID, className, userData, ratingModel, token, this);
         } else if (state == 2) {
-            classViewModel.setTeacherRating(teacherID, userID, ratingModel);
+            classViewModel.setTeacherRating(teacherID, userData, ratingModel, token, this);
         }
         classViewModel.getRatingSubmittedMutableLiveData().observe(this, unused -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);

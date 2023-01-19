@@ -5,8 +5,10 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.firestore.auth.User;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.RatingModel;
+import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Repository.ClassRepository;
@@ -80,12 +82,12 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.getClassRequests(subjectAndTimeSlot);
     }
 
-    public void setClassRating(String classID, String userID, RatingModel ratingModel) {
-        firebaseRepo.setClassRating(classID, userID, ratingModel);
+    public void setClassRating(String classID, String className, UserData userID, RatingModel ratingModel, String token, Context context) {
+        firebaseRepo.setClassRating(classID, className, userID, ratingModel, token, context);
     }
 
-    public void setTeacherRating(String teacherID, String userID, RatingModel ratingModel) {
-        firebaseRepo.setTeacherRating(teacherID, userID, ratingModel);
+    public void setTeacherRating(String teacherID, UserData userID, RatingModel ratingModel, String token, Context context) {
+        firebaseRepo.setTeacherRating(teacherID, userID, ratingModel, token, context);
     }
 
     public void getAllJoinedClasses(String userID) {
