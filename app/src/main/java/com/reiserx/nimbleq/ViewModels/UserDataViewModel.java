@@ -14,13 +14,15 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         UserDataRepository.getUsernameComplete,
         UserDataRepository.getUserTypeComplete,
         UserDataRepository.getUserDetailsComplete,
-        UserDataRepository.getDataAsListString {
+        UserDataRepository.getDataAsListString,
+        UserDataRepository.OnUpdateUsernameComplete{
 
     private final MutableLiveData<UserData> userData = new MutableLiveData<>();
     private final MutableLiveData<String> username = new MutableLiveData<>();
     private final MutableLiveData<userType> userTypeMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<userDetails> userDetailsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> LisStringMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Void> updateUsernameMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userNameError = new MutableLiveData<>();
@@ -46,12 +48,16 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         return userDetailsMutableLiveData;
     }
 
+    public MutableLiveData<Void> getUpdateUsernameMutableLiveData() {
+        return updateUsernameMutableLiveData;
+    }
+
     public MutableLiveData<List<String>> getLisStringMutableLiveData() {
         return LisStringMutableLiveData;
     }
 
     public UserDataViewModel() {
-        firebaseRepo = new UserDataRepository(this, this, this, this, this);
+        firebaseRepo = new UserDataRepository(this, this, this, this, this, this);
     }
 
     public void getUserData(String userID) {
@@ -82,6 +88,10 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         firebaseRepo.updateFCMToken(userID);
     }
 
+    public void updateUsername(String userID, String username) {
+        firebaseRepo.updateUsername(userID, username);
+    }
+
     @Override
     public void onSuccess(UserData userDatas) {
         userData.setValue(userDatas);
@@ -105,6 +115,11 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
     @Override
     public void onSuccess(List<String> teacherList) {
         LisStringMutableLiveData.setValue(teacherList);
+    }
+
+    @Override
+    public void onSuccess(Void voids) {
+        updateUsernameMutableLiveData.setValue(voids);
     }
 
     @Override

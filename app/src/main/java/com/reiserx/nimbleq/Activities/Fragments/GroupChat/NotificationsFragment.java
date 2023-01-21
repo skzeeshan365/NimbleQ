@@ -5,6 +5,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,12 +22,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -135,20 +141,41 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
         binding.attachImg.setOnClickListener(v -> {
 
-            AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-            alert.setMessage("Send a photo");
-            alert.setPositiveButton("gallery", (dialogInterface, i) -> {
-                if (mimetype != null) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
-                    startActivityForResult(intent, 101);
-                } else
-                    snackbarTop.showSnackBar("Failed to get mime type", false);
-            });
-            alert.setNegativeButton("Images", (dialogInterface, i) -> {
+            if (mimetype != null && mimetype.length != 0) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                alert.setMessage("Send a photo");
+
+                alert.setPositiveButton("Files", (dialogInterface, i) -> {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent.setType("*/*");
+                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
+                        FilesActivityResultLauncher.launch(intent);
+                });
+                alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                    FishBun.with(NotificationsFragment.this)
+                            .setImageAdapter(new GlideAdapter())
+                            .setIsUseDetailView(true)
+                            .setMaxCount(5)
+                            .setMinCount(1)
+                            .setPickerSpanCount(2)
+                            .setAlbumSpanCount(1, 2)
+                            .setButtonInAlbumActivity(false)
+                            .setCamera(true)
+                            .setReachLimitAutomaticClose(true)
+                            .setAllViewTitle("All")
+                            .setActionBarTitle("Image Library")
+                            .textOnImagesSelectionLimitReached("Limit Reached!")
+                            .textOnNothingSelected("Nothing Selected")
+                            .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                            .isStartInAllView(false)
+                            .exceptMimeType(listOf(MimeType.GIF))
+                            .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                            .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
+                });
+                alert.show();
+            } else {
                 FishBun.with(NotificationsFragment.this)
                         .setImageAdapter(new GlideAdapter())
                         .setIsUseDetailView(true)
@@ -167,9 +194,8 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                         .isStartInAllView(false)
                         .exceptMimeType(listOf(MimeType.GIF))
                         .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                        .startAlbumWithOnActivityResult(100);
-            });
-            alert.show();
+                        .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
+            }
         });
 
         chatsViewModel.getAllMessagesListMutableLiveData().observe(getViewLifecycleOwner(), messages -> {
@@ -248,6 +274,13 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
             binding.recyclerView.setVisibility(View.VISIBLE);
             binding.progHolder.setVisibility(View.GONE);
         });
+        chatsViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
+            binding.textView9.setText(error);
+            binding.recyclerView.setVisibility(View.GONE);
+            binding.progHolder.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
+            binding.textView9.setVisibility(View.VISIBLE);
+        });
     }
 
     public void swipeController(List<Message> messages) {
@@ -310,87 +343,92 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    ActivityResultLauncher<Intent> ImagesActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        path.clear();
+                        if (result.getData() != null) {
+                            path = result.getData().getParcelableArrayListExtra(FishBun.INTENT_PATH);
+                            Log.d(CONSTANTS.TAG2, String.valueOf(FileUtil.convertUriToFilePath(getContext(), path.get(0))));
+                            firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
+                            Toast.makeText(requireContext(), "Uploading files", Toast.LENGTH_SHORT).show();
+                            firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
+                                Calendar c = Calendar.getInstance();
+                                @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
 
-        switch (requestCode) {
-            case 100:
-                if (resultCode == RESULT_OK) {
-                    path.clear();
-                    if (data != null) {
-                        path = data.getParcelableArrayListExtra(FishBun.INTENT_PATH);
-                        Log.d(CONSTANTS.TAG2, String.valueOf(FileUtil.convertUriToFilePath(getContext(), path.get(0))));
-                        firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
-                        Toast.makeText(requireContext(), "Uploading files", Toast.LENGTH_SHORT).show();
-                        firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
-                            Calendar c = Calendar.getInstance();
-                            @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
+                                Calendar cal = Calendar.getInstance();
+                                long currentTime = cal.getTimeInMillis();
 
-                            Calendar cal = Calendar.getInstance();
-                            long currentTime = cal.getTimeInMillis();
+                                if (binding.replyMsg.getText().toString().trim().equals("")) {
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, currentTime);
+                                } else {
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                                }
 
-                            if (binding.replyMsg.getText().toString().trim().equals("")) {
-                                message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, currentTime);
-                            } else {
-                                message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
-                            }
-
-                            chatsViewModel.submitMessage(message, classID);
-                            chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {
-                                Log.d(CONSTANTS.TAG2, "messageSent");
-                                binding.messageBox.setText("");
-                                binding.replyHolder.setVisibility(View.GONE);
-                                binding.replyMsg.setText("");
-                                binding.replyNameTxt.setText("");
-                                replyID = null;
-                                replyUId = null;
+                                chatsViewModel.submitMessage(message, classID);
+                                chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {
+                                    Log.d(CONSTANTS.TAG2, "messageSent");
+                                    binding.messageBox.setText("");
+                                    binding.replyHolder.setVisibility(View.GONE);
+                                    binding.replyMsg.setText("");
+                                    binding.replyNameTxt.setText("");
+                                    replyID = null;
+                                    replyUId = null;
+                                });
                             });
-                        });
-                        firebaseStorageViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> Log.d(CONSTANTS.TAG2, s));
-                    }
-                }
-                break;
-            case 101:
-                if (resultCode == RESULT_OK) {
-                    path.clear();
-                    if (data != null) {
-                        if (null != data.getClipData()) {
-                            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                                path.add(data.getClipData().getItemAt(i).getUri());
-                            }
-                        } else {
-                            path.add(data.getData());
+                            firebaseStorageViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> Log.d(CONSTANTS.TAG2, s));
                         }
-                        firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
-
-                        firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
-                            Calendar c = Calendar.getInstance();
-                            @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
-
-                            Calendar cal = Calendar.getInstance();
-                            long currentTime = cal.getTimeInMillis();
-
-                            if (binding.replyMsg.getText().toString().trim().equals("")) {
-                                message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, currentTime);
-                            } else {
-                                message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
-                            }
-                            chatsViewModel.submitMessage(message, classID);
-                            chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {
-                                binding.messageBox.setText("");
-                                binding.replyHolder.setVisibility(View.GONE);
-                                binding.replyMsg.setText("");
-                                binding.replyNameTxt.setText("");
-                                replyID = null;
-                                replyUId = null;
-                            });
-                        });
-                        firebaseStorageViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
                     }
                 }
-                break;
-        }
-    }
+            });
+
+    ActivityResultLauncher<Intent> FilesActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        path.clear();
+                        if (result.getData() != null) {
+                            if (null != result.getData().getClipData()) {
+                                for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
+                                    path.add(result.getData().getClipData().getItemAt(i).getUri());
+                                }
+                            } else {
+                                path.add(result.getData().getData());
+                            }
+                            firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
+
+                            firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
+                                Calendar c = Calendar.getInstance();
+                                @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
+
+                                Calendar cal = Calendar.getInstance();
+                                long currentTime = cal.getTimeInMillis();
+
+                                if (binding.replyMsg.getText().toString().trim().equals("")) {
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, currentTime);
+                                } else {
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                                }
+                                chatsViewModel.submitMessage(message, classID);
+                                chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {
+                                    binding.messageBox.setText("");
+                                    binding.replyHolder.setVisibility(View.GONE);
+                                    binding.replyMsg.setText("");
+                                    binding.replyNameTxt.setText("");
+                                    replyID = null;
+                                    replyUId = null;
+                                });
+                            });
+                            firebaseStorageViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
+                        }
+                    }
+                }
+            });
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -477,7 +515,11 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
     void getMimeTypes() {
         AdministrationViewModel administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
-        administrationViewModel.getMimeTypes();
+        administrationViewModel.getFileEnabled();
+        administrationViewModel.getFileEnabledMutableLiveData().observe(getViewLifecycleOwner(), enabled -> {
+            if (!enabled)
+                administrationViewModel.getMimeTypesForGroupChats();
+        });
         administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> mimetype = stringList.toArray(new String[0]));
         administrationViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
     }

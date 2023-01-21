@@ -75,7 +75,7 @@ public class ClassListActivity extends AppCompatActivity {
 
         if (!userTypeClass.isUserLearner()) {
             if (dataType == 0) {
-                setTitle("Classes");
+                setTitle("Your Classes");
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
 
@@ -87,7 +87,8 @@ public class ClassListActivity extends AppCompatActivity {
                     binding.recycler.setVisibility(View.VISIBLE);
                     binding.progHolder.setVisibility(View.GONE);
                 });
-                classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
+                classViewModel.getClassListErrorMutableLiveData().observe(this, s -> {
+                    android.util.Log.d(CONSTANTS.TAG2, "gfgh");
                     binding.textView9.setText(s);
                     binding.recycler.setVisibility(View.GONE);
                     binding.progHolder.setVisibility(View.VISIBLE);
@@ -105,20 +106,19 @@ public class ClassListActivity extends AppCompatActivity {
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
 
                     classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
-                    classViewModel.getClassRequests(subjectAndTimeSlot);
+                    classViewModel.getClassRequestsForTeachers(subjectAndTimeSlot, user.getUid());
                     classViewModel.getClassRequestMutableLiveData().observe(this, classRequestModels -> {
                         requestClassAdapter.setData(classRequestModels);
                         requestClassAdapter.notifyDataSetChanged();
                         binding.recycler.setVisibility(View.VISIBLE);
                         binding.progHolder.setVisibility(View.GONE);
                     });
-                    classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
+                    classViewModel.getClassListErrorMutableLiveData().observe(this, s -> {
                         binding.textView9.setText(s);
                         binding.recycler.setVisibility(View.GONE);
                         binding.progHolder.setVisibility(View.VISIBLE);
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textView9.setVisibility(View.VISIBLE);
-                        snackbarTop.showSnackBar(s, false);
                     });
                 });
             } else if (dataType == 2) {
@@ -134,7 +134,6 @@ public class ClassListActivity extends AppCompatActivity {
 
                 slotsViewModel.getSubjectForStudents(user.getUid());
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
-
                     classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
                     classViewModel.getClassList(subjectAndTimeSlot, user.getUid());
                     classViewModel.getClassList().observe(this, classModelList -> {
@@ -154,7 +153,7 @@ public class ClassListActivity extends AppCompatActivity {
                         }
                     });
 
-                    classViewModel.getDatabaseErrorMutableLiveData().observe(this, error -> {
+                    classViewModel.getClassListErrorMutableLiveData().observe(this, error -> {
                         binding.textView9.setText(getString(R.string.class_not_avail));
                         binding.recycler.setVisibility(View.GONE);
                         binding.progHolder.setVisibility(View.VISIBLE);
@@ -177,20 +176,19 @@ public class ClassListActivity extends AppCompatActivity {
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
 
                     classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
-                    classViewModel.getClassRequests(subjectAndTimeSlot);
+                    classViewModel.getClassRequestsForStudents(subjectAndTimeSlot, user.getUid());
                     classViewModel.getClassRequestMutableLiveData().observe(this, classRequestModels -> {
                         requestClassAdapter.setData(classRequestModels);
                         requestClassAdapter.notifyDataSetChanged();
                         binding.recycler.setVisibility(View.VISIBLE);
                         binding.progHolder.setVisibility(View.GONE);
                     });
-                    classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
+                    classViewModel.getClassListErrorMutableLiveData().observe(this, s -> {
                         binding.textView9.setText(s);
                         binding.recycler.setVisibility(View.GONE);
                         binding.progHolder.setVisibility(View.VISIBLE);
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textView9.setVisibility(View.VISIBLE);
-                        snackbarTop.showSnackBar(s, false);
                     });
                 });
             } else if (dataType == 2) {
@@ -210,7 +208,7 @@ public class ClassListActivity extends AppCompatActivity {
                             binding.progHolder.setVisibility(View.GONE);
                         }
                 });
-                classViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> {
+                classViewModel.getClassListErrorMutableLiveData().observe(this, s -> {
                     binding.textView9.setText(s);
                     binding.recycler.setVisibility(View.GONE);
                     binding.progHolder.setVisibility(View.VISIBLE);

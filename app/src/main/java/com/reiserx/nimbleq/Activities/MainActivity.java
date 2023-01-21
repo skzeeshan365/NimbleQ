@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             initializeZoomSdk(this, zoomCredentials);
 
             binding.imageView17.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                Intent intent = new Intent(MainActivity.this, AdministrationActivity.class);
                 startActivity(intent);
             });
 
@@ -122,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
             //holder 1
 
             //holder 2
-            binding.classTxt3.setText("Solve doubts");
-            binding.classDesc3.setText("Click to solve your doubts");
+            binding.textView23.setText("Solve doubts");
+            binding.textView24.setText("Click to solve your doubts");
             //holder 2
 
             //holder 3
@@ -144,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
             //holder 1
 
             //holder 2
-            binding.classTxt3.setText("Solve doubts");
-            binding.classDesc3.setText("Click to solve your doubts");
+            binding.textView23.setText("View doubts");
+            binding.textView24.setText("Click to view learner's doubts");
             //holder 2
 
             //holder 3

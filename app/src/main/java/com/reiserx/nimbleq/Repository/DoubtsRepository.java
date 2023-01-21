@@ -125,8 +125,7 @@ public class DoubtsRepository {
                                     }
                                 }
                             });
-                        } else
-                            onGetDoubtsComplete.onFailure("Doubts not available");
+                        }
                     }
                 }
                 lastVisible = queryDocumentSnapshots.getResult().getDocuments().get(queryDocumentSnapshots.getResult().size() - 1);

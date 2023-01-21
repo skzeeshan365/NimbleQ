@@ -7,15 +7,21 @@ import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
+import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityCreateClassBinding;
 
 public class CreateClass extends AppCompatActivity {
@@ -28,6 +34,8 @@ public class CreateClass extends AppCompatActivity {
     FirebaseFirestore firestore;
     FirebaseUser user;
 
+    ClassRequestModel requestMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +43,11 @@ public class CreateClass extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setTitle("Create class");
+
+        if (getIntent().getBooleanExtra("requestMode", false)) {
+            Gson gson = new Gson();
+            requestMode = gson.fromJson(getIntent().getStringExtra("request"), ClassRequestModel.class);
+        }
 
         auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
@@ -90,7 +103,6 @@ public class CreateClass extends AppCompatActivity {
                 binding.topicInfoEdittext.setEnabled(false);
                 binding.classNameEdittext.setEnabled(false);
 
-                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                 classModel classModel = new classModel();
                 classModel.setClassName(binding.classNameEdittext.getText().toString());
                 classModel.setSubject(binding.subjectNameTxt.getText().toString());
@@ -102,13 +114,19 @@ public class CreateClass extends AppCompatActivity {
                 classModel.setTeacher_info(user.getUid());
                 classModel.setTime_slot(slot);
 
-                CollectionReference collection = firestore.collection("Main").document("Class").collection("ClassInfo");
-                collection.add(classModel).addOnSuccessListener(documentReference1 -> {
+                UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+                classViewModel classViewModel = new ViewModelProvider(CreateClass.this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
+                userDataViewModel.getUsername(user.getUid());
+                userDataViewModel.getUserName().observe(this, s -> {
+                    if (requestMode != null)
+                        classViewModel.createClass(CreateClass.this, classModel, s, requestMode);
+                    else
+                        classViewModel.createClass(CreateClass.this, classModel, s);
+                });
+
+                classViewModel.getCreateClassMutableLiveData().observe(this, s -> {
                     dialogs dialogs = new dialogs(CreateClass.this, findViewById(android.R.id.content));
-                    dialogs.meetingCreated(CreateClass.this, documentReference1.getId());
-                }).addOnFailureListener(e -> {
-
-
+                    dialogs.meetingCreated(CreateClass.this, s);
                 });
             }
         });

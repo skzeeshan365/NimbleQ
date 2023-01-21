@@ -41,7 +41,7 @@ public class AnnouncementsRepository {
                         try {
                             announcementsModel.setTimeStamp(ds.child("timeStamp").getValue(long.class));
                         } catch (Exception e) {
-                            onRealtimeDbTaskComplete.onFailure("failed to get timestamp");
+
                         }
 
 

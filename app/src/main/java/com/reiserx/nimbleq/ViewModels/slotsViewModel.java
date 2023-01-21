@@ -7,17 +7,19 @@ import com.google.firebase.database.DatabaseError;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Repository.SlotsRepository;
 
+import java.util.Locale;
+
 public class slotsViewModel extends ViewModel implements SlotsRepository.OnRealtimeDbTaskComplete {
 
     private final MutableLiveData<subjectAndTimeSlot> subjectAndTimeSlotMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<DatabaseError> databaseErrorMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final SlotsRepository firebaseRepo;
 
     public MutableLiveData<subjectAndTimeSlot> getParentItemMutableLiveData() {
         return subjectAndTimeSlotMutableLiveData;
     }
 
-    public MutableLiveData<DatabaseError> getDatabaseErrorMutableLiveData() {
+    public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }
 
@@ -39,7 +41,7 @@ public class slotsViewModel extends ViewModel implements SlotsRepository.OnRealt
     }
 
     @Override
-    public void onFailure(DatabaseError error) {
-        databaseErrorMutableLiveData.setValue(error);
+    public void onFailure(String error) {
+        databaseErrorMutableLiveData.setValue(error.toString());
     }
 }

@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.R;
 
@@ -31,8 +32,11 @@ public class Notify {
     public static int NORMAL_SMALL_TEXT_NOTIFICATION = 1;
     public static int NORMAL_BIG_TEXT_NOTIFICATION = 3;
     public static int NORMAL_ANSWER_UPDATE_NOTIFICATION = 2;
+    public static int NORMAL_CLASS_REQUEST_NOTIFICATION = 4;
+    public static int NORMAL_CREATE_CLASS_NOTIFICATION = 5;
 
     public static int TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION = 1;
+    public static int TOPIC_CREATE_CLASS_NOTIFICATION = 2;
 
     public Notify(Context context) {
         this.context = context;
@@ -90,7 +94,7 @@ public class Notify {
         return random.nextInt(max - min + 1) + min;
     }
 
-    public void classJoinPayload(String name, String msg, String to, int i) {
+    public void classJoinPayload(String name, String msg, String to) {
         JSONObject dataJson = new JSONObject();
         try {
             json = new JSONObject();
@@ -148,4 +152,63 @@ public class Notify {
         }
     }
 
+    public void createClassPayload(String title, String msg, String to, String classID) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", TOPIC_CREATE_CLASS_NOTIFICATION);
+            dataJson.put("isTopic", true);
+            dataJson.put("classID", classID);
+            json.put("data", dataJson);
+            json.put("to", "/topics/".concat(to));
+
+            Log.d(CONSTANTS.TAG2, to);
+
+            postNotification();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createClassPayloadForSingleUser(String title, String msg, String to, String classID) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", NORMAL_CREATE_CLASS_NOTIFICATION);
+            dataJson.put("isTopic", false);
+            dataJson.put("classID", classID);
+            json.put("data", dataJson);
+            json.put("to", to);
+
+            Log.d(CONSTANTS.TAG2, to);
+
+            postNotification();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void classRequestPayload(String title, String msg, String to) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", NORMAL_CLASS_REQUEST_NOTIFICATION);
+            dataJson.put("isTopic", false);
+            json.put("data", dataJson);
+            json.put("to", to);
+
+            postNotification();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

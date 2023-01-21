@@ -7,6 +7,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -17,6 +19,7 @@ import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.ActivityRegistrationBinding;
 
 import org.json.JSONArray;
@@ -77,7 +80,9 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         binding.button5.setOnClickListener(view -> {
-            if (binding.gradeSpinner.getSelectedItemPosition() == 0) {
+            if (binding.editTextTextPersonName2.getText().toString().trim().equals(""))
+                binding.editTextTextPersonName2.setError("Please enter your name");
+            else if (binding.gradeSpinner.getSelectedItemPosition() == 0) {
                 snackbarTop.showSnackBar("Please select your grade", false);
             } else if (binding.schoolNameEdittext.getText().toString().trim().equals("")) {
                 binding.schoolNameEdittext.setError("Please enter your school");
@@ -93,7 +98,11 @@ public class RegistrationActivity extends AppCompatActivity {
                 DocumentReference documentReference = firestore.collection("UserData").document(user.getUid());
 
                 userDetails userDetails = new userDetails(binding.gradeSpinner.getSelectedItem().toString(), binding.schoolNameEdittext.getText().toString(), binding.statesSpinner.getSelectedItem().toString(), binding.citiesSpinner.getSelectedItem().toString(), gender);
-                documentReference.set(userDetails).addOnSuccessListener(unused -> {
+
+                UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+
+                userDataViewModel.updateUsername(user.getUid(), binding.editTextTextPersonName2.getText().toString().trim());
+                userDataViewModel.getUpdateUsernameMutableLiveData().observe(this, unused -> documentReference.set(userDetails).addOnSuccessListener(unuseds -> {
                     if (CONSTANTS.student_teacher_flag == 1)
                         dialogs.selectSubjectForLearnerRegistration(user.getUid());
                     else if (CONSTANTS.student_teacher_flag == 2)
@@ -101,6 +110,13 @@ public class RegistrationActivity extends AppCompatActivity {
                 }).addOnFailureListener(e -> {
                     Log.d(CONSTANTS.TAG, e.toString());
                     snackbarTop.showSnackBar("Faled: " + e, false);
+                }));
+
+                userDataViewModel.getDatabaseErrorMutableLiveData().observe(this, new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        snackbarTop.showSnackBar("Faled: " + s, false);
+                    }
                 });
             }
         });

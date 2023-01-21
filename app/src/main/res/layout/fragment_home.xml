@@ -88,6 +88,40 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/lt_gradient_1">
 
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <TextView
+                            android:id="@+id/rating.rxt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:text="4.1"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+
+                        <com.iarcuschin.simpleratingbar.SimpleRatingBar
+                            android:id="@+id/ratingBar"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:srb_borderColor="@color/PRIMARY_LIGHT"
+                            app:srb_fillColor="@color/primaryColor"
+                            app:srb_numberOfStars="1"
+                            app:srb_rating="0.5"
+                            app:srb_starBackgroundColor="@color/PRIMARY_LIGHT"
+                            app:srb_starBorderWidth="2"
+                            app:srb_starSize="20dp"
+                            app:srb_stepSize="0.1" />
+
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/textView27"
                         android:layout_width="wrap_content"
@@ -126,14 +160,14 @@
                         android:id="@+id/time_slot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
                         android:text="12:00 a.m"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/class_teacher"
@@ -249,6 +283,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button8" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rate_class_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="4dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="4dp"
+                android:text="Rate this class"
+                app:layout_constraintEnd_toStartOf="@+id/button8"
+                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

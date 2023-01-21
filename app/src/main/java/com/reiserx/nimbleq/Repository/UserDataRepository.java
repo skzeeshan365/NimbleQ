@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +30,7 @@ public class UserDataRepository {
     private final UserDataRepository.getUsernameComplete getUsernameComplete;
     private final UserDataRepository.getUserDetailsComplete getUserDetailsComplete;
     private final UserDataRepository.getDataAsListString getDataAsListString;
+    private final UserDataRepository.OnUpdateUsernameComplete onUpdateUsernameComplete;
 
     private final DatabaseReference userTypeReference;
     private final DatabaseReference databaseReference;
@@ -39,13 +41,15 @@ public class UserDataRepository {
                               UserDataRepository.getUsernameComplete getUsernameComplete,
                               UserDataRepository.getUserTypeComplete getUserTypeComplete,
                               UserDataRepository.getUserDetailsComplete getUserDetailsComplete,
-                              UserDataRepository.getDataAsListString getDataAsListString) {
+                              UserDataRepository.getDataAsListString getDataAsListString,
+                              UserDataRepository.OnUpdateUsernameComplete onUpdateUsernameComplete) {
 
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.getUsernameComplete = getUsernameComplete;
         this.getUserTypeComplete = getUserTypeComplete;
         this.getUserDetailsComplete = getUserDetailsComplete;
         this.getDataAsListString = getDataAsListString;
+        this.onUpdateUsernameComplete = onUpdateUsernameComplete;
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference().child("Data").child("UserData");
@@ -140,8 +144,15 @@ public class UserDataRepository {
             if (queryDocumentSnapshots.exists()) {
                 userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                 getUserDetailsComplete.onSuccess(userDetails);
+                Log.d(CONSTANTS.TAG2, "exist");
+            } else {
+                getUserDetailsComplete.onFailed("Teacher does not exist in database");
+                Log.d(CONSTANTS.TAG2, "not exist");
             }
-        }).addOnFailureListener(e -> getUserTypeComplete.onFailed(e.toString()));
+        }).addOnFailureListener(e -> {
+            getUserDetailsComplete.onFailed(e.toString());
+            Log.d(CONSTANTS.TAG2, e.toString());
+        });
     }
 
     public void getAllJoinedClasses(String userID) {
@@ -174,6 +185,12 @@ public class UserDataRepository {
         }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
     }
 
+    public void updateUsername(String userID, String s) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("userName", s);
+            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).updateChildren(map).addOnSuccessListener(unused -> onUpdateUsernameComplete.onSuccess(null)).addOnFailureListener(e -> onUpdateUsernameComplete.onFailed(e.toString()));
+    }
+
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(UserData userData);
 
@@ -200,6 +217,12 @@ public class UserDataRepository {
 
     public interface getDataAsListString {
         void onSuccess(List<String> stringList);
+
+        void onFailed(String error);
+    }
+
+    public interface OnUpdateUsernameComplete {
+        void onSuccess(Void voids);
 
         void onFailed(String error);
     }

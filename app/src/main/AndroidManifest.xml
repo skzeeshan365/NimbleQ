@@ -31,6 +31,11 @@
         tools:replace="android:allowBackup"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Administration.AdministrationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_administration"
+            android:theme="@style/Theme.NimbleQ.NoActionBar" />
+        <activity
             android:name=".Activities.Doubts.DoubtsActivity"
             android:exported="false"
             android:label="@string/title_activity_doubts"

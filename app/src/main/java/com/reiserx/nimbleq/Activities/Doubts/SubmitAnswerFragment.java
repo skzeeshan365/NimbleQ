@@ -1,5 +1,7 @@
 package com.reiserx.nimbleq.Activities.Doubts;
 
+import static com.google.android.gms.common.util.CollectionUtils.listOf;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -37,11 +39,13 @@ import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.Notify;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.DoubtsViewModel;
 import com.reiserx.nimbleq.ViewModels.FirebaseStorageViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.FragmentSubmitAnswerBinding;
 import com.sangcomz.fishbun.FishBun;
+import com.sangcomz.fishbun.MimeType;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 
 import java.io.File;
@@ -70,6 +74,8 @@ public class SubmitAnswerFragment extends Fragment {
 
     String displayName, userName;
 
+    String[] mimetype;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -79,6 +85,8 @@ public class SubmitAnswerFragment extends Fragment {
         doubtsViewModel = new ViewModelProvider(this).get(DoubtsViewModel.class);
 
         userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+
+        getMimeTypes();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -143,27 +151,66 @@ public class SubmitAnswerFragment extends Fragment {
     }
 
     void attachFile() {
-        binding.attachHolder.setOnClickListener(view -> FishBun.with(SubmitAnswerFragment.this)
-                .setImageAdapter(new GlideAdapter())
-                .setIsUseDetailView(true)
-                .setMaxCount(1)
-                .setMinCount(1)
-                .setPickerSpanCount(2)
-                .setAlbumSpanCount(1, 2)
-                .setButtonInAlbumActivity(false)
-                .setCamera(true)
-                .setReachLimitAutomaticClose(true)
-                .setAllViewTitle("All")
-                .setActionBarTitle("Image Library")
-                .textOnImagesSelectionLimitReached("Limit Reached!")
-                .textOnNothingSelected("Nothing Selected")
-                .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                .isStartInAllView(false)
-                .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                .startAlbumWithActivityResultCallback(someActivityResultLauncher));
+        binding.attachHolder.setOnClickListener(view -> {
+            if (mimetype != null && mimetype.length != 0) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                alert.setMessage("Send a photo");
+
+                alert.setPositiveButton("Files", (dialogInterface, i) -> {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
+                    FilesActivityResultLauncher.launch(intent);
+                });
+                alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                    FishBun.with(SubmitAnswerFragment.this)
+                            .setImageAdapter(new GlideAdapter())
+                            .setIsUseDetailView(true)
+                            .setMaxCount(1)
+                            .setMinCount(1)
+                            .setPickerSpanCount(2)
+                            .setAlbumSpanCount(1, 2)
+                            .setButtonInAlbumActivity(false)
+                            .setCamera(true)
+                            .setReachLimitAutomaticClose(true)
+                            .setAllViewTitle("All")
+                            .setActionBarTitle("Image Library")
+                            .textOnImagesSelectionLimitReached("Limit Reached!")
+                            .textOnNothingSelected("Nothing Selected")
+                            .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                            .isStartInAllView(false)
+                            .exceptMimeType(listOf(MimeType.GIF))
+                            .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                            .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
+                });
+                alert.show();
+            } else {
+                FishBun.with(SubmitAnswerFragment.this)
+                        .setImageAdapter(new GlideAdapter())
+                        .setIsUseDetailView(true)
+                        .setMaxCount(1)
+                        .setMinCount(1)
+                        .setPickerSpanCount(2)
+                        .setAlbumSpanCount(1, 2)
+                        .setButtonInAlbumActivity(false)
+                        .setCamera(true)
+                        .setReachLimitAutomaticClose(true)
+                        .setAllViewTitle("All")
+                        .setActionBarTitle("Image Library")
+                        .textOnImagesSelectionLimitReached("Limit Reached!")
+                        .textOnNothingSelected("Nothing Selected")
+                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                        .isStartInAllView(false)
+                        .exceptMimeType(listOf(MimeType.GIF))
+                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                        .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
+            }
+        });
     }
 
-    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+    ActivityResultLauncher<Intent> ImagesActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -176,6 +223,25 @@ public class SubmitAnswerFragment extends Fragment {
 
                             if (!adapter.isElementExist(getFileName(getContext(), path.get(0)))) {
                                 firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), path.get(0));
+                            } else
+                                snackbarTop.showSnackBar("File already added", false);
+                        }
+                    }
+                }
+            });
+
+    ActivityResultLauncher<Intent> FilesActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent datas = result.getData();
+                        if (datas != null) {
+
+                            if (!adapter.isElementExist(getFileName(getContext(), datas.getData()))) {
+                                firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), datas.getData());
                             } else
                                 snackbarTop.showSnackBar("File already added", false);
                         }
@@ -217,5 +283,16 @@ public class SubmitAnswerFragment extends Fragment {
             displayName = myFile.getName();
         }
         return displayName;
+    }
+
+    void getMimeTypes() {
+        AdministrationViewModel administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        administrationViewModel.getFileEnabled();
+        administrationViewModel.getFileEnabledMutableLiveData().observe(getViewLifecycleOwner(), enabled -> {
+            if (!enabled)
+                administrationViewModel.getMimeTypesForGroupChats();
+        });
+        administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> mimetype = stringList.toArray(new String[0]));
+        administrationViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
     }
 }

@@ -19,6 +19,7 @@ import com.reiserx.nimbleq.ViewModels.SlotListViewModel;
 import com.reiserx.nimbleq.databinding.ActivitySlotsListBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SlotsListActivity extends AppCompatActivity {
 
@@ -64,10 +65,11 @@ public class SlotsListActivity extends AppCompatActivity {
 
         SlotListViewModel viewModel = new ViewModelProvider(this).get(SlotListViewModel.class);
 
-        viewModel.getSlotList(this);
+        viewModel.getSlotList(this, user.getUid());
         viewModel.getSlotListMutableData().observe(this, datas -> {
             Log.d(CONSTANTS.TAG2, String.valueOf(datas.size()));
             if (!datas.isEmpty()) {
+                removeDuplicates(datas);
                 adapter.setSlotListData(datas);
                 adapter.notifyDataSetChanged();
                 binding.recycler.setVisibility(View.VISIBLE);
@@ -90,7 +92,7 @@ public class SlotsListActivity extends AppCompatActivity {
         });
     }
 
-    void removeDuplicates() {
+    void removeDuplicates(List<subjectAndTimeSlot> data) {
         int count = data.size();
 
         for (int i = 0; i < count; i++) {

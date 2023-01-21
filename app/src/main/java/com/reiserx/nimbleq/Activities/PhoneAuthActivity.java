@@ -46,11 +46,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
     ButtonDesign buttonDesign;
 
     DatabaseReference reference;
-    String username;
 
     SnackbarTop snackbarTop;
-
-    boolean isRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +60,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
         buttonDesign.setButtonOutline(binding.continueBtn);
 
-        isRegister = getIntent().getBooleanExtra("isRegister", false);
-        if (isRegister) {
-            phone = getIntent().getStringExtra("PhoneNumber");
-            username = getIntent().getStringExtra("Name");
-        } else {
-            phone = getIntent().getStringExtra("PhoneNumber");
-        }
+
+        phone = getIntent().getStringExtra("PhoneNumber");
 
         auth = FirebaseAuth.getInstance();
 
@@ -114,14 +106,17 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     if (Objects.requireNonNull(task.getResult().getAdditionalUserInfo()).isNewUser()) {
                         snackbarTop.showSnackBar("Account created", true);
-                        isRegister = true;
                         process();
                     } else {
                         snackbarTop.showSnackBar("Login successful", true);
-                        isRegister = false;
                         FirebaseUser user = auth.getCurrentUser();
                         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
                         userDataViewModel.updateFCMToken(user.getUid());
+                        binding.continueBtn.setOnClickListener(view -> {
+                            buttonDesign.buttonFill(binding.continueBtn);
+                            dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
+                            dialogs.selectStudentOrTeacherForLogin(auth.getUid());
+                        });
                     }
                     TransitionManager.beginDelayedTransition(binding.cardHolder, new AutoTransition());
                     binding.continueBtn.setVisibility(View.VISIBLE);
@@ -133,19 +128,6 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 }
             });
         });
-
-        binding.continueBtn.setOnClickListener(view -> {
-            buttonDesign.buttonFill(binding.continueBtn);
-            if (isRegister) {
-                Intent intent = new Intent(PhoneAuthActivity.this, RegistrationActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            } else {
-                dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
-                dialogs.selectStudentOrTeacherForLogin(auth.getUid());
-            }
-        });
     }
 
     private void process() {
@@ -155,8 +137,15 @@ public class PhoneAuthActivity extends AppCompatActivity {
         fcm.getToken().addOnSuccessListener(s -> {
             reference = database.getReference().child("Data").child("UserData").child(auth.getUid());
             FirebaseUser user = auth.getCurrentUser();
-            UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), username, s);
-            reference.setValue(userData);
+            UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), "null", s);
+            reference.setValue(userData).addOnSuccessListener(unused -> {
+                binding.continueBtn.setOnClickListener(view -> {
+                    Intent intent = new Intent(PhoneAuthActivity.this, RegistrationActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                });
+            });
         });
     }
 }

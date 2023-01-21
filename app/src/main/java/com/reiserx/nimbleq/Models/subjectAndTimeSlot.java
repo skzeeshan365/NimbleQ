@@ -15,6 +15,13 @@ public class subjectAndTimeSlot {
         this.current = current;
     }
 
+    public subjectAndTimeSlot(String subject, String topic, boolean current) {
+        this.subject = subject;
+        this.topic = topic;
+        this.timeSlot = timeSlot;
+        this.current = current;
+    }
+
     public subjectAndTimeSlot(String subject, String topic, String timeSlot) {
         this.subject = subject;
         this.topic = topic;

@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
@@ -30,7 +31,7 @@ public class SlotListRepository {
         slotReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("SubjectList").child("subjectForStudents");
     }
 
-    public void getSlotList(Context context) {
+    public void getSlotList(Context context, String userID) {
         SharedPreferences save = context.getSharedPreferences("subjectSlots", MODE_PRIVATE);
         ArrayList<subjectAndTimeSlot> data = new ArrayList<>();
         slotReference.addValueEventListener(new ValueEventListener() {
@@ -38,6 +39,7 @@ public class SlotListRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        if (!snapshot1.getKey().equals(userID))
                         slotReference.child(Objects.requireNonNull(snapshot1.getKey())).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {

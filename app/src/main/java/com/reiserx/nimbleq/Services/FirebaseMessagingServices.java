@@ -15,6 +15,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Utils.NotificationUtils;
 import com.reiserx.nimbleq.Utils.Notify;
 
@@ -60,39 +61,43 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
         user = auth.getCurrentUser();
 
         if (Boolean.parseBoolean(data.get("isTopic"))) {
-            database = FirebaseDatabase.getInstance();
-            databaseReference = database.getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
-            Query query = databaseReference.orderByChild(user.getUid()).equalTo(user.getUid());
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                            if (snapshot1.exists()) {
-                                if (remoteMessage.getFrom().equals("/topics/".concat(snapshot1.getKey()))) {
-                                    if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION)
+            if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION) {
+                database = FirebaseDatabase.getInstance();
+                databaseReference = database.getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
+                Query query = databaseReference.orderByChild(user.getUid()).equalTo(user.getUid());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                if (snapshot1.exists()) {
                                         notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, "Class announcement", title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
                                 }
                             }
+                        } else {
+
                         }
-                    } else {
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        } else {
-            if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_SMALL_TEXT_NOTIFICATION) {
-                notificationUtils.smallTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
-            } else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_ANSWER_UPDATE_NOTIFICATION) {
-                notificationUtils.sendAnswerUpdates(FirebaseMessagingServices.this, title, content, Integer.parseInt(id), data.get("payload"));
-            } else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_BIG_TEXT_NOTIFICATION) {
-                notificationUtils.bigTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id), data.get("payload"));
+                });
+            } else if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_CREATE_CLASS_NOTIFICATION) {
+                notificationUtils.openClassNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(Objects.requireNonNull(id)), data.get("classID"));
             }
+        } else {
+            if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_SMALL_TEXT_NOTIFICATION)
+                notificationUtils.smallTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
+            else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_ANSWER_UPDATE_NOTIFICATION)
+                notificationUtils.sendAnswerUpdates(FirebaseMessagingServices.this, title, content, Integer.parseInt(id), data.get("payload"));
+            else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_BIG_TEXT_NOTIFICATION)
+                notificationUtils.bigTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
+            else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_CLASS_REQUEST_NOTIFICATION)
+                notificationUtils.classRequestNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(Objects.requireNonNull(id)));
+            else if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_CREATE_CLASS_NOTIFICATION)
+                notificationUtils.openClassNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(Objects.requireNonNull(id)), data.get("classID"));
         }
     }
 }

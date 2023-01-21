@@ -28,8 +28,8 @@ public class SlotListViewModel extends ViewModel implements SlotListRepository.O
         firebaseRepo = new SlotListRepository(this);
     }
 
-    public void getSlotList(Context context) {
-        firebaseRepo.getSlotList(context);
+    public void getSlotList(Context context, String userID) {
+        firebaseRepo.getSlotList(context, userID);
     }
 
     @Override

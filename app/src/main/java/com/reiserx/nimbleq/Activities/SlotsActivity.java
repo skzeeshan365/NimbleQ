@@ -19,6 +19,7 @@ import com.reiserx.nimbleq.Adapters.slotsAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
+import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.databinding.ActivitySlotsBinding;
 
@@ -37,13 +38,13 @@ public class SlotsActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseDatabase database;
 
+    UserTypeClass userTypeClass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySlotsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        int studentOrTeacher = getIntent().getExtras().getInt("flag");
 
         setTitle("Slots");
 
@@ -59,26 +60,27 @@ public class SlotsActivity extends AppCompatActivity {
         adapter = new slotsAdapter(this, data, findViewById(android.R.id.content), false, null);
         binding.recycler.setAdapter(adapter);
 
-        getSubject(studentOrTeacher, user);
+        userTypeClass = new UserTypeClass(this);
+
+        getSubject(user);
 
         ButtonDesign buttonDesign = new ButtonDesign(this);
         buttonDesign.setButtonOutline(binding.button4);
         binding.button4.setOnClickListener(view -> {
             buttonDesign.buttonFill(binding.button4);
             dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
-            if (studentOrTeacher == 1)
+            if (userTypeClass.isUserLearner())
                 dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
-            else if (studentOrTeacher == 2)
+            else if (!userTypeClass.isUserLearner())
                 dialogs.selectSubjectForTeacherNormal(user.getUid(), false);
         });
 
     }
 
-    void getSubject(int studentOrTecher, FirebaseUser user) {
-        Log.d(CONSTANTS.TAG, String.valueOf(studentOrTecher));
-        if (studentOrTecher == 1) {
+    void getSubject(FirebaseUser user) {
+        if (userTypeClass.isUserLearner()) {
             subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForStudents").child(user.getUid());
-        } else if (studentOrTecher == 2)
+        } else if (!userTypeClass.isUserLearner())
             subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForTeacher").child(user.getUid());
 
         subjectReference.addValueEventListener(new ValueEventListener() {

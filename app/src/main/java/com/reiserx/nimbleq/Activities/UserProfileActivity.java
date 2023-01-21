@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -12,6 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.userType;
 import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
@@ -63,12 +65,12 @@ public class UserProfileActivity extends AppCompatActivity {
 
         binding.subjectslotHolder.setOnClickListener(view -> {
             Intent intent = new Intent(this, SlotsActivity.class);
-            intent.putExtra("flag", studentOrTecher);
             startActivity(intent);
         });
 
         binding.usertypeHolder.setOnClickListener(view -> {
             dialogs.selectStudentOrTeacherNormal(user.getUid());
+            getSubject();
         });
 
         getUserInfo();
@@ -115,6 +117,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 binding.subjectAndTimeSlotTxt.setText(subjectAndTimeSlot.getSubject().concat(" • ").concat(subjectAndTimeSlot.getTopic()));
         });
         slotsViewModel.getDatabaseErrorMutableLiveData().observe(this, databaseError -> {
+            Log.d(CONSTANTS.TAG2, "sfgsg");
             if (studentOrTecher == 1) {
                 dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
             } else if (studentOrTecher == 2)

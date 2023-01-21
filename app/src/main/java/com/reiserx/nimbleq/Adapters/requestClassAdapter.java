@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.reiserx.nimbleq.Activities.CreateClass;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
@@ -62,6 +68,17 @@ public class requestClassAdapter extends RecyclerView.Adapter<requestClassAdapte
         } else {
             holder.binding.deleteImg.setVisibility(View.GONE);
             holder.binding.status.setVisibility(View.GONE);
+
+            holder.binding.reqClassHolder.setOnClickListener(view -> {
+                Gson gson = new Gson();
+                Intent intent = new Intent(context, CreateClass.class);
+                intent.putExtra("request", gson.toJson(model));
+                intent.putExtra("requestMode", true);
+                intent.putExtra("subject", model.getSubject());
+                intent.putExtra("topic", model.getTopic());
+                intent.putExtra("slot", model.getTimeSlot());
+                context.startActivity(intent);
+            });
         }
     }
 

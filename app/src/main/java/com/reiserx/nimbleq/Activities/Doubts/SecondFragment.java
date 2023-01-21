@@ -1,46 +1,39 @@
 package com.reiserx.nimbleq.Activities.Doubts;
 
-import static android.app.Activity.RESULT_OK;
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.reiserx.nimbleq.Activities.AnnouncementsActivity;
-import com.reiserx.nimbleq.Activities.Fragments.GroupChat.NotificationsFragment;
 import com.reiserx.nimbleq.Adapters.fileListAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
-import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.Models.fileTypeModel;
-import com.reiserx.nimbleq.Models.remoteFileModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
-import com.reiserx.nimbleq.Utils.FileUtil;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.DoubtsViewModel;
 import com.reiserx.nimbleq.ViewModels.FirebaseStorageViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
@@ -50,7 +43,6 @@ import com.sangcomz.fishbun.MimeType;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -76,12 +68,16 @@ public class SecondFragment extends Fragment {
 
     String displayName;
 
+    String[] mimetype;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSecondBinding.inflate(inflater, container, false);
 
         firebaseStorageViewModel = new ViewModelProvider(this).get(FirebaseStorageViewModel.class);
         doubtsViewModel = new ViewModelProvider(this).get(DoubtsViewModel.class);
+
+        getMimeTypes();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -140,65 +136,118 @@ public class SecondFragment extends Fragment {
         else if (binding.doubtDescTxt.getText().toString().trim().equals(""))
             binding.doubtDescTxt.setError("Please enter description");
         else {
-                Calendar cal = Calendar.getInstance();
-                long currentTime = cal.getTimeInMillis();
+            Calendar cal = Calendar.getInstance();
+            long currentTime = cal.getTimeInMillis();
 
-                DoubtsModel model = new DoubtsModel(binding.subjectTxt.getText().toString(), binding.doubtTopicTxt.getText().toString(), binding.doubtOneLineXt.getText().toString(), binding.doubtDescTxt.getText().toString(), user.getUid(), currentTime);
+            DoubtsModel model = new DoubtsModel(binding.subjectTxt.getText().toString(), binding.doubtTopicTxt.getText().toString(), binding.doubtOneLineXt.getText().toString(), binding.doubtDescTxt.getText().toString(), user.getUid(), currentTime);
 
-                doubtsViewModel.submitDoubt(model, links);
-                doubtsViewModel.getFileSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                    alert.setTitle("Success");
-                    alert.setMessage("Doubt has been submitted");
-                    alert.setPositiveButton("close", (dialogInterface, i) -> requireActivity().onBackPressed());
-                    alert.setCancelable(false);
-                    alert.show();
-                });
-                doubtsViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
+            doubtsViewModel.submitDoubt(model, links);
+            doubtsViewModel.getFileSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
+                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                alert.setTitle("Success");
+                alert.setMessage("Doubt has been submitted");
+                alert.setPositiveButton("close", (dialogInterface, i) -> requireActivity().onBackPressed());
+                alert.setCancelable(false);
+                alert.show();
+            });
+            doubtsViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
         }
     }
 
     void attachFile() {
         binding.attachHolder.setOnClickListener(view -> {
-            FishBun.with(SecondFragment.this)
-                    .setImageAdapter(new GlideAdapter())
-                    .setIsUseDetailView(true)
-                    .setMaxCount(1)
-                    .setMinCount(1)
-                    .setPickerSpanCount(2)
-                    .setAlbumSpanCount(1, 2)
-                    .setButtonInAlbumActivity(false)
-                    .setCamera(true)
-                    .setReachLimitAutomaticClose(true)
-                    .setAllViewTitle("All")
-                    .setActionBarTitle("Image Library")
-                    .textOnImagesSelectionLimitReached("Limit Reached!")
-                    .textOnNothingSelected("Nothing Selected")
-                    .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                    .isStartInAllView(false)
-                    .exceptMimeType(listOf(MimeType.GIF))
-                    .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                    .startAlbumWithOnActivityResult(100);
+            if (mimetype != null && mimetype.length != 0) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                alert.setMessage("Send a photo");
+
+                alert.setPositiveButton("Files", (dialogInterface, i) -> {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
+                    FilesActivityResultLauncher.launch(intent);
+                });
+                alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                    FishBun.with(SecondFragment.this)
+                            .setImageAdapter(new GlideAdapter())
+                            .setIsUseDetailView(true)
+                            .setMaxCount(1)
+                            .setMinCount(1)
+                            .setPickerSpanCount(2)
+                            .setAlbumSpanCount(1, 2)
+                            .setButtonInAlbumActivity(false)
+                            .setCamera(true)
+                            .setReachLimitAutomaticClose(true)
+                            .setAllViewTitle("All")
+                            .setActionBarTitle("Image Library")
+                            .textOnImagesSelectionLimitReached("Limit Reached!")
+                            .textOnNothingSelected("Nothing Selected")
+                            .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                            .isStartInAllView(false)
+                            .exceptMimeType(listOf(MimeType.GIF))
+                            .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                            .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
+                });
+                alert.show();
+            } else {
+                FishBun.with(SecondFragment.this)
+                        .setImageAdapter(new GlideAdapter())
+                        .setIsUseDetailView(true)
+                        .setMaxCount(1)
+                        .setMinCount(1)
+                        .setPickerSpanCount(2)
+                        .setAlbumSpanCount(1, 2)
+                        .setButtonInAlbumActivity(false)
+                        .setCamera(true)
+                        .setReachLimitAutomaticClose(true)
+                        .setAllViewTitle("All")
+                        .setActionBarTitle("Image Library")
+                        .textOnImagesSelectionLimitReached("Limit Reached!")
+                        .textOnNothingSelected("Nothing Selected")
+                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                        .isStartInAllView(false)
+                        .exceptMimeType(listOf(MimeType.GIF))
+                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                        .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
+            }
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent datas) {
+    ActivityResultLauncher<Intent> ImagesActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent datas = result.getData();
+                        if (datas != null) {
+                            List<Uri> path = datas.getParcelableArrayListExtra(FishBun.INTENT_PATH);
 
-        switch (requestCode) {
-            case 100:
-                if (resultCode == RESULT_OK) {
-                    if (datas != null) {
-                        List<Uri> path = datas.getParcelableArrayListExtra(FishBun.INTENT_PATH);
-
-                        if (!adapter.isElementExist(getFileName(getContext(), path.get(0)))) {
-                            firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), path.get(0));
+                            if (!adapter.isElementExist(getFileName(getContext(), path.get(0)))) {
+                                firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), path.get(0));
+                            }
                         }
                     }
                 }
-                break;
-        }
-    }
+            });
+
+    ActivityResultLauncher<Intent> FilesActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        if (result.getData() != null) {
+                            if (!adapter.isElementExist(getFileName(getContext(), result.getData().getData()))) {
+                                firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), result.getData().getData());
+                            } else
+                                snackbarTop.showSnackBar("File already added", false);
+                        }
+                    }
+                }
+            });
 
     @SuppressLint("Range")
     public String getFileName(Context context, Uri uri) {
@@ -238,5 +287,16 @@ public class SecondFragment extends Fragment {
             adapter.notifyDataSetChanged();
         });
         firebaseStorageViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
+    }
+
+    void getMimeTypes() {
+        AdministrationViewModel administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        administrationViewModel.getFileEnabled();
+        administrationViewModel.getFileEnabledMutableLiveData().observe(getViewLifecycleOwner(), enabled -> {
+            if (!enabled)
+                administrationViewModel.getMimeTypesForGroupChats();
+        });
+        administrationViewModel.getMimeTypesListMutableLiveData().observe(getViewLifecycleOwner(), stringList -> mimetype = stringList.toArray(new String[0]));
+        administrationViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
     }
 }

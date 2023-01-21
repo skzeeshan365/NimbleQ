@@ -29,12 +29,13 @@ public class SlotsRepository {
                         subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
                     }
                     onRealtimeDbTaskComplete.onSuccess(subjectAndTimeSlot);
-                }
+                } else
+                    onRealtimeDbTaskComplete.onFailure("Slot not available");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                onRealtimeDbTaskComplete.onFailure(error);
+                onRealtimeDbTaskComplete.onFailure(error.toString());
             }
         });
     }
@@ -49,12 +50,13 @@ public class SlotsRepository {
                         subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
                     }
                     onRealtimeDbTaskComplete.onSuccess(subjectAndTimeSlot);
-                }
+                } else
+                    onRealtimeDbTaskComplete.onFailure("Slot not available");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                onRealtimeDbTaskComplete.onFailure(error);
+                onRealtimeDbTaskComplete.onFailure(error.toString());
             }
         });
     }
@@ -62,6 +64,6 @@ public class SlotsRepository {
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(subjectAndTimeSlot subjectAndTimeSlot);
 
-        void onFailure(DatabaseError error);
+        void onFailure(String error);
     }
 }

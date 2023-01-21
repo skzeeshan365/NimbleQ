@@ -18,15 +18,18 @@ import java.util.List;
 public class classViewModel extends ViewModel implements ClassRepository.OnRealtimeDbTaskComplete,
         ClassRepository.OnClassJoinStateChanged,
         ClassRepository.OnGetClassListComplete,
-        ClassRepository.onGetClassRequestComplete, ClassRepository.OnRatingSubmitted {
+        ClassRepository.onGetClassRequestComplete,
+        ClassRepository.OnRatingSubmitted, ClassRepository.OnCreateClassComplete {
 
     private final MutableLiveData<classModel> classData = new MutableLiveData<>();
     private final MutableLiveData<Integer> classState = new MutableLiveData<>();
     private final MutableLiveData<List<classModel>> classList = new MutableLiveData<>();
     private final MutableLiveData<List<ClassRequestModel>> classRequestMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Void> ratingSubmittedMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> createClassMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> classListErrorMutableLiveData = new MutableLiveData<>();
 
     private final ClassRepository firebaseRepo;
 
@@ -54,8 +57,16 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         return databaseErrorMutableLiveData;
     }
 
+    public MutableLiveData<String> getClassListErrorMutableLiveData() {
+        return classListErrorMutableLiveData;
+    }
+
+    public MutableLiveData<String> getCreateClassMutableLiveData() {
+        return createClassMutableLiveData;
+    }
+
     public classViewModel() {
-        firebaseRepo = new ClassRepository(this, this, this, this, this);
+        firebaseRepo = new ClassRepository(this, this, this, this, this, this);
     }
 
     public void getClassData(String classID) {
@@ -78,8 +89,12 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.getClassListForTeacher(userID);
     }
 
-    public void getClassRequests(subjectAndTimeSlot subjectAndTimeSlot) {
-        firebaseRepo.getClassRequests(subjectAndTimeSlot);
+    public void getClassRequestsForTeachers(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
+        firebaseRepo.getClassRequestsForTeachers(subjectAndTimeSlot, userID);
+    }
+
+    public void getClassRequestsForStudents(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
+        firebaseRepo.getClassRequestsForStudents(subjectAndTimeSlot, userID);
     }
 
     public void setClassRating(String classID, String className, UserData userID, RatingModel ratingModel, String token, Context context) {
@@ -88,6 +103,14 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
 
     public void setTeacherRating(String teacherID, UserData userID, RatingModel ratingModel, String token, Context context) {
         firebaseRepo.setTeacherRating(teacherID, userID, ratingModel, token, context);
+    }
+
+    public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
+        firebaseRepo.createClass(context, classModel, teacherName, request);
+    }
+
+    public void createClass(Context context, classModel classModel, String teacherName) {
+        firebaseRepo.createClass(context, classModel, teacherName);
     }
 
     public void getAllJoinedClasses(String userID) {
@@ -102,6 +125,11 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     @Override
     public void onSuccess(Void voids) {
         ratingSubmittedMutableLiveData.setValue(voids);
+    }
+
+    @Override
+    public void onClassCreated(String classID) {
+        createClassMutableLiveData.setValue(classID);
     }
 
     @Override
@@ -132,6 +160,6 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
 
     @Override
     public void onGetClassListFailure(String error) {
-        databaseErrorMutableLiveData.setValue(error);
+        classListErrorMutableLiveData.setValue(error);
     }
 }

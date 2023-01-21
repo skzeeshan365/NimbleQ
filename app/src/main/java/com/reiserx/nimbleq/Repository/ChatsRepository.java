@@ -101,7 +101,6 @@ public class ChatsRepository {
                                 break;
                         }
                     }
-
                     onGetLatestMessageComplete.onSuccess(message);
                 } else onGetLatestMessageComplete.onFailure("No message available");
             } else if (error != null) {

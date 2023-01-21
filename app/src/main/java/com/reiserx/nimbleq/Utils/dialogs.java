@@ -22,6 +22,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,7 +32,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Activities.MainActivity;
+import com.reiserx.nimbleq.Adapters.TeacherListSpinnerAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.UserData;
@@ -39,6 +43,9 @@ import com.reiserx.nimbleq.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class dialogs {
     private final Context context;
@@ -47,6 +54,9 @@ public class dialogs {
     DatabaseReference reference;
     subjectAndTimeSlot models;
     ArrayList<String> teacherList;
+    ArrayList<UserData> userData;
+    UserData requestTeacherData;
+    List<subjectAndTimeSlot> list;
 
     public dialogs(Context context, View view) {
         this.context = context;
@@ -67,13 +77,57 @@ public class dialogs {
         buttonDesign.setButtonOutline(student_btn);
         buttonDesign.setButtonOutline(teacher_btn);
 
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("SubjectList");
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        list = new ArrayList<>();
+
         student_btn.setOnClickListener(view -> {
             CONSTANTS.student_teacher_flag = 1;
             buttonDesign.buttonFill(student_btn);
             buttonDesign.setButtonOutline(teacher_btn);
             snackbarTop.showSnackBar("Logged in as learner", true);
-            selectSubjectForLearnerNormal(uid, true);
-            alert.dismiss();
+
+            FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+
+            databaseReference.child("subjectForStudents").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        if (snapshot.getChildrenCount() == 3) {
+                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
+                                if (subjectAndTimeSlot != null) {
+                                    subjectAndTimeSlot.setKey(snapshot1.getKey());
+                                    list.add(subjectAndTimeSlot);
+                                    fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot));
+                                }
+                            }
+                            if (!checkSlots()) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("current", true);
+                                subjectAndTimeSlot model = list.get(0);
+                                databaseReference.child("subjectForStudents").child(uid).child(model.getKey()).updateChildren(map);
+                            }
+                            context.startActivity(intent);
+                        } else if (snapshot.getChildrenCount() < 3) {
+                            selectSubjectForLearnerNormal(uid, true);
+                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
+                                if (subjectAndTimeSlot != null)
+                                    fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot));
+                            }
+                        }
+                    } else
+                        selectSubjectForLearnerNormal(uid, true);
+                    alert.dismiss();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
             updateUserType(uid, CONSTANTS.student_teacher_flag);
         });
 
@@ -82,13 +136,52 @@ public class dialogs {
             buttonDesign.buttonFill(teacher_btn);
             buttonDesign.setButtonOutline(student_btn);
             snackbarTop.showSnackBar("Logged in as teacher", true);
-            selectSubjectForTeacherNormal(uid, true);
-            alert.dismiss();
+
+            databaseReference.child("subjectForTeacher").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        if (snapshot.getChildrenCount() == 3) {
+                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
+                                if (subjectAndTimeSlot != null) {
+                                    subjectAndTimeSlot.setKey(snapshot1.getKey());
+                                    list.add(subjectAndTimeSlot);
+                                }
+                            }
+                            if (!checkSlots()) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("current", true);
+                                subjectAndTimeSlot model = list.get(0);
+                                databaseReference.child("subjectForTeacher").child(uid).child(model.getKey()).updateChildren(map);
+                            }
+                            context.startActivity(intent);
+                        } else if (snapshot.getChildrenCount() < 3) {
+                            selectSubjectForTeacherNormal(uid, true);
+                        }
+                    } else
+                        selectSubjectForTeacherNormal(uid, true);
+                    alert.dismiss();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
             updateUserType(uid, CONSTANTS.student_teacher_flag);
         });
         alert.setView(mView);
         alert.setCancelable(false);
         alert.show();
+    }
+
+    boolean checkSlots() {
+        for (subjectAndTimeSlot subjectAndTimeSlot : list) {
+            if (subjectAndTimeSlot.isCurrent())
+                return true;
+        }
+        return false;
     }
 
     public void selectStudentOrTeacherNormal(String uid) {
@@ -410,6 +503,10 @@ public class dialogs {
                             map.put("current", false);
                             reference.child(snapshot1.getKey()).updateChildren(map);
                         }
+                        FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+                        fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot)).addOnFailureListener(e -> {
+                            snackbarTop.showSnackBar("Failed to subscribe for notification ".concat(e.toString()), false);
+                        });;
                         reference.push().setValue(subjectAndTimeSlot);
                         snackbarTop.showSnackBar("Slot saved", true);
                     } else {
@@ -506,10 +603,67 @@ public class dialogs {
             } else if (time_spinner.getSelectedItemPosition() == 0) {
                 Toast.makeText(context, "Please select your time slot", Toast.LENGTH_SHORT).show();
             } else {
+                FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+                fcm.unsubscribeFromTopic(TopicSubscription.getTopicForSlot(model));
                 if (model.isCurrent())
                     models = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim(), time_spinner.getSelectedItem().toString(), true);
                 else if (!model.isCurrent())
                     models = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim(), time_spinner.getSelectedItem().toString(), false);
+                reference.setValue(models);
+                fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(models)).addOnSuccessListener(unused -> alert.dismiss()).addOnFailureListener(e -> {
+                    snackbarTop.showSnackBar("Failed to subscribe for notification ".concat(e.toString()), false);
+                    alert.dismiss();
+                });
+            }
+        });
+        alert.setView(mView);
+        alert.show();
+    }
+
+    public void updateSubjectForTeacher(subjectAndTimeSlot model, DatabaseReference reference) {
+
+        AlertDialog alert = new AlertDialog.Builder(context).create();
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.subjects_layout, null);
+
+        final Button next_btn = mView.findViewById(R.id.next_btn);
+        final EditText topic_edittext = mView.findViewById(R.id.topic_edittext);
+        final Spinner time_spinner = mView.findViewById(R.id.time_spinner);
+        final Spinner subject_spinner = mView.findViewById(R.id.subject_spinner);
+
+        final TextView sub_txt = mView.findViewById(R.id.sub_txt);
+        sub_txt.setText("Select subject and topic");
+
+        alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ButtonDesign buttonDesign = new ButtonDesign(context);
+        buttonDesign.setButtonOutline(next_btn);
+
+        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
+
+        ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
+        subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        subject_spinner.setAdapter(subjectsAdapter);
+        subject_spinner.setOnItemSelectedListener(new subjectList());
+
+        topic_edittext.setText(model.getTopic());
+        subject_spinner.setSelection(getIndex(subject_spinner, model.getSubject()));
+
+        time_spinner.setVisibility(View.GONE);
+
+        next_btn.setOnClickListener(view -> {
+            CONSTANTS.student_teacher_flag = 2;
+            buttonDesign.buttonFill(next_btn);
+            if (subject_spinner.getSelectedItemPosition() == 0) {
+                Toast.makeText(context, "Please select your subject", Toast.LENGTH_SHORT).show();
+            } else if (topic_edittext.getText().toString().trim().equals("")) {
+                topic_edittext.setError("Please enter your topic");
+            } else {
+                if (model.isCurrent())
+                    models = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim(), true);
+                else if (!model.isCurrent())
+                    models = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim(), false);
                 reference.setValue(models);
                 alert.dismiss();
             }
@@ -560,11 +714,14 @@ public class dialogs {
                 notify_txt.setVisibility(View.VISIBLE);
 
                 teacherList = new ArrayList<>();
-                teacherList.add("Select teacher");
+                userData = new ArrayList<>();
 
-                ArrayAdapter<String> names = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, teacherList);
-                names.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(names);
+                teacherList.add("Select teacher");
+                userData.add(null);
+
+                TeacherListSpinnerAdapter adapter = new TeacherListSpinnerAdapter(context, teacherList, userData);
+                spinner.setAdapter(adapter);
+                spinner.setOnItemSelectedListener(new teacherListListener());
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference().child("Data").child("Main").child("UserType");
@@ -581,6 +738,7 @@ public class dialogs {
                                             UserData UserData = snapshot.getValue(UserData.class);
                                             if (UserData != null) {
                                                 teacherList.add(UserData.getUserName());
+                                                userData.add(UserData);
                                             }
                                         }
                                     }
@@ -592,7 +750,7 @@ public class dialogs {
                                 });
                             }
                             spinner.setEnabled(true);
-                            names.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
                         }
                     }
 
@@ -619,7 +777,12 @@ public class dialogs {
                 if (spinner.getSelectedItemPosition() == 0)
                     snackbarTop.showSnackBar("Please select teacher preference", false);
                 else {
-                    ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, userID);
+                    ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, requestTeacherData.getUid(), userID);
+                    Notify notify = new Notify(context);
+                    String sb = "Subject: "+subject+"\n";
+                    String tp = "Topic: "+topic_edittext.getText().toString().trim()+"\n";
+                    String slot = "Time: "+time_slot;
+                    notify.classRequestPayload("A student has request a class from you", sb+tp+slot, requestTeacherData.getFCM_TOKEN());
                     reference.add(classRequestModel).addOnSuccessListener(documentReference -> {
                         snackbarTop.showSnackBar("Request submitted", true);
                         alert.dismiss();
@@ -641,5 +804,18 @@ public class dialogs {
         });
         alert.setView(mView);
         alert.show();
+    }
+
+    public class teacherListListener implements AdapterView.OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            requestTeacherData = userData.get(i);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
     }
 }

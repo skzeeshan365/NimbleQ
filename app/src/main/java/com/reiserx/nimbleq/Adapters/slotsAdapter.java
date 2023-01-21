@@ -21,16 +21,20 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Activities.CreateClass;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
+import com.reiserx.nimbleq.Utils.TopicSubscription;
+import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.databinding.SlotsLayoutBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.ToDoubleBiFunction;
 
 public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHolder> {
 
@@ -112,13 +116,15 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
             if (model.getTimeSlot() != null)
                 holder.binding.slotsDescTxt.setText(model.getTimeSlot().concat(" • ".concat(model.getSubject().concat(" • ".concat(model.getTopic())))));
             else
-                holder.binding.slotsDescTxt.setText(model.getSubject());
+                holder.binding.slotsDescTxt.setText(model.getSubject().concat(" • ".concat(model.getTopic())));
 
             holder.binding.deleteImg.setOnClickListener(view -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
                 alert.setTitle("Delete slot");
                 alert.setMessage("Are you sure you want to delete this slot");
                 alert.setPositiveButton("Delete", (dialogInterface, i) -> {
+                    FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+                    fcm.unsubscribeFromTopic(TopicSubscription.getTopicForSlot(model));
 
                     if (model.isCurrent()) {
                         model.getReference().limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -158,7 +164,12 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
 
             holder.binding.editImg.setOnClickListener(view -> {
                 dialogs dialogs = new dialogs(context, view);
-                dialogs.updateSubjectForLearner(model, model.getReference().child(model.getKey()));
+                UserTypeClass userTypeClass = new UserTypeClass(context);
+
+                if (userTypeClass.isUserLearner())
+                    dialogs.updateSubjectForLearner(model, model.getReference().child(model.getKey()));
+                else
+                    dialogs.updateSubjectForTeacher(model, model.getReference().child(model.getKey()));
             });
 
             holder.binding.slotHolder.setOnClickListener(view -> {

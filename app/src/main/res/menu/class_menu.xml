@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/Rate_menu_item"
-        android:title="Rate this class" />
+        android:title="Rate this teacher" />
     <item
         android:id="@+id/Teacher_info_menuitem"
         android:title="Teacher info" />
