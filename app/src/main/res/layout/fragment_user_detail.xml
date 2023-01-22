@@ -27,8 +27,9 @@
         android:text="TextView"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/user_name_txt"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/user_name_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_name_txt" />
+        app:layout_constraintTop_toBottomOf="@+id/userid_txt" />
 
     <TextView
         android:id="@+id/user_school_txt"
@@ -86,7 +87,7 @@
         app:layout_constraintTop_toBottomOf="@+id/user_state_city_txt" />
 
     <TextView
-        android:id="@+id/textView42"
+        android:id="@+id/user_classes_created_txt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -95,5 +96,36 @@
         app:layout_constraintEnd_toEndOf="@+id/user_classes_txt"
         app:layout_constraintStart_toStartOf="@+id/user_classes_txt"
         app:layout_constraintTop_toBottomOf="@+id/user_classes_txt" />
+
+    <TextView
+        android:id="@+id/userid_txt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/user_name_txt"
+        app:layout_constraintStart_toStartOf="@+id/user_name_txt"
+        app:layout_constraintTop_toBottomOf="@+id/user_name_txt" />
+
+    <Button
+        android:id="@+id/joined_class_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Joined class list"
+        app:layout_constraintEnd_toEndOf="@+id/user_classes_created_txt"
+        app:layout_constraintStart_toStartOf="@+id/user_classes_created_txt"
+        app:layout_constraintTop_toBottomOf="@+id/user_classes_created_txt" />
+
+    <Button
+        android:id="@+id/created_class_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Created class list"
+        app:layout_constraintEnd_toEndOf="@+id/joined_class_btn"
+        app:layout_constraintStart_toStartOf="@+id/joined_class_btn"
+        app:layout_constraintTop_toBottomOf="@+id/joined_class_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

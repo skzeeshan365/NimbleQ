@@ -56,5 +56,25 @@
         android:name="com.reiserx.nimbleq.Activities.Administration.FragmentUserDetail"
         android:label="User details"
         tools:layout="@layout/fragment_user_detail">
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_FragmentJoinedClassList"
+            app:destination="@id/FragmentJoinedClassList" />
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_FragmentCreateClassList"
+            app:destination="@id/FragmentCreateClassList" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentJoinedClassList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentjoinedClassList"
+        android:label="Joined class list"
+        tools:layout="@layout/fragment_userlist_admin">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentCreateClassList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentCreatedClassList"
+        android:label="Created class list"
+        tools:layout="@layout/fragment_userlist_admin">
     </fragment>
 </navigation>

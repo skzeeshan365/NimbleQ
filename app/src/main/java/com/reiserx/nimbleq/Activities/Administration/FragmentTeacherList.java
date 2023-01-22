@@ -12,12 +12,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
+import com.reiserx.nimbleq.Utils.StateCityData;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class FragmentTeacherList extends Fragment {
@@ -26,10 +33,31 @@ public class FragmentTeacherList extends Fragment {
 
     UserListAdapter userListAdapter;
 
+    List<String> filters, gradelist, citylist;
+    List<UserData> userData;
+
+    AdministrationViewModel administrationViewModel;
+
+    static int spinner_flag = 1;
+    static String state;
+
+    static int FILTER_BY_GRADE = 1;
+    static int FILTER_BY_GENDER = 2;
+    static int FILTER_BY_STATE = 3;
+    static int FILTER_BY_CITY = 4;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentUserlistAdminBinding.inflate(inflater, container, false);
 
+        binding.recycler.setVisibility(View.GONE);
+        binding.progHolder.setVisibility(View.VISIBLE);
+        binding.progressBar2.setVisibility(View.VISIBLE);
+        binding.textView9.setVisibility(View.GONE);
+
+        initializeSpinners();
+
+        userData = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.recycler.setLayoutManager(layoutManager);
         userListAdapter = new UserListAdapter(getContext(), NavHostFragment.findNavController(FragmentTeacherList.this));
@@ -41,15 +69,25 @@ public class FragmentTeacherList extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        AdministrationViewModel administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        administrationViewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
 
         administrationViewModel.getTeacherList();
         administrationViewModel.getGetUserListMutableLiveData().observe(getViewLifecycleOwner(), userDataList -> {
+            userData.clear();
+            userData.addAll(userDataList);
             userListAdapter.setData(userDataList);
             binding.recycler.setAdapter(userListAdapter);
             userListAdapter.notifyDataSetChanged();
+            binding.recycler.setVisibility(View.VISIBLE);
+            binding.progHolder.setVisibility(View.GONE);
         });
-        administrationViewModel.getUserListErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> Log.d(CONSTANTS.TAG2, s));
+        administrationViewModel.getUserListErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> {
+            binding.textView9.setText(s);
+            binding.recycler.setVisibility(View.GONE);
+            binding.progHolder.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
+            binding.textView9.setVisibility(View.VISIBLE);
+        });
     }
 
     @Override
@@ -58,4 +96,189 @@ public class FragmentTeacherList extends Fragment {
         binding = null;
     }
 
+    void initializeSpinners() {
+        filters = new ArrayList<>();
+
+        filters.add("Select your filter");
+        filters.add("Filter by grade");
+        filters.add("Filter by gender");
+        filters.add("Filter by state");
+        filters.add("Filter by city");
+
+        binding.spinner3.setVisibility(View.GONE);
+        binding.spinner4.setVisibility(View.GONE);
+
+        ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, filters);
+        subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinner2.setAdapter(subjectsAdapter);
+        binding.spinner2.setOnItemSelectedListener(new filterClassListener());
+    }
+
+    public class filterClassListener implements AdapterView.OnItemSelectedListener {
+
+        ArrayAdapter<String> subjectsAdapter;
+        StateCityData stateCityData;
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            switch (i) {
+                case 1:
+                    administrationViewModel.getGradeList();
+                    administrationViewModel.getListStringMutableLiveData().observe(getViewLifecycleOwner(), stringList -> {
+                        binding.spinner3.setVisibility(View.VISIBLE);
+                        gradelist = stringList;
+                        subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, stringList);
+                        subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        binding.spinner3.setAdapter(subjectsAdapter);
+                        binding.spinner3.setOnItemSelectedListener(new gradeListClass());
+                    });
+                    spinner_flag = FILTER_BY_GRADE;
+                    break;
+                case 2:
+                    binding.spinner3.setVisibility(View.VISIBLE);
+                    gradelist = new ArrayList<>();
+                    gradelist.add("Select gender");
+                    gradelist.add("Male");
+                    gradelist.add("Female");
+                    subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, gradelist);
+                    subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinner3.setAdapter(subjectsAdapter);
+                    binding.spinner3.setOnItemSelectedListener(new gradeListClass());
+                    spinner_flag = FILTER_BY_GENDER;
+                    break;
+                case 3:
+                    binding.spinner3.setVisibility(View.VISIBLE);
+
+                    stateCityData = new StateCityData(getContext());
+                    gradelist = stateCityData.getStates(stateCityData.loadJSONFile());
+
+                    subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, gradelist);
+                    subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinner3.setAdapter(subjectsAdapter);
+                    binding.spinner3.setOnItemSelectedListener(new gradeListClass());
+                    spinner_flag = FILTER_BY_STATE;
+                    break;
+                case 4:
+                    binding.spinner3.setVisibility(View.VISIBLE);
+                    binding.spinner4.setVisibility(View.VISIBLE);
+
+                    stateCityData = new StateCityData(getContext());
+
+                    gradelist = stateCityData.getStates(stateCityData.loadJSONFile());
+
+                    subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, gradelist);
+                    subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinner3.setAdapter(subjectsAdapter);
+                    binding.spinner3.setOnItemSelectedListener(new gradeListClass());
+                    spinner_flag = FILTER_BY_CITY;
+                    break;
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+    }
+
+    public class gradeListClass implements AdapterView.OnItemSelectedListener {
+
+        ArrayAdapter<String> subjectsAdapter;
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            if (i > 0) {
+                if (spinner_flag == FILTER_BY_CITY) {
+
+                    StateCityData stateCityData = new StateCityData(getContext());
+
+                    citylist = stateCityData.getCities(stateCityData.loadJSONFile(), gradelist.get(i));
+
+                    subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, citylist);
+                    subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinner4.setAdapter(subjectsAdapter);
+                    binding.spinner4.setOnItemSelectedListener(new cityListClass());
+                    state = gradelist.get(i);
+
+                } else {
+                    removeDuplicates(userData, spinner_flag, gradelist.get(i));
+                }
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+    }
+
+    public class cityListClass implements AdapterView.OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            if (i > 0) {
+                removeDuplicates(userData, state, citylist.get(i));
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+    }
+
+    void removeDuplicates(List<UserData> data, int requestCode, String value) {
+        List<UserData> dataList = new ArrayList<>();
+
+        for (UserData userData : data) {
+            switch (requestCode) {
+                case 1:
+                    if (userData.getUserDetails().getGrade().equals(value))
+                        dataList.add(userData);
+                    break;
+                case 2:
+                    if (userData.getUserDetails().getGender().equals(value))
+                        dataList.add(userData);
+                    break;
+                case 3:
+                    if (userData.getUserDetails().getState().equals(value))
+                        dataList.add(userData);
+                    break;
+                default:
+                    dataList.addAll(data);
+                    break;
+            }
+        }
+        if (!dataList.isEmpty()) {
+            userListAdapter.setData(dataList);
+            binding.recycler.setAdapter(userListAdapter);
+            userListAdapter.notifyDataSetChanged();
+        } else {
+            binding.textView9.setText("No user available for this filter");
+            binding.recycler.setVisibility(View.GONE);
+            binding.progHolder.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
+            binding.textView9.setVisibility(View.VISIBLE);
+        }
+    }
+
+    void removeDuplicates(List<UserData> data, String state, String city) {
+        List<UserData> dataList = new ArrayList<>();
+
+        for (UserData userData : data) {
+            if (userData.getUserDetails().getState().equals(state) && userData.getUserDetails().getCity().equals(city))
+                dataList.add(userData);
+        }
+        if (!dataList.isEmpty()) {
+            userListAdapter.setData(dataList);
+            binding.recycler.setAdapter(userListAdapter);
+            userListAdapter.notifyDataSetChanged();
+        } else {
+            binding.textView9.setText("No user available for this filter");
+            binding.recycler.setVisibility(View.GONE);
+            binding.progHolder.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
+            binding.textView9.setVisibility(View.VISIBLE);
+        }
+    }
 }

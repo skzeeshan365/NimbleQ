@@ -34,6 +34,11 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.HomeVi
         this.data = data;
     }
 
+    public void clear() {
+        if (data != null && !data.isEmpty())
+            data.clear();
+    }
+
     public UserListAdapter(Context context, NavController navController) {
         this.context = context;
         this.navController = navController;

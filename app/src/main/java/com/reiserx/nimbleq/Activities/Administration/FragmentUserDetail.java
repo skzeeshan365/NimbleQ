@@ -49,6 +49,7 @@ public class FragmentUserDetail extends Fragment {
         viewModel.getUserDetailsMutableLiveData().observe(getViewLifecycleOwner(), userDetails -> {
 
             binding.userNameTxt.setText("Username: "+userData.getUserName());
+            binding.useridTxt.setText("UserID: "+userData.getUid());
             binding.userPhoneTxt.setText("Phone: "+userData.getPhoneNumber());
 
             binding.userSchoolTxt.setText("School: "+userDetails.getSchoolName());
@@ -59,6 +60,12 @@ public class FragmentUserDetail extends Fragment {
 
         viewModel.getClassJoinCount(userData.getUid());
         viewModel.getClassJoinCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesTxt.setText("Classes joined: "+count));
+
+        viewModel.getCreatedClassCount(userData.getUid());
+        viewModel.getClassCreateCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesCreatedTxt.setText("Classes created: "+count));
+
+        binding.joinedClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentJoinedClassList));
+        binding.createdClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentCreateClassList));
     }
 
     @Override

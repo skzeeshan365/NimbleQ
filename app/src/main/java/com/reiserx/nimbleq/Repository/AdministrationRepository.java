@@ -12,6 +12,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateQuerySnapshot;
+import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -20,8 +23,10 @@ import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.mimeTypesModel;
 import com.reiserx.nimbleq.Models.userDetails;
+import com.reiserx.nimbleq.Utils.MapComparator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +36,8 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetUserListComplete onGetUserListComplete;
     private final AdministrationRepository.OnGetUserDetailsComplete onGetUserDetailsComplete;
     private final AdministrationRepository.OnGetClassJoinCountComplete onGetClassJoinCountComplete;
+    private final AdministrationRepository.OnGetClassCreateCountComplete onGetClassCreateCountComplete;
+    private final AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete;
 
     DatabaseReference reference;
     DatabaseReference userDataReference;
@@ -38,18 +45,23 @@ public class AdministrationRepository {
     DatabaseReference classJoinReference;
 
     CollectionReference userDetailsReference;
+    DocumentReference classReference;
 
     public AdministrationRepository(AdministrationRepository.OnGetMimetypesCompleted onGetMimetypesCompleted,
                                     AdministrationRepository.OnGetFileEnabledComplete onGetFileEnabledComplete,
                                     AdministrationRepository.OnGetUserListComplete onGetUserListComplete,
                                     AdministrationRepository.OnGetUserDetailsComplete onGetUserDetailsComplete,
-                                    AdministrationRepository.OnGetClassJoinCountComplete onGetClassJoinCountComplete) {
+                                    AdministrationRepository.OnGetClassJoinCountComplete onGetClassJoinCountComplete,
+                                    AdministrationRepository.OnGetClassCreateCountComplete onGetClassCreateCountComplete,
+                                    AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete) {
 
         this.onGetMimetypesCompleted = onGetMimetypesCompleted;
         this.onGetFileEnabledComplete = onGetFileEnabledComplete;
         this.onGetUserListComplete = onGetUserListComplete;
         this.onGetUserDetailsComplete = onGetUserDetailsComplete;
         this.onGetClassJoinCountComplete = onGetClassJoinCountComplete;
+        this.onGetClassCreateCountComplete = onGetClassCreateCountComplete;
+        this.onGetListStringDataCountComplete = onGetListStringDataCountComplete;
 
         reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -57,6 +69,7 @@ public class AdministrationRepository {
         classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
 
         userDetailsReference = FirebaseFirestore.getInstance().collection("UserData");
+        classReference = FirebaseFirestore.getInstance().collection("Main").document("Class");
     }
 
     public void getMimeTypesForGroupChats() {
@@ -98,9 +111,31 @@ public class AdministrationRepository {
         });
     }
 
+    public void getGradeList() {
+        List<String> gradeList = new ArrayList<>();
+        gradeList.add("Select grade");
+        reference.child("Lists").child("GradeList").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            gradeList.add(value);
+                    }
+                    onGetListStringDataCountComplete.onGetListStringDataSuccess(gradeList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetListStringDataCountComplete.onFailed(error.toString());
+            }
+        });
+    }
+
     public void getAllUserList() {
         List<UserData> data = new ArrayList<>();
-
         userDataReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -108,10 +143,16 @@ public class AdministrationRepository {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         UserData userData = snapshot1.getValue(UserData.class);
                         if (userData != null) {
-                            data.add(userData);
+                            userDetailsReference.document(userData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                if (queryDocumentSnapshots.exists()) {
+                                    userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                    userData.setUserDetails(userDetails);
+                                }
+                                data.add(userData);
+                                onGetUserListComplete.onGetUserListSuccess(data);
+                            });
                         }
                     }
-                    onGetUserListComplete.onGetUserListSuccess(data);
                 }
             }
 
@@ -136,9 +177,15 @@ public class AdministrationRepository {
                                 if (snapshot.exists()) {
                                     UserData UserData = snapshot.getValue(UserData.class);
                                     if (UserData != null) {
-                                        data.add(UserData);
+                                        userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                            if (queryDocumentSnapshots.exists()) {
+                                                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                                UserData.setUserDetails(userDetails);
+                                            }
+                                            data.add(UserData);
+                                            onGetUserListComplete.onGetUserListSuccess(data);
+                                        });
                                     }
-                                    onGetUserListComplete.onGetUserListSuccess(data);
                                 }
                             }
 
@@ -148,7 +195,6 @@ public class AdministrationRepository {
                             }
                         });
                     }
-                    onGetUserListComplete.onGetUserListSuccess(data);
                 }
             }
 
@@ -173,9 +219,15 @@ public class AdministrationRepository {
                                 if (snapshot.exists()) {
                                     UserData UserData = snapshot.getValue(UserData.class);
                                     if (UserData != null) {
-                                        data.add(UserData);
+                                        userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                            if (queryDocumentSnapshots.exists()) {
+                                                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                                UserData.setUserDetails(userDetails);
+                                            }
+                                            data.add(UserData);
+                                            onGetUserListComplete.onGetUserListSuccess(data);
+                                        });
                                     }
-                                    onGetUserListComplete.onGetUserListSuccess(data);
                                 }
                             }
 
@@ -185,7 +237,6 @@ public class AdministrationRepository {
                             }
                         });
                     }
-                    onGetUserListComplete.onGetUserListSuccess(data);
                 }
             }
 
@@ -216,12 +267,25 @@ public class AdministrationRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     onGetClassJoinCountComplete.onGetClassJoinCountSuccess(snapshot.getChildrenCount());
-                } else onGetClassJoinCountComplete.onFailed("No data available");
+                } else onGetClassJoinCountComplete.onGetClassJoinCountSuccess(0);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 onGetClassJoinCountComplete.onFailed(error.toString());
+            }
+        });
+    }
+
+    public void getCreatedClassCount(String userID) {
+        com.google.firebase.firestore.Query query1 = classReference.collection("ClassInfo").whereEqualTo("teacher_info", userID);
+        AggregateQuery countQuery = query1.count();
+        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                AggregateQuerySnapshot snapshot1 = task1.getResult();
+                onGetClassCreateCountComplete.onGetClassCreateCountSuccess(snapshot1.getCount());
+            } else {
+                onGetClassCreateCountComplete.onFailed(task1.getException().toString());
             }
         });
     }
@@ -252,6 +316,18 @@ public class AdministrationRepository {
 
     public interface OnGetClassJoinCountComplete {
         void onGetClassJoinCountSuccess(long count);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetClassCreateCountComplete {
+        void onGetClassCreateCountSuccess(long count);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetListStringDataCountComplete {
+        void onGetListStringDataSuccess(List<String> data);
 
         void onFailed(String error);
     }

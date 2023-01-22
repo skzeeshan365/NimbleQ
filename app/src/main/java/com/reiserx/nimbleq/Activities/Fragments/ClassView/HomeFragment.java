@@ -77,6 +77,12 @@ public class HomeFragment extends Fragment implements MenuProvider {
         binding.textView9.setVisibility(View.GONE);
         binding.progButton.setVisibility(View.GONE);
 
+        buttonDesign = new ButtonDesign(getContext());
+        buttonDesign.setButtonOutline(binding.button8);
+
+        buttonDesign.setButtonOutline(binding.rateClassBtn);
+        binding.rateClassBtn.setVisibility(View.GONE);
+
         userDataViewModel.getUserData().observe(getViewLifecycleOwner(), userData -> {
             binding.classTeacher.setText(userData.getUserName());
 
@@ -103,7 +109,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
                     alert.show();
                 });
             } else {
-                buttonDesign.setButtonOutline(binding.rateClassBtn);
                 classViewModel.getClassState(user.getUid(), id);
                 classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
                     if (state == 2) {
@@ -149,9 +154,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
         user = auth.getCurrentUser();
 
         id = getActivity().getIntent().getExtras().getString("classID");
-
-        buttonDesign = new ButtonDesign(getContext());
-        buttonDesign.setButtonOutline(binding.button8);
 
         fetchClass();
 

@@ -73,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
             initializeZoomSdk(this, zoomCredentials);
 
             binding.imageView17.setOnClickListener(view -> {
+                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                startActivity(intent);
+            });
+
+            binding.textView34.setOnClickListener(view -> {
                 Intent intent = new Intent(MainActivity.this, AdministrationActivity.class);
                 startActivity(intent);
             });

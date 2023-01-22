@@ -14,7 +14,8 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnGetFileEnabledComplete,
         AdministrationRepository.OnGetUserListComplete,
         AdministrationRepository.OnGetUserDetailsComplete,
-        AdministrationRepository.OnGetClassJoinCountComplete{
+        AdministrationRepository.OnGetClassJoinCountComplete,
+        AdministrationRepository.OnGetClassCreateCountComplete, AdministrationRepository.OnGetListStringDataCountComplete{
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -22,6 +23,8 @@ public class AdministrationViewModel extends ViewModel implements
     private final MutableLiveData<List<UserData>> getUserListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<userDetails> userDetailsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> classJoinCountMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> classCreateCountMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> listStringMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userListErrorMutableLiveData = new MutableLiveData<>();
@@ -48,6 +51,14 @@ public class AdministrationViewModel extends ViewModel implements
         return classJoinCountMutableLiveData;
     }
 
+    public MutableLiveData<Long> getClassCreateCountMutableLiveData() {
+        return classCreateCountMutableLiveData;
+    }
+
+    public MutableLiveData<List<String>> getListStringMutableLiveData() {
+        return listStringMutableLiveData;
+    }
+
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }
@@ -57,7 +68,7 @@ public class AdministrationViewModel extends ViewModel implements
     }
 
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this, this,this, this, this);
+        firebaseRepo = new AdministrationRepository(this,this, this, this,this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -86,6 +97,14 @@ public class AdministrationViewModel extends ViewModel implements
 
     public void getClassJoinCount(String userID) {
         firebaseRepo.getClassJoinCount(userID);
+    }
+
+    public void getCreatedClassCount(String userID) {
+        firebaseRepo.getCreatedClassCount(userID);
+    }
+
+    public void getGradeList() {
+        firebaseRepo.getGradeList();
     }
 
     @Override
@@ -121,6 +140,16 @@ public class AdministrationViewModel extends ViewModel implements
     @Override
     public void onGetClassJoinCountSuccess(long count) {
         classJoinCountMutableLiveData.setValue(count);
+    }
+
+    @Override
+    public void onGetClassCreateCountSuccess(long count) {
+        classCreateCountMutableLiveData.setValue(count);
+    }
+
+    @Override
+    public void onGetListStringDataSuccess(List<String> data) {
+        listStringMutableLiveData.setValue(data);
     }
 
     @Override
