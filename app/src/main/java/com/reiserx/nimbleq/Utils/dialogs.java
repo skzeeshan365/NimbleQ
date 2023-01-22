@@ -725,7 +725,7 @@ public class dialogs {
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference().child("Data").child("Main").child("UserType");
-                Query query = reference.orderByChild("teacher");
+                Query query = reference.orderByChild("teacher").equalTo(true);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {

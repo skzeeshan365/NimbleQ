@@ -11,13 +11,50 @@
         android:label="Home"
         tools:layout="@layout/fragment_admin_home">
         <action
-            android:id="@+id/action_HomeFragment_to_Second2Fragment"
-            app:destination="@id/Second2Fragment" />
+            android:id="@+id/action_HomeFragment_to_FragmentUserList"
+            app:destination="@id/FragmentUserList" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentTeacherList"
+            app:destination="@id/FragmentTeacherList" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentStudentList"
+            app:destination="@id/FragmentStudentList" />
     </fragment>
+
     <fragment
-        android:id="@+id/Second2Fragment"
-        android:name="com.reiserx.nimbleq.Activities.Administration.Second2Fragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second2">
+        android:id="@+id/FragmentUserList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentUserList"
+        android:label="User list"
+        tools:layout="@layout/fragment_userlist_admin">
+        <action
+            android:id="@+id/action_FragmentUserList_to_FragmentUserDetails"
+            app:destination="@id/FragmentUserDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentTeacherList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentTeacherList"
+        android:label="Teacher list"
+        tools:layout="@layout/fragment_userlist_admin">
+        <action
+            android:id="@+id/action_FragmentTeacherList_to_FragmentUserDetails"
+            app:destination="@id/FragmentUserDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentStudentList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentStudentList"
+        android:label="Student list"
+        tools:layout="@layout/fragment_userlist_admin">
+        <action
+            android:id="@+id/action_FragmentStudentList_to_FragmentUserDetails"
+            app:destination="@id/FragmentUserDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentUserDetails"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentUserDetail"
+        android:label="User details"
+        tools:layout="@layout/fragment_user_detail">
     </fragment>
 </navigation>

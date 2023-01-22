@@ -118,27 +118,6 @@ public class UserDataRepository {
         });
     }
 
-    public void getTeacherList() {
-        List<String> list = new ArrayList<>();
-        Query query = userTypeReference.orderByChild("teacher");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                        list.add(snapshot1.getKey());
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
     public void getUserDetails(String userID) {
         collectionReference.document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (queryDocumentSnapshots.exists()) {

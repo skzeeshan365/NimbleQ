@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
+import com.reiserx.nimbleq.Models.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,5 +35,18 @@ public class SharedPreferenceClass {
 
     public DoubtsModel getDoubtInfo() {
         return gson.fromJson(save.getString("DOUBT_INFO", null), DoubtsModel.class);
+    }
+
+    public void setUserInfo(UserData model) {
+        SharedPreferences.Editor myEdit = save.edit();
+
+        String json = gson.toJson(model);
+
+        myEdit.putString("USER_INFO", json);
+        myEdit.apply();
+    }
+
+    public UserData getUserInfo() {
+        return gson.fromJson(save.getString("USER_INFO", null), UserData.class);
     }
 }

@@ -76,10 +76,6 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         firebaseRepo.getUserDetails(userID);
     }
 
-    public void getTeacherList() {
-        firebaseRepo.getTeacherList();
-    }
-
     public void getAllJoinedClasses(String userID) {
         firebaseRepo.getAllJoinedClasses(userID);
     }

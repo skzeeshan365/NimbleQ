@@ -7,37 +7,46 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.reiserx.nimbleq.Activities.Doubts.FirstFragment;
+import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
+import com.reiserx.nimbleq.Adapters.slotsAdapter;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.FragmentAdminHomeBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HomeFragment extends Fragment {
 
     private FragmentAdminHomeBinding binding;
 
+    HomeAdapter homeAdapter;
+    List<String> data;
+
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentAdminHomeBinding.inflate(inflater, container, false);
-        return binding.getRoot();
 
+        data = new ArrayList<>();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.recycler.setLayoutManager(layoutManager);
+        homeAdapter = new HomeAdapter(getContext(), data, NavHostFragment.findNavController(HomeFragment.this));
+        binding.recycler.setAdapter(homeAdapter);
+
+        return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(HomeFragment.this)
-                        .navigate(R.id.action_HomeFragment_to_Second2Fragment);
-            }
-        });
+        data.add("User list");
+        data.add("Student list");
+        data.add("Teacher list");
     }
 
     @Override
