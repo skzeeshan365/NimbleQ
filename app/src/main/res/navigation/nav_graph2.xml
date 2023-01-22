@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_HomeFragment_to_FragmentStudentList"
             app:destination="@id/FragmentStudentList" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentUpdateGradeList"
+            app:destination="@id/FragmentUpdateGradeList" />
     </fragment>
 
     <fragment
@@ -76,5 +79,12 @@
         android:name="com.reiserx.nimbleq.Activities.Administration.FragmentCreatedClassList"
         android:label="Created class list"
         tools:layout="@layout/fragment_userlist_admin">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentUpdateGradeList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentUpdateGradeList"
+        android:label="Grade list"
+        tools:layout="@layout/fragment_update_grade_list">
     </fragment>
 </navigation>

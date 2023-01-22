@@ -3,6 +3,7 @@ package com.reiserx.nimbleq.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Repository.AdministrationRepository;
@@ -15,7 +16,10 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnGetUserListComplete,
         AdministrationRepository.OnGetUserDetailsComplete,
         AdministrationRepository.OnGetClassJoinCountComplete,
-        AdministrationRepository.OnGetClassCreateCountComplete, AdministrationRepository.OnGetListStringDataCountComplete{
+        AdministrationRepository.OnGetClassCreateCountComplete,
+        AdministrationRepository.OnGetListStringDataCountComplete,
+        AdministrationRepository.OnGetAdminModelListComplete,
+        AdministrationRepository.OnUpdateModelListComplete{
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -25,6 +29,8 @@ public class AdministrationViewModel extends ViewModel implements
     private final MutableLiveData<Long> classJoinCountMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> classCreateCountMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> listStringMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<AdminListModel>> adminModelListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<AdminListModel> adminListModelMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userListErrorMutableLiveData = new MutableLiveData<>();
@@ -59,6 +65,14 @@ public class AdministrationViewModel extends ViewModel implements
         return listStringMutableLiveData;
     }
 
+    public MutableLiveData<AdminListModel> getAdminListModelMutableLiveData() {
+        return adminListModelMutableLiveData;
+    }
+
+    public MutableLiveData<List<AdminListModel>> getAdminModelListMutableLiveData() {
+        return adminModelListMutableLiveData;
+    }
+
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }
@@ -68,7 +82,7 @@ public class AdministrationViewModel extends ViewModel implements
     }
 
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this,this, this, this,this, this, this);
+        firebaseRepo = new AdministrationRepository(this,this, this,this, this, this,this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -105,6 +119,14 @@ public class AdministrationViewModel extends ViewModel implements
 
     public void getGradeList() {
         firebaseRepo.getGradeList();
+    }
+
+    public void getGradeModelList() {
+        firebaseRepo.getGradeModelList();
+    }
+
+    public void updateGradeModelList(String grade) {
+        firebaseRepo.updateGradeModelList(grade);
     }
 
     @Override
@@ -150,6 +172,16 @@ public class AdministrationViewModel extends ViewModel implements
     @Override
     public void onGetListStringDataSuccess(List<String> data) {
         listStringMutableLiveData.setValue(data);
+    }
+
+    @Override
+    public void onGetAdminModelListSuccess(List<AdminListModel> data) {
+        adminModelListMutableLiveData.setValue(data);
+    }
+
+    @Override
+    public void onUpdateModelListSuccess(AdminListModel adminListModel) {
+        adminListModelMutableLiveData.setValue(adminListModel);
     }
 
     @Override

@@ -39,8 +39,9 @@
         android:text="TextView"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/user_phone_txt"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/user_phone_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_phone_txt" />
+        app:layout_constraintTop_toBottomOf="@+id/user_last_login_txt" />
 
     <TextView
         android:id="@+id/user_grade_txt"
@@ -127,5 +128,27 @@
         app:layout_constraintEnd_toEndOf="@+id/joined_class_btn"
         app:layout_constraintStart_toStartOf="@+id/joined_class_btn"
         app:layout_constraintTop_toBottomOf="@+id/joined_class_btn" />
+
+    <TextView
+        android:id="@+id/user_created_txt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/user_phone_txt"
+        app:layout_constraintStart_toStartOf="@+id/user_phone_txt"
+        app:layout_constraintTop_toBottomOf="@+id/user_phone_txt" />
+
+    <TextView
+        android:id="@+id/user_last_login_txt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/user_created_txt"
+        app:layout_constraintStart_toStartOf="@+id/user_created_txt"
+        app:layout_constraintTop_toBottomOf="@+id/user_created_txt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

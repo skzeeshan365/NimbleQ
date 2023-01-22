@@ -29,6 +29,8 @@ import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.ActivityPhoneAuthBinding;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -113,6 +115,9 @@ public class PhoneAuthActivity extends AppCompatActivity {
                         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
                         userDataViewModel.updateFCMToken(user.getUid());
                         binding.continueBtn.setOnClickListener(view -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
+                            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
                             buttonDesign.buttonFill(binding.continueBtn);
                             dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
                             dialogs.selectStudentOrTeacherForLogin(auth.getUid());
@@ -137,7 +142,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         fcm.getToken().addOnSuccessListener(s -> {
             reference = database.getReference().child("Data").child("UserData").child(auth.getUid());
             FirebaseUser user = auth.getCurrentUser();
-            UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), "null", s);
+            UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), "null", s, user.getMetadata().getCreationTimestamp(), user.getMetadata().getLastSignInTimestamp());
             reference.setValue(userData).addOnSuccessListener(unused -> {
                 binding.continueBtn.setOnClickListener(view -> {
                     Intent intent = new Intent(PhoneAuthActivity.this, RegistrationActivity.class);

@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.marlonlom.utilities.timeago.TimeAgo;
+import com.google.firebase.auth.FirebaseAuth;
 import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
@@ -51,6 +53,8 @@ public class FragmentUserDetail extends Fragment {
             binding.userNameTxt.setText("Username: "+userData.getUserName());
             binding.useridTxt.setText("UserID: "+userData.getUid());
             binding.userPhoneTxt.setText("Phone: "+userData.getPhoneNumber());
+            binding.userCreatedTxt.setText("Created on: "+ TimeAgo.using(userData.getCreated_timestamp()));
+            binding.userLastLoginTxt.setText("Last login: "+ TimeAgo.using(userData.getLastLogin_timestamp()));
 
             binding.userSchoolTxt.setText("School: "+userDetails.getSchoolName());
             binding.userGradeTxt.setText("Grade: "+userDetails.getGrade());

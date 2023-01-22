@@ -47,6 +47,7 @@ public class HomeFragment extends Fragment {
         data.add("User list");
         data.add("Student list");
         data.add("Teacher list");
+        data.add("Grade list");
     }
 
     @Override

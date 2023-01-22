@@ -5,6 +5,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,6 +21,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.mimeTypesModel;
@@ -26,6 +29,7 @@ import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Utils.MapComparator;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,8 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetClassJoinCountComplete onGetClassJoinCountComplete;
     private final AdministrationRepository.OnGetClassCreateCountComplete onGetClassCreateCountComplete;
     private final AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete;
+    private final AdministrationRepository.OnGetAdminModelListComplete onGetAdminModelListComplete;
+    private final AdministrationRepository.OnUpdateModelListComplete onUpdateModelListComplete;
 
     DatabaseReference reference;
     DatabaseReference userDataReference;
@@ -53,7 +59,9 @@ public class AdministrationRepository {
                                     AdministrationRepository.OnGetUserDetailsComplete onGetUserDetailsComplete,
                                     AdministrationRepository.OnGetClassJoinCountComplete onGetClassJoinCountComplete,
                                     AdministrationRepository.OnGetClassCreateCountComplete onGetClassCreateCountComplete,
-                                    AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete) {
+                                    AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete,
+                                    AdministrationRepository.OnGetAdminModelListComplete onGetAdminModelListComplete,
+                                    AdministrationRepository.OnUpdateModelListComplete onUpdateModelListComplete) {
 
         this.onGetMimetypesCompleted = onGetMimetypesCompleted;
         this.onGetFileEnabledComplete = onGetFileEnabledComplete;
@@ -62,6 +70,8 @@ public class AdministrationRepository {
         this.onGetClassJoinCountComplete = onGetClassJoinCountComplete;
         this.onGetClassCreateCountComplete = onGetClassCreateCountComplete;
         this.onGetListStringDataCountComplete = onGetListStringDataCountComplete;
+        this.onGetAdminModelListComplete = onGetAdminModelListComplete;
+        this.onUpdateModelListComplete = onUpdateModelListComplete;
 
         reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -131,6 +141,39 @@ public class AdministrationRepository {
             public void onCancelled(@NonNull DatabaseError error) {
                 onGetListStringDataCountComplete.onFailed(error.toString());
             }
+        });
+    }
+
+    public void getGradeModelList() {
+        List<AdminListModel> gradeList = new ArrayList<>();
+        reference.child("Lists").child("GradeList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    gradeList.clear();
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            gradeList.add(new AdminListModel(value, reference.child("Lists").child("GradeList").child(snapshot1.getKey())));
+                    }
+                    onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetAdminModelListComplete.onFailed(error.toString());
+            }
+        });
+    }
+
+    public void updateGradeModelList(String grade) {
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+        reference.child("Lists").child("GradeList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
+            onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("GradeList").child(String.valueOf(currentTime))));
+        }).addOnFailureListener(e -> {
+            onUpdateModelListComplete.onFailed(e.toString());
         });
     }
 
@@ -328,6 +371,18 @@ public class AdministrationRepository {
 
     public interface OnGetListStringDataCountComplete {
         void onGetListStringDataSuccess(List<String> data);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetAdminModelListComplete {
+        void onGetAdminModelListSuccess(List<AdminListModel> data);
+
+        void onFailed(String error);
+    }
+
+    public interface OnUpdateModelListComplete {
+        void onUpdateModelListSuccess(AdminListModel adminListModel);
 
         void onFailed(String error);
     }
