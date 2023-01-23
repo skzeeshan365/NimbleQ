@@ -1,7 +1,6 @@
 package com.reiserx.nimbleq.Activities.Fragments.ClassView;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -17,19 +16,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.reiserx.nimbleq.Activities.RateAndFeedbackActivity;
+import com.reiserx.nimbleq.Activities.Feedbacks.RateAndFeedbackActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
-import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
+import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
@@ -299,6 +298,10 @@ public class HomeFragment extends Fragment implements MenuProvider {
             alert.setPositiveButton("leave", (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, teacherData.getFCM_TOKEN(), false, getContext()));
             alert.setNegativeButton("cancel", null);
             alert.show();
+        } else if (menuItem.getItemId() == R.id.feedbacks_menuitem) {
+            SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+            sharedPreferenceClass.setClassID(id);
+            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_navigation_home_to_FragmentFeedback);
         }
         return false;
     }

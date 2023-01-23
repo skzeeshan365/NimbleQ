@@ -7,27 +7,24 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.reiserx.nimbleq.Adapters.classListAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
+import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
 
-public class FragmentCreatedClassList extends Fragment {
+public class FragmentClassListByRating extends Fragment {
 
-    private com.reiserx.nimbleq.databinding.FragmentClassListBinding binding;
+    private FragmentClassListBinding binding;
 
     classListAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = com.reiserx.nimbleq.databinding.FragmentClassListBinding.inflate(inflater, container, false);
+        binding = FragmentClassListBinding.inflate(inflater, container, false);
 
         binding.recycler.setVisibility(View.GONE);
         binding.progHolder.setVisibility(View.VISIBLE);
@@ -46,11 +43,9 @@ public class FragmentCreatedClassList extends Fragment {
 
         classViewModel viewModel = new ViewModelProvider(this).get(classViewModel.class);
 
-        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
-        UserData userData = sharedPreferenceClass.getUserInfo();
-        viewModel.getClassListForTeacher(userData.getUid());
+        viewModel.getClassRequestsByRating();
         viewModel.getClassList().observe(getViewLifecycleOwner(), userDataList -> {
-            Log.d(CONSTANTS.TAG2, String.valueOf(userDataList.size()));
+
             adapter.setClassList(userDataList);
             binding.recycler.setAdapter(adapter);
             adapter.notifyDataSetChanged();

@@ -49,4 +49,24 @@ public class SharedPreferenceClass {
     public UserData getUserInfo() {
         return gson.fromJson(save.getString("USER_INFO", null), UserData.class);
     }
+
+    public void setClassID(String classID) {
+        SharedPreferences.Editor myEdit = save.edit();
+        myEdit.putString("CLASS_ID", classID);
+        myEdit.apply();
+    }
+
+    public String getClassID() {
+        return save.getString("CLASS_ID", null);
+    }
+
+    public void setUserID(String classID) {
+        SharedPreferences.Editor myEdit = save.edit();
+        myEdit.putString("USER_ID", classID);
+        myEdit.apply();
+    }
+
+    public String getUserID() {
+        return save.getString("USER_ID", null);
+    }
 }

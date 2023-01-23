@@ -14,6 +14,9 @@
             android:name="classID"
             app:argType="string"
             android:defaultValue="null" />
+        <action
+            android:id="@+id/action_navigation_home_to_FragmentFeedback"
+            app:destination="@id/FragmentFeedback" />
     </fragment>
 
     <fragment
@@ -27,4 +30,10 @@
         android:name="com.reiserx.nimbleq.Activities.Fragments.GroupChat.NotificationsFragment"
         android:label="@string/group_chat"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/FragmentFeedback"
+        android:name="com.reiserx.nimbleq.Activities.Feedbacks.FragmentFeedbacks"
+        android:label="Ratings"
+        tools:layout="@layout/fragment_class_list" />
 </navigation>

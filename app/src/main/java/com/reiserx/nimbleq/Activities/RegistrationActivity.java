@@ -15,10 +15,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.ActivityRegistrationBinding;
 
@@ -31,12 +33,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     ActivityRegistrationBinding binding;
 
-    String[] gradeList;
+    List<String> gradeList;
     ArrayList<String> stateList;
     ArrayList<String> cityList;
 
@@ -226,15 +229,20 @@ public class RegistrationActivity extends AppCompatActivity {
 
         jsonString = loadJSONFile();
 
-        gradeList = new String[]{"Select grade", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5",
-                "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10"};
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+
+        viewModel.getGradeList();
+        viewModel.getListStringMutableLiveData().observe(this, models -> {
+
+            gradeList = models;
+            ArrayAdapter<String> gradesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gradeList);
+            gradesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.gradeSpinner.setAdapter(gradesAdapter);
+            binding.gradeSpinner.setOnItemSelectedListener(new gradesClass());
+
+        });
 
         getStates(jsonString);
-
-        ArrayAdapter<String> gradesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gradeList);
-        gradesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.gradeSpinner.setAdapter(gradesAdapter);
-        binding.gradeSpinner.setOnItemSelectedListener(new gradesClass());
 
         if (stateList != null) {
             ArrayAdapter<String> statesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, stateList);

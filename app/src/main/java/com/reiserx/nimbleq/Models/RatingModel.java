@@ -2,17 +2,20 @@ package com.reiserx.nimbleq.Models;
 
 public class RatingModel {
     int rating;
-    String userID, feedback;
+    String userID, feedback, name;
+    long timeStamp;
 
-    public RatingModel(int rating, String userID, String feedback) {
+    public RatingModel(int rating, String userID, String feedback, long timeStamp) {
         this.rating = rating;
         this.userID = userID;
         this.feedback = feedback;
+        this.timeStamp = timeStamp;
     }
 
-    public RatingModel(int rating, String userID) {
+    public RatingModel(int rating, String userID, long timeStamp) {
         this.rating = rating;
         this.userID = userID;
+        this.timeStamp = timeStamp;
     }
 
     public RatingModel() {
@@ -40,5 +43,21 @@ public class RatingModel {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

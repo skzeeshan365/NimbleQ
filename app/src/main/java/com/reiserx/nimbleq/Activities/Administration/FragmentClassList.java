@@ -15,19 +15,25 @@ import android.view.ViewGroup;
 import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
+import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
+import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
-public class FragmentCreatedClassList extends Fragment {
+import java.util.Collections;
+import java.util.Comparator;
 
-    private com.reiserx.nimbleq.databinding.FragmentClassListBinding binding;
+public class FragmentClassList extends Fragment {
+
+    private FragmentClassListBinding binding;
 
     classListAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = com.reiserx.nimbleq.databinding.FragmentClassListBinding.inflate(inflater, container, false);
+        binding = FragmentClassListBinding.inflate(inflater, container, false);
 
         binding.recycler.setVisibility(View.GONE);
         binding.progHolder.setVisibility(View.VISIBLE);
@@ -46,11 +52,8 @@ public class FragmentCreatedClassList extends Fragment {
 
         classViewModel viewModel = new ViewModelProvider(this).get(classViewModel.class);
 
-        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
-        UserData userData = sharedPreferenceClass.getUserInfo();
-        viewModel.getClassListForTeacher(userData.getUid());
+        viewModel.getClassRequestsByDemand();
         viewModel.getClassList().observe(getViewLifecycleOwner(), userDataList -> {
-            Log.d(CONSTANTS.TAG2, String.valueOf(userDataList.size()));
             adapter.setClassList(userDataList);
             binding.recycler.setAdapter(adapter);
             adapter.notifyDataSetChanged();

@@ -1,10 +1,16 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -15,6 +21,7 @@ import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Adapters.requestClassAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.classModel;
+import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
@@ -28,7 +35,7 @@ import com.reiserx.nimbleq.databinding.ActivityClassListBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassListActivity extends AppCompatActivity {
+public class ClassListActivity extends AppCompatActivity implements MenuProvider {
 
     ActivityClassListBinding binding;
 
@@ -41,6 +48,8 @@ public class ClassListActivity extends AppCompatActivity {
     SnackbarTop snackbarTop;
 
     classViewModel classViewModel;
+
+    subjectAndTimeSlot subjectAndTimeSlot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +143,7 @@ public class ClassListActivity extends AppCompatActivity {
 
                 slotsViewModel.getSubjectForStudents(user.getUid());
                 slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
+                    this.subjectAndTimeSlot = subjectAndTimeSlot;
                     classViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.classViewModel.class);
                     classViewModel.getClassList(subjectAndTimeSlot, user.getUid());
                     classViewModel.getClassList().observe(this, classModelList -> {
@@ -162,6 +172,8 @@ public class ClassListActivity extends AppCompatActivity {
                         binding.progButton.setVisibility(View.VISIBLE);
                         buttonDesign.setButtonOutline(binding.progButton);
                     });
+                    removeMenuProvider(this);
+                    addMenuProvider(this, this);
                     requestClass(subjectAndTimeSlot.getSubject(), subjectAndTimeSlot.getTopic(), subjectAndTimeSlot.getTimeSlot());
                 });
             } else if (dataType == 1) {
@@ -224,5 +236,20 @@ public class ClassListActivity extends AppCompatActivity {
             dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
             dialogs.requestClass(subject, topic, timeslot, user.getUid());
         });
+    }
+
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.request_class_menu, menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.request_class_menuitem) {
+            if (subjectAndTimeSlot != null) {
+                requestClass(subjectAndTimeSlot.getSubject(), subjectAndTimeSlot.getTopic(), subjectAndTimeSlot.getTimeSlot());
+            }
+        }
+        return false;
     }
 }

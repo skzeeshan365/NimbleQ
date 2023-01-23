@@ -69,6 +69,26 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
                     navController.navigate(R.id.action_HomeFragment_to_FragmentUpdateGradeList);
                 });
                 break;
+            case 4:
+                holder.binding.getRoot().setOnClickListener(view -> {
+                    navController.navigate(R.id.action_HomeFragment_to_FragmentSubjectList);
+                });
+                break;
+            case 5:
+                holder.binding.getRoot().setOnClickListener(view -> {
+                    navController.navigate(R.id.action_HomeFragment_to_FragmentSlotList);
+                });
+                break;
+            case 6:
+                holder.binding.getRoot().setOnClickListener(view -> {
+                    navController.navigate(R.id.action_HomeFragment_to_FragmentClassListByDemand);
+                });
+                break;
+            case 7:
+                holder.binding.getRoot().setOnClickListener(view -> {
+                    navController.navigate(R.id.action_HomeFragment_to_FragmentClassListByRating);
+                });
+                break;
         }
     }
 

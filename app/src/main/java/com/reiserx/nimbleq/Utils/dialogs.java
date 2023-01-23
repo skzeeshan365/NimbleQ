@@ -32,11 +32,15 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.reiserx.nimbleq.Activities.ClassActivity;
 import com.reiserx.nimbleq.Activities.MainActivity;
 import com.reiserx.nimbleq.Adapters.TeacherListSpinnerAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
+import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
@@ -49,7 +53,7 @@ import java.util.Map;
 
 public class dialogs {
     private final Context context;
-    private String[] subjectList, timeSlotsList;
+    private List<String> subjectList, timeSlotsList;
     SnackbarTop snackbarTop;
     DatabaseReference reference;
     subjectAndTimeSlot models;
@@ -57,6 +61,7 @@ public class dialogs {
     ArrayList<UserData> userData;
     UserData requestTeacherData;
     List<subjectAndTimeSlot> list;
+    float rating1, rating2, rating3, rating4, rating5;
 
     public dialogs(Context context, View view) {
         this.context = context;
@@ -240,8 +245,45 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
-        timeSlotsList = new String[]{"Select time slot", "04:00 p.m", "04:45 p.m", "05:30 p.m", "06:15 p.m", "07:00 p.m", "07:45 p.m"};
+        subjectList  = new ArrayList<>();
+        subjectList.add("Select subject");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            subjectList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
+
+        timeSlotsList  = new ArrayList<>();
+        timeSlotsList.add("Select time slot");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            timeSlotsList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
 
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
         subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -298,8 +340,45 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
-        timeSlotsList = new String[]{"Select time slot", "04:00 p.m", "04:45 p.m", "05:30 p.m", "06:15 p.m", "07:00 p.m", "07:45 p.m"};
+        subjectList  = new ArrayList<>();
+        subjectList.add("Select subject");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            subjectList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
+
+        timeSlotsList  = new ArrayList<>();
+        timeSlotsList.add("Select time slot");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            timeSlotsList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
 
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
         subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -357,7 +436,25 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
+        subjectList  = new ArrayList<>();
+        subjectList.add("Select subject");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            subjectList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
 
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
         subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -410,7 +507,25 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
+        subjectList  = new ArrayList<>();
+        subjectList.add("Select subject");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            subjectList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
 
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
         subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -549,7 +664,9 @@ public class dialogs {
         });
 
         open_class.setOnClickListener(view -> {
-
+            Intent intent = new Intent(context, ClassActivity.class);
+            intent.putExtra("classID", classID);
+            context.startActivity(intent);
         });
         alert.setView(mView);
         alert.setCancelable(false);
@@ -576,8 +693,45 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
-        timeSlotsList = new String[]{"Select time slot", "04:00 p.m", "04:45 p.m", "05:30 p.m", "06:15 p.m", "07:00 p.m", "07:45 p.m"};
+        subjectList  = new ArrayList<>();
+        subjectList.add("Select subject");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            subjectList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
+
+        timeSlotsList  = new ArrayList<>();
+        timeSlotsList.add("Select time slot");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            timeSlotsList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
 
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
         subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -640,7 +794,25 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList = new String[]{"Select subject", "English", "Mathematics", "Science", "Computer", "Social science", "Geography", "History", "Hindi", "Marathi"};
+        subjectList  = new ArrayList<>();
+        subjectList.add("Select subject");
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            subjectList.add(value);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                snackbarTop.showSnackBar(error.toString(), false);
+            }
+        });
 
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, subjectList);
         subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -723,6 +895,8 @@ public class dialogs {
                 spinner.setAdapter(adapter);
                 spinner.setOnItemSelectedListener(new teacherListListener());
 
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference().child("Data").child("Main").child("UserType");
                 Query query = reference.orderByChild("teacher").equalTo(true);
@@ -737,8 +911,16 @@ public class dialogs {
                                         if (snapshot.exists()) {
                                             UserData UserData = snapshot.getValue(UserData.class);
                                             if (UserData != null) {
-                                                teacherList.add(UserData.getUserName());
-                                                userData.add(UserData);
+                                                firestore.collection("Main").document("Class").collection("Ratings").document("TeacherRating").collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        QuerySnapshot ratingSnapshot = task1.getResult();
+                                                        if (ratingSnapshot != null) {
+                                                            UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                                                        }
+                                                        teacherList.add(UserData.getUserName());
+                                                        userData.add(UserData);
+                                                    }
+                                                });
                                             }
                                         }
                                     }
@@ -817,5 +999,29 @@ public class dialogs {
         public void onNothingSelected(AdapterView<?> adapterView) {
 
         }
+    }
+
+    float calculateRating(List<RatingModel> ratingModelList) {
+        rating1 = rating2 = rating3 = rating4 = rating5 = 0;
+        for (RatingModel ratingModel : ratingModelList) {
+            switch (ratingModel.getRating()) {
+                case 1:
+                    rating1++;
+                    break;
+                case 2:
+                    rating2++;
+                    break;
+                case 3:
+                    rating3++;
+                    break;
+                case 4:
+                    rating4++;
+                    break;
+                case 5:
+                    rating5++;
+                    break;
+            }
+        }
+        return (5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1) / (rating5 + rating4 + rating3 + rating2 + rating1);
     }
 }

@@ -22,6 +22,18 @@
         <action
             android:id="@+id/action_HomeFragment_to_FragmentUpdateGradeList"
             app:destination="@id/FragmentUpdateGradeList" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentSubjectList"
+            app:destination="@id/FragmentSubjectList" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentSlotList"
+            app:destination="@id/FragmentSlotList" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentClassListByDemand"
+            app:destination="@id/FragmentClassListByDemand" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentClassListByRating"
+            app:destination="@id/FragmentClassListByRating" />
     </fragment>
 
     <fragment
@@ -65,6 +77,9 @@
         <action
             android:id="@+id/action_FragmentUserDetails_to_FragmentCreateClassList"
             app:destination="@id/FragmentCreateClassList" />
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_FragmentFeedbacksForTeacher"
+            app:destination="@id/FragmentFeedbacksForTeacher" />
     </fragment>
 
     <fragment
@@ -86,5 +101,40 @@
         android:name="com.reiserx.nimbleq.Activities.Administration.FragmentUpdateGradeList"
         android:label="Grade list"
         tools:layout="@layout/fragment_update_grade_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentSubjectList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentSubjectList"
+        android:label="Subject list"
+        tools:layout="@layout/fragment_update_grade_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentSlotList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentTimeSlots"
+        android:label="Time slot list"
+        tools:layout="@layout/fragment_update_grade_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentClassListByDemand"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentClassList"
+        android:label="Class list by demand"
+        tools:layout="@layout/fragment_class_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentClassListByRating"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentClassListByRating"
+        android:label="Class list by rating"
+        tools:layout="@layout/fragment_class_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentFeedbacksForTeacher"
+        android:name="com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListTeacher"
+        android:label="Teacher rating"
+        tools:layout="@layout/fragment_class_list">
     </fragment>
 </navigation>

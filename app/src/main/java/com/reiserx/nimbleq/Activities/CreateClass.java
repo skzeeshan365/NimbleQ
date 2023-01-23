@@ -20,15 +20,19 @@ import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityCreateClassBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateClass extends AppCompatActivity {
 
     ActivityCreateClassBinding binding;
 
-    String[] gradeList;
+    List<String> gradeList;
 
     FirebaseAuth auth;
     FirebaseFirestore firestore;
@@ -62,12 +66,16 @@ public class CreateClass extends AppCompatActivity {
         binding.subjectNameTxt.setText(subject);
         binding.topicNameEdittext.setText(topic);
 
-        gradeList = new String[]{"Select grade", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5",
-                "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10"};
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
 
-        ArrayAdapter<String> gradesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gradeList);
-        gradesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.gradeSpinnerCreateClass.setAdapter(gradesAdapter);
+        viewModel.getGradeList();
+        viewModel.getListStringMutableLiveData().observe(this, stringList -> {
+            gradeList = stringList;
+
+            ArrayAdapter<String> gradesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gradeList);
+            gradesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.gradeSpinnerCreateClass.setAdapter(gradesAdapter);
+        });
 
         ButtonDesign buttonDesign = new ButtonDesign(this);
         buttonDesign.setButtonOutline(binding.button6);

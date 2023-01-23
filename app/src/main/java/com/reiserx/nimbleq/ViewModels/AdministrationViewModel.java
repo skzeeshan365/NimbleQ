@@ -129,6 +129,22 @@ public class AdministrationViewModel extends ViewModel implements
         firebaseRepo.updateGradeModelList(grade);
     }
 
+    public void getSubjectModelList() {
+        firebaseRepo.getSubjectModelList();
+    }
+
+    public void updateSubjectModelList(String grade) {
+        firebaseRepo.updateSubjectModelList(grade);
+    }
+
+    public void getSlotModelList() {
+        firebaseRepo.getSlotModelList();
+    }
+
+    public void updateSlotModelList(String grade) {
+        firebaseRepo.updateSlotModelList(grade);
+    }
+
     @Override
     public void onSuccess(List<String> mimetypes) {
         mimeTypesListMutableLiveData.setValue(mimetypes);

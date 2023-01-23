@@ -1,4 +1,4 @@
-package com.reiserx.nimbleq.Activities;
+package com.reiserx.nimbleq.Activities.Feedbacks;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -18,6 +18,8 @@ import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityRateAndFeedbackBinding;
+
+import java.util.Calendar;
 
 public class RateAndFeedbackActivity extends AppCompatActivity {
 
@@ -54,12 +56,14 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
             int rating = type.getRating();
 
             binding.button3.setOnClickListener(view -> {
+                Calendar cal = Calendar.getInstance();
+                long currentTime = cal.getTimeInMillis();
                 buttonDesign.buttonFill(binding.button3);
             if (binding.editTextTextPersonName3.getText().toString().trim().equals("")) {
-                RatingModel ratingModel = new RatingModel(rating, userID);
+                RatingModel ratingModel = new RatingModel(rating, userID, currentTime);
                 updateRating(state, ratingModel);
             } else {
-                RatingModel ratingModel = new RatingModel(rating, userID, binding.editTextTextPersonName3.getText().toString().trim());
+                RatingModel ratingModel = new RatingModel(rating, userID, binding.editTextTextPersonName3.getText().toString().trim(), currentTime);
                 updateRating(state, ratingModel);
             }
             });

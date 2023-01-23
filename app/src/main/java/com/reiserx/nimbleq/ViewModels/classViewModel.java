@@ -19,7 +19,9 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         ClassRepository.OnClassJoinStateChanged,
         ClassRepository.OnGetClassListComplete,
         ClassRepository.onGetClassRequestComplete,
-        ClassRepository.OnRatingSubmitted, ClassRepository.OnCreateClassComplete {
+        ClassRepository.OnRatingSubmitted,
+        ClassRepository.OnCreateClassComplete,
+        ClassRepository.OnGetRatingsComplete {
 
     private final MutableLiveData<classModel> classData = new MutableLiveData<>();
     private final MutableLiveData<Integer> classState = new MutableLiveData<>();
@@ -27,6 +29,7 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     private final MutableLiveData<List<ClassRequestModel>> classRequestMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Void> ratingSubmittedMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createClassMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RatingModel>> ratingModelListMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> classListErrorMutableLiveData = new MutableLiveData<>();
@@ -65,8 +68,12 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         return createClassMutableLiveData;
     }
 
+    public MutableLiveData<List<RatingModel>> getRatingModelListMutableLiveData() {
+        return ratingModelListMutableLiveData;
+    }
+
     public classViewModel() {
-        firebaseRepo = new ClassRepository(this, this, this, this, this, this);
+        firebaseRepo = new ClassRepository(this, this,this, this, this, this, this);
     }
 
     public void getClassData(String classID) {
@@ -97,6 +104,14 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.getClassRequestsForStudents(subjectAndTimeSlot, userID);
     }
 
+    public void getClassRequestsByDemand() {
+        firebaseRepo.getClassListByDemand();
+    }
+
+    public void getClassRequestsByRating() {
+        firebaseRepo.getClassListByRating();
+    }
+
     public void setClassRating(String classID, String className, UserData userID, RatingModel ratingModel, String token, Context context) {
         firebaseRepo.setClassRating(classID, className, userID, ratingModel, token, context);
     }
@@ -117,6 +132,14 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.getAllJoinedClasses(userID);
     }
 
+    public void getClassRatings(String classID) {
+        firebaseRepo.getClassRating(classID);
+    }
+
+    public void getTeacherRatings(String userID) {
+        firebaseRepo.getTeacherRating(userID);
+    }
+
     @Override
     public void onSuccess(classModel classModel) {
         classData.setValue(classModel);
@@ -130,6 +153,11 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     @Override
     public void onClassCreated(String classID) {
         createClassMutableLiveData.setValue(classID);
+    }
+
+    @Override
+    public void onGetRatingsSuccess(List<RatingModel> ratingModelList) {
+        ratingModelListMutableLiveData.setValue(ratingModelList);
     }
 
     @Override

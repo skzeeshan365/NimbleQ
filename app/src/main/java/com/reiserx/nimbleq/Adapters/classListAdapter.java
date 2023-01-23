@@ -65,6 +65,8 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
             intent.putExtra("classID", model.getClassID());
             context.startActivity(intent);
         });
+
+        Log.d(CONSTANTS.TAG2, model.getClassName().concat(": ".concat(String.valueOf(model.getStudent_count()))));
     }
 
     @Override

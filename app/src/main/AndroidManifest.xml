@@ -31,6 +31,9 @@
         tools:replace="android:allowBackup"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Feedbacks.FeedbackListActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Administration.AdministrationActivity"
             android:exported="false"
             android:label="@string/title_activity_administration"
@@ -60,7 +63,7 @@
             android:name=".Activities.ClassListActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.RateAndFeedbackActivity"
+            android:name=".Activities.Feedbacks.RateAndFeedbackActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.UserProfileActivity"

@@ -5,6 +5,7 @@ public class classModel {
     String classID;
     String teacher_name;
     float rating;
+    long student_count;
 
     public classModel(String className, String subject, String topic, String classInfo, String grade, String time_slot, String teacher_info, String meetingID, String meetingPassword) {
         this.className = className;
@@ -115,5 +116,13 @@ public class classModel {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public long getStudent_count() {
+        return student_count;
+    }
+
+    public void setStudent_count(long student_count) {
+        this.student_count = student_count;
     }
 }

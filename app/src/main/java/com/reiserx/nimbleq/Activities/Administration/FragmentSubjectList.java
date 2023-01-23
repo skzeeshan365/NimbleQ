@@ -1,40 +1,26 @@
 package com.reiserx.nimbleq.Activities.Administration;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.reiserx.nimbleq.Adapters.Administration.AdminListsAdapter;
-import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.AdminListModel;
-import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Utils.ButtonDesign;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentUpdateGradeListBinding;
-import com.reiserx.nimbleq.databinding.FragmentUserDetailBinding;
 
-public class FragmentUpdateGradeList extends Fragment {
+public class FragmentSubjectList extends Fragment {
 
     private FragmentUpdateGradeListBinding binding;
 
@@ -57,7 +43,7 @@ public class FragmentUpdateGradeList extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
 
-        viewModel.getGradeModelList();
+        viewModel.getSubjectModelList();
         viewModel.getAdminModelListMutableLiveData().observe(getViewLifecycleOwner(), models -> {
             adapter.setData(models);
             binding.recycler.setAdapter(adapter);
@@ -82,14 +68,14 @@ public class FragmentUpdateGradeList extends Fragment {
 
         editText.setHint("Enter a subject name");
 
-        alert.setTitle("Add Grade");
-        alert.setMessage("This grade list will be used throughout the app\nNote. Uppercase and lowercase letters are considered distinct");
+        alert.setTitle("Add Subject");
+        alert.setMessage("This subject list will be used throughout the app\nNote. Uppercase and lowercase letters are considered distinct");
 
         alert.setPositiveButton("Add", (dialogInterface, i) -> {
             if (editText.getText().toString().trim().equals(""))
-                Toast.makeText(getContext(), "Please enter a grade", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please enter a subject", Toast.LENGTH_SHORT).show();
             else {
-                viewModel.updateGradeModelList(editText.getText().toString().trim());
+                viewModel.updateSubjectModelList(editText.getText().toString().trim());
             }
         });
 

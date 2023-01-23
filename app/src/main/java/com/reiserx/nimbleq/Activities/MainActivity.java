@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
+import com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             binding.classTxt3.setText("View your class requests");
             binding.classDesc3.setText("Click to view your class requests");
             //holder 4
+            binding.feedbacksHolder.setVisibility(View.GONE);
 
         } else if (!userTypeClass.isUserLearner()) {
 
@@ -164,6 +166,14 @@ public class MainActivity extends AppCompatActivity {
             binding.classTxt3.setText("View class requests");
             binding.classDesc3.setText("Click to view available class requests");
             //holder 4
+
+            //holder 5
+            binding.feedbacksHolder.setVisibility(View.VISIBLE);
+            binding.feedbacksLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(this, FeedbackListActivity.class);
+                startActivity(intent);
+            });
+            //holder 5
         }
     }
 

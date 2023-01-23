@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.reiserx.nimbleq.Activities.ClassActivity;
 import com.reiserx.nimbleq.Activities.CreateClass;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
@@ -103,8 +105,19 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
                                 alert.setTitle("Class already exist");
                                 alert.setMessage("Class name: ".concat(classModel.getClassName()) + "\nDo you want to open it");
-                                alert.setPositiveButton("open class", null);
-                                alert.setNegativeButton("cancel", null);
+                                alert.setPositiveButton("open class", (dialogInterface, i) -> {
+                                    Intent intent = new Intent(context, ClassActivity.class);
+                                    intent.putExtra("classID", document.getId());
+                                    context.startActivity(intent);
+                                });
+                                alert.setNegativeButton("create class", (dialogInterface, i) -> {
+                                    Intent intent = new Intent(context, CreateClass.class);
+                                    intent.putExtra("subject", model.getSubject());
+                                    intent.putExtra("topic", model.getTopic());
+                                    intent.putExtra("slot", model.getTimeSlot());
+                                    context.startActivity(intent);
+                                });
+                                alert.setNeutralButton("cancel", null);
                                 alert.show();
                             }
                         }

@@ -48,6 +48,10 @@ public class HomeFragment extends Fragment {
         data.add("Student list");
         data.add("Teacher list");
         data.add("Grade list");
+        data.add("Subject list");
+        data.add("Time slot list");
+        data.add("Class list by demand");
+        data.add("Class list by rating");
     }
 
     @Override

@@ -70,6 +70,7 @@ public class FragmentUserDetail extends Fragment {
 
         binding.joinedClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentJoinedClassList));
         binding.createdClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentCreateClassList));
+        binding.feedbacksBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentFeedbacksForTeacher));
     }
 
     @Override

@@ -4,6 +4,7 @@ public class UserData {
     String uid, phoneNumber, userName, FCM_TOKEN;
     long created_timestamp, lastLogin_timestamp;
     userDetails userDetails;
+    float rating;
 
     public UserData(String uid, String phoneNumber, String userName, String FCM_TOKEN, long created_timestamp, long lastLogin_timestamp) {
         this.uid = uid;
@@ -71,5 +72,13 @@ public class UserData {
 
     public void setLastLogin_timestamp(long lastLogin_timestamp) {
         this.lastLogin_timestamp = lastLogin_timestamp;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 }

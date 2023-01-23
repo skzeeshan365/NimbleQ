@@ -1,17 +1,11 @@
 package com.reiserx.nimbleq.Repository;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,15 +24,13 @@ import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
-import com.reiserx.nimbleq.Utils.NotificationUtils;
 import com.reiserx.nimbleq.Utils.Notify;
 import com.reiserx.nimbleq.Utils.TopicSubscription;
-import com.reiserx.nimbleq.databinding.SubjectsLayoutBinding;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public class ClassRepository {
 
@@ -48,6 +40,7 @@ public class ClassRepository {
     private final ClassRepository.onGetClassRequestComplete onGetClassRequestComplete;
     private final ClassRepository.OnRatingSubmitted onRatingSubmitted;
     private final ClassRepository.OnCreateClassComplete onCreateClassComplete;
+    private final ClassRepository.OnGetRatingsComplete onGetRatingsComplete;
 
     private final DocumentReference reference;
     private final DatabaseReference classJoinReference;
@@ -61,7 +54,8 @@ public class ClassRepository {
                            ClassRepository.OnGetClassListComplete OnGetClassListComplete,
                            ClassRepository.onGetClassRequestComplete onGetClassRequestComplete,
                            ClassRepository.OnRatingSubmitted onRatingSubmitted,
-                           ClassRepository.OnCreateClassComplete onCreateClassComplete) {
+                           ClassRepository.OnCreateClassComplete onCreateClassComplete,
+                           ClassRepository.OnGetRatingsComplete onGetRatingsComplete) {
 
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.OnClassJoinStateChanged = OnClassJoinStateChanged;
@@ -69,6 +63,7 @@ public class ClassRepository {
         this.onGetClassRequestComplete = onGetClassRequestComplete;
         this.onRatingSubmitted = onRatingSubmitted;
         this.onCreateClassComplete = onCreateClassComplete;
+        this.onGetRatingsComplete = onGetRatingsComplete;
 
 
         reference = FirebaseFirestore.getInstance().collection("Main").document("Class");
@@ -79,12 +74,12 @@ public class ClassRepository {
     public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = "Class: "+classModel.getClassName()+"\n";
-            String subject = "Subject: "+classModel.getSubject()+"\n";
-            String topic = "Topic: "+classModel.getTopic()+"\n";
-            String schedule = "Time: "+classModel.getTime_slot()+"\n";
-            String teacher = "Teacher: "+teacherName;
-            String message = classNmae+subject+topic+schedule+teacher;
+            String classNmae = "Class: " + classModel.getClassName() + "\n";
+            String subject = "Subject: " + classModel.getSubject() + "\n";
+            String topic = "Topic: " + classModel.getTopic() + "\n";
+            String schedule = "Time: " + classModel.getTime_slot() + "\n";
+            String teacher = "Teacher: " + teacherName;
+            String message = classNmae + subject + topic + schedule + teacher;
 
             notify.createClassPayload("New class has been created based on your slot", message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
             onCreateClassComplete.onClassCreated(reference.getId());
@@ -122,12 +117,12 @@ public class ClassRepository {
 
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = "Class: "+classModel.getClassName()+"\n";
-            String subject = "Subject: "+classModel.getSubject()+"\n";
-            String topic = "Topic: "+classModel.getTopic()+"\n";
-            String schedule = "Time: "+classModel.getTime_slot()+"\n";
-            String teacher = "Teacher: "+teacherName;
-            String message = classNmae+subject+topic+schedule+teacher;
+            String classNmae = "Class: " + classModel.getClassName() + "\n";
+            String subject = "Subject: " + classModel.getSubject() + "\n";
+            String topic = "Topic: " + classModel.getTopic() + "\n";
+            String schedule = "Time: " + classModel.getTime_slot() + "\n";
+            String teacher = "Teacher: " + teacherName;
+            String message = classNmae + subject + topic + schedule + teacher;
 
             notify.createClassPayload("New class has been created based on your slot", message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
             onCreateClassComplete.onClassCreated(reference.getId());
@@ -424,26 +419,90 @@ public class ClassRepository {
         reference.collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating"), token);
+                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating"), token);
             else
-                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating with \nfeedback: "+ratingModel.getFeedback()), token);
+                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating with \nfeedback: " + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> {
             onRatingSubmitted.onFailure(e.toString());
         });
     }
 
+    public void getClassRating(String classID) {
+        List<RatingModel> ratingModelList = new ArrayList<>();
+        reference.collection("Ratings").document("ClassRating").collection(classID).get().addOnSuccessListener(task1 -> {
+            if (!task1.isEmpty()) {
+                for (DocumentSnapshot documentSnapshot : task1.getDocuments()) {
+                    RatingModel ratingModel = documentSnapshot.toObject(RatingModel.class);
+                    if (ratingModel != null) {
+                        userDataReference.child(ratingModel.getUserID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String username = snapshot.getValue(String.class);
+                                    if (username != null) {
+                                        ratingModel.setName(username);
+                                        ratingModelList.add(ratingModel);
+                                    }
+                                }
+                                onGetRatingsComplete.onGetRatingsSuccess(ratingModelList);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                onGetRatingsComplete.onFailure(error.toString());
+                            }
+                        });
+                    }
+                }
+            } else
+                onGetRatingsComplete.onFailure("Ratings not available");
+        }).addOnFailureListener(e -> onGetRatingsComplete.onFailure(e.toString()));
+    }
+
     public void setTeacherRating(String teacherID, UserData userID, RatingModel ratingModel, String token, Context context) {
         reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating"), token);
+                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating"), token);
             else
-                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given "+ratingModel.getRating()+" star rating with \nfeedback: "+ratingModel.getFeedback()), token);
+                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating with \nfeedback: " + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> {
             onRatingSubmitted.onFailure(e.toString());
         });
+    }
+
+    public void getTeacherRating(String userID) {
+        List<RatingModel> ratingModelList = new ArrayList<>();
+        reference.collection("Ratings").document("TeacherRating").collection(userID).get().addOnSuccessListener(task1 -> {
+            if (!task1.isEmpty()) {
+                for (DocumentSnapshot documentSnapshot : task1.getDocuments()) {
+                    RatingModel ratingModel = documentSnapshot.toObject(RatingModel.class);
+                    if (ratingModel != null) {
+                        userDataReference.child(ratingModel.getUserID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String username = snapshot.getValue(String.class);
+                                    if (username != null) {
+                                        ratingModel.setName(username);
+                                        ratingModelList.add(ratingModel);
+                                    }
+                                }
+                                onGetRatingsComplete.onGetRatingsSuccess(ratingModelList);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                onGetRatingsComplete.onFailure(error.toString());
+                            }
+                        });
+                    }
+                }
+            } else
+                onGetRatingsComplete.onFailure("Ratings not available");
+        }).addOnFailureListener(e -> onGetRatingsComplete.onFailure(e.toString()));
     }
 
     float calculateRating(List<RatingModel> ratingModelList) {
@@ -467,7 +526,116 @@ public class ClassRepository {
                     break;
             }
         }
-        return  (5*rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1)/(rating5+rating4+rating3+rating2+rating1);
+        return (5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1) / (rating5 + rating4 + rating3 + rating2 + rating1);
+    }
+
+    public void getClassListByDemand() {
+        List<classModel> data = new ArrayList<>();
+        reference.collection("ClassInfo").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                data.clear();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
+                    classModel.setClassID(document.getId());
+
+                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            QuerySnapshot ratingSnapshot = task1.getResult();
+                            if (ratingSnapshot != null) {
+                                classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                            }
+                        }
+                        classJoinReference.child(classModel.getClassID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    classModel.setStudent_count(snapshot.getChildrenCount());
+                                }
+                                userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {
+                                            String username = snapshot.getValue(String.class);
+                                            if (username != null) {
+                                                classModel.setTeacher_name(username);
+                                                data.add(classModel);
+                                            }
+                                        }
+                                        Collections.sort(data, new Comparator<classModel>() {
+                                            @Override
+                                            public int compare(classModel lhs, classModel rhs) {
+                                                return Long.compare(rhs.getStudent_count(), lhs.getStudent_count());
+                                            }
+                                        });
+                                        OnGetClassListComplete.onSuccess(data);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        OnGetClassListComplete.onGetClassListFailure(error.toString());
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    });
+                }
+            } else {
+                OnGetClassListComplete.onGetClassListFailure("Failed to get class list");
+            }
+        });
+    }
+
+    public void getClassListByRating() {
+        List<classModel> data = new ArrayList<>();
+        reference.collection("ClassInfo").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                data.clear();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
+                    classModel.setClassID(document.getId());
+
+                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            QuerySnapshot ratingSnapshot = task1.getResult();
+                            if (ratingSnapshot != null) {
+                                classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                            }
+                        }
+                        userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String username = snapshot.getValue(String.class);
+                                    if (username != null) {
+                                        classModel.setTeacher_name(username);
+                                        data.add(classModel);
+                                    }
+                                }
+                                Collections.sort(data, new Comparator<classModel>() {
+                                    @Override
+                                    public int compare(classModel lhs, classModel rhs) {
+                                        return Float.compare(lhs.getRating(), rhs.getRating());
+                                    }
+                                });
+                                OnGetClassListComplete.onSuccess(data);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                OnGetClassListComplete.onGetClassListFailure(error.toString());
+                            }
+                        });
+                    });
+                }
+            } else {
+                OnGetClassListComplete.onGetClassListFailure("Failed to get class list");
+            }
+        });
     }
 
     public interface OnRealtimeDbTaskComplete {
@@ -502,6 +670,12 @@ public class ClassRepository {
 
     public interface OnCreateClassComplete {
         void onClassCreated(String classID);
+
+        void onFailure(String error);
+    }
+
+    public interface OnGetRatingsComplete {
+        void onGetRatingsSuccess(List<RatingModel> ratingModelList);
 
         void onFailure(String error);
     }

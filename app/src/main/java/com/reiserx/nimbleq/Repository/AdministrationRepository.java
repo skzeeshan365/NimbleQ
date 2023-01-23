@@ -167,11 +167,77 @@ public class AdministrationRepository {
         });
     }
 
+    public void getSubjectModelList() {
+        List<AdminListModel> gradeList = new ArrayList<>();
+        reference.child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    gradeList.clear();
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            gradeList.add(new AdminListModel(value, reference.child("Lists").child("SubjectList").child(snapshot1.getKey())));
+                    }
+                    onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetAdminModelListComplete.onFailed(error.toString());
+            }
+        });
+    }
+
+    public void getSlotModelList() {
+        List<AdminListModel> gradeList = new ArrayList<>();
+        reference.child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    gradeList.clear();
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        String value = snapshot1.getValue(String.class);
+                        if (value != null)
+                            gradeList.add(new AdminListModel(value, reference.child("Lists").child("SlotList").child(snapshot1.getKey())));
+                    }
+                    onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetAdminModelListComplete.onFailed(error.toString());
+            }
+        });
+    }
+
     public void updateGradeModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
         reference.child("Lists").child("GradeList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
             onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("GradeList").child(String.valueOf(currentTime))));
+        }).addOnFailureListener(e -> {
+            onUpdateModelListComplete.onFailed(e.toString());
+        });
+    }
+
+    public void updateSubjectModelList(String grade) {
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+        reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
+            onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime))));
+        }).addOnFailureListener(e -> {
+            onUpdateModelListComplete.onFailed(e.toString());
+        });
+    }
+
+    public void updateSlotModelList(String grade) {
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+        reference.child("Lists").child("SlotList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
+            onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SlotList").child(String.valueOf(currentTime))));
         }).addOnFailureListener(e -> {
             onUpdateModelListComplete.onFailed(e.toString());
         });
