@@ -3,6 +3,8 @@ package com.reiserx.nimbleq.Activities.Administration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuItemCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
@@ -10,10 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SearchView;
 
 import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
@@ -27,14 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FragmentTeacherList extends Fragment {
+public class FragmentTeacherList extends Fragment implements MenuProvider {
 
     private FragmentUserlistAdminBinding binding;
 
     UserListAdapter userListAdapter;
 
     List<String> filters, gradelist, citylist;
-    List<UserData> userData;
+    List<UserData> userData, userData1;
 
     AdministrationViewModel administrationViewModel;
 
@@ -58,10 +64,14 @@ public class FragmentTeacherList extends Fragment {
         initializeSpinners();
 
         userData = new ArrayList<>();
+        userData1 = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.recycler.setLayoutManager(layoutManager);
         userListAdapter = new UserListAdapter(getContext(), NavHostFragment.findNavController(FragmentTeacherList.this));
         userListAdapter.setActionCode(R.id.action_FragmentTeacherList_to_FragmentUserDetails);
+
+        requireActivity().removeMenuProvider(this);
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
         return binding.getRoot();
     }
@@ -280,5 +290,62 @@ public class FragmentTeacherList extends Fragment {
             binding.progressBar2.setVisibility(View.GONE);
             binding.textView9.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menu.clear();
+        menuInflater.inflate(R.menu.single_search_menu, menu);
+
+        MenuItem searchViewItem
+                = menu.findItem(R.id.app_bar_search);
+        SearchView searchView
+                = (SearchView) MenuItemCompat
+                .getActionView(searchViewItem);
+
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        userData1 = filter(userData, newText);
+                        userListAdapter.setFilter(userData1);
+                        return false;
+                    }
+                });
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        return false;
+    }
+
+    private List<UserData> filter(List<UserData> dataList, String newText) {
+        newText = newText.toLowerCase();
+        String name;
+        userData1.clear();
+        for (UserData dataFromDataList : dataList) {
+            name = dataFromDataList.getUserName().toLowerCase();
+
+            if (name.contains(newText)) {
+                userData1.add(dataFromDataList);
+            }
+        }
+        if (userData1.isEmpty()) {
+            binding.textView9.setText("Users not available");
+            binding.recycler.setVisibility(View.GONE);
+            binding.progHolder.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
+            binding.textView9.setVisibility(View.VISIBLE);
+        } else {
+            binding.recycler.setVisibility(View.VISIBLE);
+            binding.progHolder.setVisibility(View.GONE);
+        }
+        return userData1;
     }
 }

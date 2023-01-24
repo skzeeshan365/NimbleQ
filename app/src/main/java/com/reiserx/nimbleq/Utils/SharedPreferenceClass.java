@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
+import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
 
 import java.util.HashMap;
@@ -68,5 +69,18 @@ public class SharedPreferenceClass {
 
     public String getUserID() {
         return save.getString("USER_ID", null);
+    }
+
+    public void setFCMKey(FCMCREDENTIALS model) {
+        SharedPreferences.Editor myEdit = save.edit();
+
+        String json = gson.toJson(model);
+
+        myEdit.putString("FCM_KEY", json);
+        myEdit.apply();
+    }
+
+    public FCMCREDENTIALS getFCMKey() {
+        return gson.fromJson(save.getString("FCM_KEY", null), FCMCREDENTIALS.class);
     }
 }

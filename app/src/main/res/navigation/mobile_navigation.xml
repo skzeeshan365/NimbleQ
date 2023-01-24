@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_navigation_home_to_FragmentFeedback"
             app:destination="@id/FragmentFeedback" />
+        <action
+            android:id="@+id/action_navigation_home_to_FragmentLearnerListForClass"
+            app:destination="@id/FragmentLearnerListForClass" />
     </fragment>
 
     <fragment
@@ -36,4 +39,10 @@
         android:name="com.reiserx.nimbleq.Activities.Feedbacks.FragmentFeedbacks"
         android:label="Ratings"
         tools:layout="@layout/fragment_class_list" />
+
+    <fragment
+        android:id="@+id/FragmentLearnerListForClass"
+        android:name="com.reiserx.nimbleq.Activities.Fragments.ClassView.FragmentLearnerListForClass"
+        android:label="Learners"
+        tools:layout="@layout/fragment_userlist_admin" />
 </navigation>

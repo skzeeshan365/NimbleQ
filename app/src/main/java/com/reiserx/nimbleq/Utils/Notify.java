@@ -28,6 +28,7 @@ public class Notify {
 
     Context context;
     JSONObject json;
+    SharedPreferenceClass sharedPreferenceClass;
 
     public static int NORMAL_SMALL_TEXT_NOTIFICATION = 1;
     public static int NORMAL_BIG_TEXT_NOTIFICATION = 3;
@@ -41,6 +42,7 @@ public class Notify {
     public Notify(Context context) {
         this.context = context;
         json = new JSONObject();
+        sharedPreferenceClass = new SharedPreferenceClass(context);
     }
 
     String TAG = "jkfhsb";
@@ -72,7 +74,7 @@ public class Notify {
 
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
                 Request request = new Request.Builder()
-                        .header("Authorization", context.getString(R.string.serverKey))
+                        .header("Authorization", sharedPreferenceClass.getFCMKey().getKEY())
                         .url(context.getString(R.string.fcm))
                         .post(body)
                         .build();

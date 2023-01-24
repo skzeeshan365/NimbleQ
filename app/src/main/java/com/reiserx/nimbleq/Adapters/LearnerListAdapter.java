@@ -1,8 +1,8 @@
-package com.reiserx.nimbleq.Adapters.Administration;
+package com.reiserx.nimbleq.Adapters;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
+import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
@@ -19,23 +20,14 @@ import com.reiserx.nimbleq.databinding.LtHomeListAdminBinding;
 
 import java.util.List;
 
-public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.HomeViewHolder> {
+public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.HomeViewHolder> {
 
     Context context;
     List<UserData> data;
     NavController navController;
-    int actionCode;
-
-    public void setActionCode(int actionCode) {
-        this.actionCode = actionCode;
-    }
 
     public void setData(List<UserData> data) {
         this.data = data;
-    }
-
-    public List<UserData> getData() {
-        return data;
     }
 
     public void clear() {
@@ -43,29 +35,37 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.HomeVi
             data.clear();
     }
 
-    public UserListAdapter(Context context, NavController navController) {
+    public List<UserData> getData() {
+        return data;
+    }
+
+    public LearnerListAdapter(Context context) {
         this.context = context;
-        this.navController = navController;
     }
 
     @NonNull
     @Override
-    public UserListAdapter.HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public LearnerListAdapter.HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.lt_home_list_admin, parent, false);
-        return new UserListAdapter.HomeViewHolder(view);
+        return new LearnerListAdapter.HomeViewHolder(view);
     }
 
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
-    public void onBindViewHolder(@NonNull UserListAdapter.HomeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull LearnerListAdapter.HomeViewHolder holder, int position) {
         UserData model = data.get(position);
         holder.binding.textView25.setText(model.getUserName());
 
         holder.binding.getRoot().setOnClickListener(view -> {
-            SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);
-
-            sharedPreferenceClass.setUserInfo(model);
-            navController.navigate(actionCode);
+            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+            alert.setTitle(model.getUserName());
+            String grade = "Grade: "+model.getUserDetails().getGrade();
+            String stateCity = "\nLives in: "+model.getUserDetails().getState()+", "+model.getUserDetails().getCity();
+            String gender = "\nGender: "+model.getUserDetails().getGender();
+            String schoolname = "\nSchool: "+model.getUserDetails().getSchoolName();
+            alert.setMessage(grade+schoolname+stateCity+gender);
+            alert.setPositiveButton("ok", null);
+            alert.show();
         });
     }
 

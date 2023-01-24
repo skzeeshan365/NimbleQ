@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/learnerList_menuitem"
+        android:title="Learner list" />
+    <item
         android:id="@+id/feedbacks_menuitem"
         android:title="Feedbacks" />
 </menu>

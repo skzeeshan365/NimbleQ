@@ -8,6 +8,9 @@
         android:id="@+id/Teacher_info_menuitem"
         android:title="Teacher info" />
     <item
+        android:id="@+id/chat_with_teacher_menuitem"
+        android:title="Chat with teacher" />
+    <item
         android:id="@+id/leave_class_menu_item"
         android:title="Leave class" />
 </menu>

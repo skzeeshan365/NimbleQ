@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,13 +20,16 @@ import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
+import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.mimeTypesModel;
 import com.reiserx.nimbleq.Models.userDetails;
+import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.Utils.MapComparator;
 
 import java.util.ArrayList;
@@ -44,6 +48,9 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete;
     private final AdministrationRepository.OnGetAdminModelListComplete onGetAdminModelListComplete;
     private final AdministrationRepository.OnUpdateModelListComplete onUpdateModelListComplete;
+    private final AdministrationRepository.OnGetZoomCredentialsComplete onGetZoomCredentialsComplete;
+    private final AdministrationRepository.OnGetFCMCredentialsComplete onGetFCMCredentialsComplete;
+    private final AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete;
 
     DatabaseReference reference;
     DatabaseReference userDataReference;
@@ -52,6 +59,7 @@ public class AdministrationRepository {
 
     CollectionReference userDetailsReference;
     DocumentReference classReference;
+    CollectionReference credentialReference;
 
     public AdministrationRepository(AdministrationRepository.OnGetMimetypesCompleted onGetMimetypesCompleted,
                                     AdministrationRepository.OnGetFileEnabledComplete onGetFileEnabledComplete,
@@ -61,7 +69,10 @@ public class AdministrationRepository {
                                     AdministrationRepository.OnGetClassCreateCountComplete onGetClassCreateCountComplete,
                                     AdministrationRepository.OnGetListStringDataCountComplete onGetListStringDataCountComplete,
                                     AdministrationRepository.OnGetAdminModelListComplete onGetAdminModelListComplete,
-                                    AdministrationRepository.OnUpdateModelListComplete onUpdateModelListComplete) {
+                                    AdministrationRepository.OnUpdateModelListComplete onUpdateModelListComplete,
+                                    AdministrationRepository.OnGetZoomCredentialsComplete onGetZoomCredentialsComplete,
+                                    AdministrationRepository.OnGetFCMCredentialsComplete onGetFCMCredentialsComplete,
+                                    AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete) {
 
         this.onGetMimetypesCompleted = onGetMimetypesCompleted;
         this.onGetFileEnabledComplete = onGetFileEnabledComplete;
@@ -72,6 +83,9 @@ public class AdministrationRepository {
         this.onGetListStringDataCountComplete = onGetListStringDataCountComplete;
         this.onGetAdminModelListComplete = onGetAdminModelListComplete;
         this.onUpdateModelListComplete = onUpdateModelListComplete;
+        this.onGetZoomCredentialsComplete = onGetZoomCredentialsComplete;
+        this.onGetFCMCredentialsComplete = onGetFCMCredentialsComplete;
+        this.onGetAdministratorComplete = onGetAdministratorComplete;
 
         reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -80,6 +94,7 @@ public class AdministrationRepository {
 
         userDetailsReference = FirebaseFirestore.getInstance().collection("UserData");
         classReference = FirebaseFirestore.getInstance().collection("Main").document("Class");
+        credentialReference = FirebaseFirestore.getInstance().collection("CREDENTIALS");
     }
 
     public void getMimeTypesForGroupChats() {
@@ -356,6 +371,47 @@ public class AdministrationRepository {
         });
     }
 
+    public void getLearnerListForClass(String classID) {
+        List<UserData> data = new ArrayList<>();
+        classJoinReference.child(classID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    UserData UserData = snapshot.getValue(UserData.class);
+                                    if (UserData != null) {
+                                        userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                            if (queryDocumentSnapshots.exists()) {
+                                                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                                UserData.setUserDetails(userDetails);
+                                            }
+                                            data.add(UserData);
+                                            onGetUserListComplete.onGetUserListSuccess(data);
+                                        });
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                onGetUserListComplete.onGetUserListFailure(error.toString());
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public void getUserDetails(String userID) {
         userDetailsReference.document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (queryDocumentSnapshots.exists()) {
@@ -395,6 +451,47 @@ public class AdministrationRepository {
                 onGetClassCreateCountComplete.onGetClassCreateCountSuccess(snapshot1.getCount());
             } else {
                 onGetClassCreateCountComplete.onFailed(task1.getException().toString());
+            }
+        });
+    }
+
+    public void getZoomCredentials() {
+        credentialReference.document("ZoomCredentials").get().addOnSuccessListener(snapshot -> {
+            if (snapshot.exists()) {
+                zoomCredentials zoomCredentials = snapshot.toObject(com.reiserx.nimbleq.Models.zoomCredentials.class);
+                onGetZoomCredentialsComplete.onGetZoomCredentialsSuccess(zoomCredentials);
+            } else
+                onGetZoomCredentialsComplete.onFailed("Failed to get credentials");
+        }).addOnFailureListener(e -> {
+            onGetZoomCredentialsComplete.onFailed(e.toString());
+        });
+    }
+
+    public void getFCMCredentials() {
+        credentialReference.document("FCMCREDENTIALS").get().addOnSuccessListener(snapshot -> {
+            if (snapshot.exists()) {
+                FCMCREDENTIALS fcmcredentials = snapshot.toObject(com.reiserx.nimbleq.Models.FCMCREDENTIALS.class);
+                onGetFCMCredentialsComplete.onGetFCMCredentialsSuccess(fcmcredentials);
+            } else
+                onGetFCMCredentialsComplete.onFailed("Failed to get credentials");
+        }).addOnFailureListener(e -> {
+            onGetFCMCredentialsComplete.onFailed(e.toString());
+        });
+    }
+
+    public void getAdministrator(String userID) {
+        reference.child("Administrators").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                    onGetAdministratorComplete.onGetAdminSuccess(true);
+                else
+                    onGetAdministratorComplete.onAdminFailed("You are not allowed to access this service");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetAdministratorComplete.onAdminFailed(error.toString());
             }
         });
     }
@@ -451,5 +548,23 @@ public class AdministrationRepository {
         void onUpdateModelListSuccess(AdminListModel adminListModel);
 
         void onFailed(String error);
+    }
+
+    public interface OnGetZoomCredentialsComplete {
+        void onGetZoomCredentialsSuccess(zoomCredentials zoomCredentials);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetFCMCredentialsComplete {
+        void onGetFCMCredentialsSuccess(FCMCREDENTIALS fcmcredentials);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetAdministratorComplete {
+        void onGetAdminSuccess(Boolean admin);
+
+        void onAdminFailed(String error);
     }
 }

@@ -60,11 +60,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void process() {
             binding.includePhoneSignin.button.setOnClickListener(v -> {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 buttonDesign.buttonFill(binding.includePhoneSignin.button);
                 Intent intent = new Intent(LoginActivity.this, PhoneAuthActivity.class);
                 intent.putExtra("PhoneNumber", "+91".concat(binding.includePhoneSignin.editTextPhone2.getText().toString()));
                 startActivity(intent);
+                finish();
             });
         }
 }

@@ -8,6 +8,9 @@ public class zoomCredentials {
         this.SDK_SECRET = SDK_SECRET;
     }
 
+    public zoomCredentials() {
+    }
+
     public String getSDK_KEY() {
         return SDK_KEY;
     }

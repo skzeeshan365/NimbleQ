@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.FirebaseApp;
@@ -19,8 +20,11 @@ import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
+import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityMainBinding;
@@ -66,20 +70,17 @@ public class MainActivity extends AppCompatActivity {
             //Main logic starts
             userTypeClass = new UserTypeClass(this);
 
+            checkAdmin(user.getUid());
+
             getUserType();
 
             initializeSlot();
 
-            zoomCredentials zoomCredentials = new zoomCredentials(CONSTANTS.SDK_KEY, CONSTANTS.SDK_SECRET);
-            initializeZoomSdk(this, zoomCredentials);
+            initializeZoomSdk(this);
+            initializeFCM();
 
             binding.imageView17.setOnClickListener(view -> {
                 Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                startActivity(intent);
-            });
-
-            binding.textView34.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, AdministrationActivity.class);
                 startActivity(intent);
             });
 
@@ -184,23 +185,28 @@ public class MainActivity extends AppCompatActivity {
         initializeSlot();
     }
 
-    public void initializeZoomSdk(Context context, zoomCredentials zoomCredentials) {
-        ZoomSDK sdk = ZoomSDK.getInstance();
-        ZoomSDKInitParams params = new ZoomSDKInitParams();
-        params.appKey = zoomCredentials.getSDK_KEY();
-        params.appSecret = zoomCredentials.getSDK_SECRET();
-        params.domain = "zoom.us";
-        params.enableLog = true;
-        ZoomSDKInitializeListener listener = new ZoomSDKInitializeListener() {
-            @Override
-            public void onZoomSDKInitializeResult(int errorCode, int internalErrorCode) {
-            }
+    public void initializeZoomSdk(Context context) {
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        viewModel.getZoomCredentials();
+        viewModel.getZoomCredentialsMutableLiveData().observe(this, zoomCredentials -> {
+            ZoomSDK sdk = ZoomSDK.getInstance();
+            ZoomSDKInitParams params = new ZoomSDKInitParams();
+            params.appKey = zoomCredentials.getSDK_KEY();
+            params.appSecret = zoomCredentials.getSDK_SECRET();
+            params.domain = "zoom.us";
+            params.enableLog = true;
+            ZoomSDKInitializeListener listener = new ZoomSDKInitializeListener() {
+                @Override
+                public void onZoomSDKInitializeResult(int errorCode, int internalErrorCode) {
+                }
 
-            @Override
-            public void onZoomAuthIdentityExpired() {
-            }
-        };
-        sdk.initialize(context, listener, params);
+                @Override
+                public void onZoomAuthIdentityExpired() {
+                }
+            };
+            sdk.initialize(context, listener, params);
+        });
+        viewModel.getDatabaseErrorMutableLiveData().observe(this, s -> Toast.makeText(context, s, Toast.LENGTH_SHORT).show());
     }
 
     void initializeSlot() {
@@ -237,5 +243,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         viewModel.getDatabaseErrorMutableLiveData().observe(this, error -> Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show());
+    }
+    void initializeFCM() {
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        viewModel.getFCMCredentials();
+        viewModel.getFCMCredentialsMutableLiveData().observe(this, fcmcredentials -> {
+            SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(MainActivity.this);
+            sharedPreferenceClass.setFCMKey(fcmcredentials);
+        });
+        viewModel.getDatabaseErrorMutableLiveData().observe(this, s -> Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show());
+    }
+
+    private void checkAdmin(String userID) {
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        viewModel.getAdministrator(userID);
+        viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
+            Intent intent = new Intent(MainActivity.this, AdministrationActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        });
     }
 }

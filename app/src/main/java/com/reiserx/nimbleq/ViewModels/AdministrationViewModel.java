@@ -4,8 +4,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.reiserx.nimbleq.Models.AdminListModel;
+import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.userDetails;
+import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.Repository.AdministrationRepository;
 
 import java.util.List;
@@ -19,7 +21,10 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnGetClassCreateCountComplete,
         AdministrationRepository.OnGetListStringDataCountComplete,
         AdministrationRepository.OnGetAdminModelListComplete,
-        AdministrationRepository.OnUpdateModelListComplete{
+        AdministrationRepository.OnUpdateModelListComplete,
+        AdministrationRepository.OnGetZoomCredentialsComplete,
+        AdministrationRepository.OnGetFCMCredentialsComplete,
+        AdministrationRepository.OnGetAdministratorComplete{
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -31,14 +36,22 @@ public class AdministrationViewModel extends ViewModel implements
     private final MutableLiveData<List<String>> listStringMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<AdminListModel>> adminModelListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<AdminListModel> adminListModelMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<zoomCredentials> zoomCredentialsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<FCMCREDENTIALS> FCMCredentialsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> adminMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userListErrorMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> adminErrorMutableLiveData = new MutableLiveData<>();
 
     private final AdministrationRepository firebaseRepo;
 
     public MutableLiveData<List<String>> getMimeTypesListMutableLiveData() {
         return mimeTypesListMutableLiveData;
+    }
+
+    public MutableLiveData<Boolean> getAdminMutableLiveData() {
+        return adminMutableLiveData;
     }
 
     public MutableLiveData<Boolean> getFileEnabledMutableLiveData() {
@@ -61,6 +74,10 @@ public class AdministrationViewModel extends ViewModel implements
         return classCreateCountMutableLiveData;
     }
 
+    public MutableLiveData<zoomCredentials> getZoomCredentialsMutableLiveData() {
+        return zoomCredentialsMutableLiveData;
+    }
+
     public MutableLiveData<List<String>> getListStringMutableLiveData() {
         return listStringMutableLiveData;
     }
@@ -73,6 +90,10 @@ public class AdministrationViewModel extends ViewModel implements
         return adminModelListMutableLiveData;
     }
 
+    public MutableLiveData<FCMCREDENTIALS> getFCMCredentialsMutableLiveData() {
+        return FCMCredentialsMutableLiveData;
+    }
+
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }
@@ -81,8 +102,12 @@ public class AdministrationViewModel extends ViewModel implements
         return userListErrorMutableLiveData;
     }
 
+    public MutableLiveData<String> getAdminErrorMutableLiveData() {
+        return adminErrorMutableLiveData;
+    }
+
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this,this, this,this, this, this,this, this, this);
+        firebaseRepo = new AdministrationRepository(this,this,this,this,this, this,this, this, this,this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -103,6 +128,10 @@ public class AdministrationViewModel extends ViewModel implements
 
     public void getStudentList() {
         firebaseRepo.getStudentList();
+    }
+
+    public void getLearnerListForClass(String classID) {
+        firebaseRepo.getLearnerListForClass(classID);
     }
 
     public void getUserDetails(String userID) {
@@ -143,6 +172,17 @@ public class AdministrationViewModel extends ViewModel implements
 
     public void updateSlotModelList(String grade) {
         firebaseRepo.updateSlotModelList(grade);
+    }
+
+    public void getZoomCredentials() {
+        firebaseRepo.getZoomCredentials();
+    }
+    public void getFCMCredentials() {
+        firebaseRepo.getFCMCredentials();
+    }
+
+    public void getAdministrator(String userID) {
+        firebaseRepo.getAdministrator(userID);
     }
 
     @Override
@@ -198,6 +238,26 @@ public class AdministrationViewModel extends ViewModel implements
     @Override
     public void onUpdateModelListSuccess(AdminListModel adminListModel) {
         adminListModelMutableLiveData.setValue(adminListModel);
+    }
+
+    @Override
+    public void onGetZoomCredentialsSuccess(zoomCredentials zoomCredentials) {
+        zoomCredentialsMutableLiveData.setValue(zoomCredentials);
+    }
+
+    @Override
+    public void onGetFCMCredentialsSuccess(FCMCREDENTIALS fcmcredentials) {
+        FCMCredentialsMutableLiveData.setValue(fcmcredentials);
+    }
+
+    @Override
+    public void onGetAdminSuccess(Boolean admin) {
+        adminMutableLiveData.setValue(admin);
+    }
+
+    @Override
+    public void onAdminFailed(String error) {
+        adminErrorMutableLiveData.setValue(error);
     }
 
     @Override

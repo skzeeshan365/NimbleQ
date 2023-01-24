@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,10 +23,12 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.ActivityPhoneAuthBinding;
 
@@ -112,15 +115,26 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     } else {
                         snackbarTop.showSnackBar("Login successful", true);
                         FirebaseUser user = auth.getCurrentUser();
-                        UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
-                        userDataViewModel.updateFCMToken(user.getUid());
-                        binding.continueBtn.setOnClickListener(view -> {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
-                            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
-                            buttonDesign.buttonFill(binding.continueBtn);
-                            dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
-                            dialogs.selectStudentOrTeacherForLogin(auth.getUid());
+
+                        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+                        viewModel.getAdministrator(user.getUid());
+                        viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
+                            Intent intent = new Intent(PhoneAuthActivity.this, AdministrationActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        });
+                        viewModel.getAdminErrorMutableLiveData().observe(PhoneAuthActivity.this, s -> {
+                            UserDataViewModel userDataViewModel = new ViewModelProvider(PhoneAuthActivity.this).get(UserDataViewModel.class);
+                            userDataViewModel.updateFCMToken(user.getUid());
+                            binding.continueBtn.setOnClickListener(view -> {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
+                                FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
+                                buttonDesign.buttonFill(binding.continueBtn);
+                                dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
+                                dialogs.selectStudentOrTeacherForLogin(auth.getUid());
+                            });
                         });
                     }
                     TransitionManager.beginDelayedTransition(binding.cardHolder, new AutoTransition());

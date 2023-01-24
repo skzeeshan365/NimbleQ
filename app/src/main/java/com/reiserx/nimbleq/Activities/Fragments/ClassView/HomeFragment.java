@@ -1,9 +1,15 @@
 package com.reiserx.nimbleq.Activities.Fragments.ClassView;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -23,6 +30,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 import com.reiserx.nimbleq.Activities.Feedbacks.RateAndFeedbackActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
@@ -31,10 +40,12 @@ import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentHomeBinding;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import us.zoom.sdk.JoinMeetingOptions;
@@ -70,6 +81,11 @@ public class HomeFragment extends Fragment implements MenuProvider {
         classViewModel = new ViewModelProvider(this).get(classViewModel.class);
         userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
+        firestore = FirebaseFirestore.getInstance();
+        database = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         binding.scrollView.setVisibility(View.GONE);
         binding.progHolder.setVisibility(View.VISIBLE);
         binding.progressBar2.setVisibility(View.VISIBLE);
@@ -81,6 +97,9 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
         buttonDesign.setButtonOutline(binding.rateClassBtn);
         binding.rateClassBtn.setVisibility(View.GONE);
+
+        requireActivity().removeMenuProvider(this);
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
         userDataViewModel.getUserData().observe(getViewLifecycleOwner(), userData -> {
             binding.classTeacher.setText(userData.getUserName());
@@ -143,14 +162,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
         });
 
         snackbarTop = new SnackbarTop(binding.getRoot());
-
-        requireActivity().removeMenuProvider(this);
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
-
-        firestore = FirebaseFirestore.getInstance();
-        database = FirebaseDatabase.getInstance();
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
 
         id = getActivity().getIntent().getExtras().getString("classID");
 
@@ -262,10 +273,19 @@ public class HomeFragment extends Fragment implements MenuProvider {
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menu.clear();
         UserTypeClass userTypeClass = new UserTypeClass(requireContext());
-        if (userTypeClass.isUserLearner())
-            menuInflater.inflate(R.menu.class_menu, menu);
-        else
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        viewModel.getAdministrator(user.getUid());
+        viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
             menuInflater.inflate(R.menu.class_menu_teacher, menu);
+            binding.button8.setVisibility(View.INVISIBLE);
+            binding.rateClassBtn.setVisibility(View.GONE);
+        });
+        viewModel.getAdminErrorMutableLiveData().observe(this, s -> {
+            if (userTypeClass.isUserLearner())
+                menuInflater.inflate(R.menu.class_menu, menu);
+            else
+                menuInflater.inflate(R.menu.class_menu_teacher, menu);
+        });
     }
 
     @Override
@@ -302,6 +322,24 @@ public class HomeFragment extends Fragment implements MenuProvider {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
             sharedPreferenceClass.setClassID(id);
             NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_navigation_home_to_FragmentFeedback);
+        } else if (menuItem.getItemId() == R.id.chat_with_teacher_menuitem) {
+            if (teacherData != null) {
+                String[] permissions = {Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS};
+                Permissions.check(requireContext(), permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        if (contactExists(teacherData.getPhoneNumber()))
+                            openWhatsappContact(teacherData.getPhoneNumber());
+                        else
+                            addContact();
+                    }
+                });
+            } else
+                snackbarTop.showSnackBar("Failed to get phone number", false);
+        } else if (menuItem.getItemId() == R.id.learnerList_menuitem) {
+            SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+            sharedPreferenceClass.setClassID(id);
+            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_navigation_home_to_FragmentLearnerListForClass);
         }
         return false;
     }
@@ -314,5 +352,64 @@ public class HomeFragment extends Fragment implements MenuProvider {
         intent.putExtra("userID", user.getUid());
         intent.putExtra("token", teacherData.getFCM_TOKEN());
         requireContext().startActivity(intent);
+    }
+
+    void openWhatsappContact(String number) {
+        Uri uri = Uri.parse("smsto:" + number);
+        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+        i.setPackage("com.whatsapp");
+        startActivity(i);
+    }
+
+    private void addContact() {
+        ArrayList<ContentProviderOperation> op_list = new ArrayList<>();
+        op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                //.withValue(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DEFAULT)
+                .build());
+
+        op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, teacherData.getUserName())
+                .build());
+
+        op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, teacherData.getPhoneNumber())
+                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
+                .build());
+
+        try{
+            ContentProviderResult[] results = requireContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, op_list);
+            androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+            alert.setTitle("Chat with teacher");
+            alert.setMessage("Chat with teacher on whatsapp");
+            alert.setPositiveButton("open whatsapp", (dialogInterface, i) -> openWhatsappContact(teacherData.getPhoneNumber()));
+            alert.setNegativeButton("cancel", null);
+            alert.show();
+        }catch(Exception e){
+            Log.d(CONSTANTS.TAG2, e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    public boolean contactExists(String number) {
+        if (number != null) {
+            Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+            String[] mPhoneNumberProjection = { ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME };
+            Cursor cur = requireContext().getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null);
+            try {
+                if (cur.moveToFirst()) {
+                    return true;
+                }
+            } finally {
+                if (cur != null)
+                    cur.close();
+            }
+        }
+        return false;
     }
 }
