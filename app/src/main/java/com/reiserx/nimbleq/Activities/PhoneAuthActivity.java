@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
@@ -75,7 +76,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         }
 
         dialog = new ProgressDialog(this);
-        dialog.setMessage("Sending OTP...");
+        dialog.setMessage(getString(R.string.sending_otp));
         dialog.setCancelable(false);
         dialog.show();
 
@@ -110,10 +111,10 @@ public class PhoneAuthActivity extends AppCompatActivity {
             auth.signInWithCredential(credential).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     if (Objects.requireNonNull(task.getResult().getAdditionalUserInfo()).isNewUser()) {
-                        snackbarTop.showSnackBar("Account created", true);
+                        snackbarTop.showSnackBar(getString(R.string.account_created), true);
                         process();
                     } else {
-                        snackbarTop.showSnackBar("Login successful", true);
+                        snackbarTop.showSnackBar(getString(R.string.login_successful), true);
                         FirebaseUser user = auth.getCurrentUser();
 
                         AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);

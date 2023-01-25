@@ -18,6 +18,7 @@ import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.Models.remoteFileModel;
 import com.reiserx.nimbleq.Models.uploadProgressModel;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.fileSize;
 
 import java.io.File;
@@ -47,8 +48,6 @@ public class FirebaseStorageRepository {
                 Calendar cal = Calendar.getInstance();
                 long currentTime = cal.getTimeInMillis();
 
-                Log.d(CONSTANTS.TAG2, getFileName(context, uri));
-
                 reference.child(userID).child(String.valueOf(currentTime)).putFile(uri).addOnSuccessListener(taskSnapshot -> {
                     reference.child(userID).child(String.valueOf(currentTime)).getDownloadUrl().addOnSuccessListener(uri1 -> {
                         remoteFileModel remoteFileModel = new remoteFileModel(getFileName(context, uri), uri1.toString());
@@ -59,7 +58,7 @@ public class FirebaseStorageRepository {
                     onFileUploaded.onFailure(e.toString());
                 });
             } else
-                onFileUploaded.onFailure("Failed to upload file ".concat(getFileName(context, uri)));
+                onFileUploaded.onFailure(context.getString(R.string.failed_to_upload_file).concat(getFileName(context, uri)));
         }
     }
 
@@ -90,7 +89,7 @@ public class FirebaseStorageRepository {
                 onFileSingleUploaded.onFailure(e.toString());
             });
         } else
-            onFileSingleUploaded.onFailure("Failed to upload file ".concat(getFileName(context, uri)));
+            onFileSingleUploaded.onFailure(context.getString(R.string.failed_to_upload_file).concat(getFileName(context, uri)));
     }
 
     @SuppressLint("Range")

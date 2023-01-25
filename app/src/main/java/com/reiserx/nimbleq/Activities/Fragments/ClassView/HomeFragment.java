@@ -110,32 +110,32 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
                 binding.rateClassBtn.setVisibility(View.GONE);
 
-                binding.button8.setText("Join meeting");
+                binding.button8.setText(getString(R.string.join_meeting));
                 buttonDesign.setButtonOutline(binding.button8);
                 binding.button8.setOnClickListener(view -> {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                    alert.setTitle("Join class as Host");
-                    alert.setMessage("Joining class as host is not supported in this app\nYou have to join it from zoom app\nMEETING ID: "+MEETING_ID+"\nMEETING PASSWORD: "+MEETING_PASSWORD);
-                    alert.setPositiveButton("open", (dialogInterface, i) -> {
+                    alert.setTitle(getString(R.string.join_class_as_host));
+                    alert.setMessage(getString(R.string.join_class_msg_1)+MEETING_ID+"\n"+getString(R.string.join_class_msg_2)+MEETING_PASSWORD);
+                    alert.setPositiveButton(getString(R.string.open), (dialogInterface, i) -> {
                         PackageManager pm = requireContext().getPackageManager();
                         Intent intent = pm.getLaunchIntentForPackage("us.zoom.videomeetings");
                         if (intent != null) {
                             startActivity(intent);
                         }
                     });
-                    alert.setNegativeButton("cancel", null);
+                    alert.setNegativeButton(getString(R.string.cancel), null);
                     alert.show();
                 });
             } else {
                 classViewModel.getClassState(user.getUid(), id);
                 classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
                     if (state == 2) {
-                        binding.button8.setText("Join meeting");
+                        binding.button8.setText(getString(R.string.join_meeting));
                         buttonDesign.setButtonOutline(binding.button8);
                         setJoinMeeting();
                         binding.rateClassBtn.setVisibility(View.VISIBLE);
                     } else if (state == 3) {
-                        binding.button8.setText("Join class");
+                        binding.button8.setText(getString(R.string.join_class));
                         buttonDesign.setButtonOutline(binding.button8);
                         binding.button8.setOnClickListener(view -> {
                             buttonDesign.buttonFill(binding.button8);
@@ -143,8 +143,8 @@ public class HomeFragment extends Fragment implements MenuProvider {
                         });
                         binding.rateClassBtn.setVisibility(View.GONE);
                     } else if (state == 1) {
-                        snackbarTop.showSnackBar("Class joined", true);
-                        binding.button8.setText("Join meeting");
+                        snackbarTop.showSnackBar(getString(R.string.class_joined), true);
+                        binding.button8.setText(getString(R.string.join_meeting));
                         buttonDesign.setButtonOutline(binding.button8);
                         setJoinMeeting();
                         binding.rateClassBtn.setVisibility(View.VISIBLE);
@@ -180,7 +180,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
         Intent intent = new Intent(getContext(), RateAndFeedbackActivity.class);
         intent.putExtra("id", 1);
         intent.putExtra("classID", id);
-        intent.putExtra("Message", "How was your experience in class ".concat(Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).getTitle().toString()));
+        intent.putExtra("Message", getString(R.string.feedback_msg).concat(Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).getTitle().toString()));
         intent.putExtra("userID", user.getUid());
         intent.putExtra("token", teacherData.getFCM_TOKEN());
         intent.putExtra("classname", Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).getTitle().toString());
@@ -188,7 +188,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
     }
 
     void setJoinMeeting() {
-        Log.d(CONSTANTS.TAG, "called");
         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
         userDataViewModel.getUsername(user.getUid());
@@ -197,10 +196,10 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 if (username != null) {
                     buttonDesign.buttonFill(binding.button8);
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                    alert.setTitle("Join meeting");
-                    alert.setMessage("Are you sure you want to join this meeting");
-                    alert.setPositiveButton("join", (dialogInterface, i) -> joinMeeting(username, MEETING_ID, MEETING_PASSWORD));
-                    alert.setNegativeButton("cancel", (dialogInterface, i) -> buttonDesign.setButtonOutline(binding.button8));
+                    alert.setTitle(getString(R.string.join_meeting));
+                    alert.setMessage(getString(R.string.are_you_sure_you_want_to_join_this_meeting));
+                    alert.setPositiveButton(getString(R.string.join), (dialogInterface, i) -> joinMeeting(username, MEETING_ID, MEETING_PASSWORD));
+                    alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> buttonDesign.setButtonOutline(binding.button8));
                     alert.show();
                 }
             });
@@ -293,30 +292,30 @@ public class HomeFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.Rate_menu_item) {
             rateTeacher();
         } else if (menuItem.getItemId() == R.id.Teacher_info_menuitem) {
-            snackbarTop.showSnackBar("Fetching details...", true);
+            snackbarTop.showSnackBar(getString(R.string.fetching_details), true);
             userDataViewModel.getUserDetails(teacherData.getUid());
             userDataViewModel.getUserDetailsMutableLiveData().observe(getViewLifecycleOwner(), userDetails -> {
                 Log.d(CONSTANTS.TAG2, String.valueOf(userDetails));
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                 alert.setTitle(teacherData.getUserName());
-                String grade = "Grade: "+userDetails.getGrade();
-                String stateCity = "\nLives in: "+userDetails.getState()+", "+userDetails.getCity();
-                String gender = "\nGender: "+userDetails.getGender();
-                String schoolname = "\nSchool: "+userDetails.getSchoolName();
+                String grade = getString(R.string.grade2)+userDetails.getGrade();
+                String stateCity = "\n"+getString(R.string.lives_in_1)+userDetails.getState()+", "+userDetails.getCity();
+                String gender = "\n"+getString(R.string.gender_2)+userDetails.getGender();
+                String schoolname = "\n"+getString(R.string.school_2)+userDetails.getSchoolName();
                 alert.setMessage(grade+schoolname+stateCity+gender);
-                alert.setPositiveButton("Rate", (dialogInterface, i) -> {
+                alert.setPositiveButton(getString(R.string.rate), (dialogInterface, i) -> {
                     rateTeacher();
                 });
-                alert.setNegativeButton("cancel", null);
+                alert.setNegativeButton(getString(R.string.cancel), null);
                 alert.show();
             });
             userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> snackbarTop.showSnackBar(s, false));
         } else if (menuItem.getItemId() == R.id.leave_class_menu_item) {
             AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-            alert.setTitle("Leave class");
-            alert.setMessage("Are you sure you want to leave this class\nAfter leaving you will not receive any updates about this class");
-            alert.setPositiveButton("leave", (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, teacherData.getFCM_TOKEN(), false, getContext()));
-            alert.setNegativeButton("cancel", null);
+            alert.setTitle(getString(R.string.leave_class));
+            alert.setMessage(getString(R.string.leave_class_msg));
+            alert.setPositiveButton(getString(R.string.leave), (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, teacherData.getFCM_TOKEN(), false, getContext()));
+            alert.setNegativeButton(getString(R.string.cancel), null);
             alert.show();
         } else if (menuItem.getItemId() == R.id.feedbacks_menuitem) {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
@@ -335,7 +334,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                     }
                 });
             } else
-                snackbarTop.showSnackBar("Failed to get phone number", false);
+                snackbarTop.showSnackBar(getString(R.string.failed_to_get_phone_number), false);
         } else if (menuItem.getItemId() == R.id.learnerList_menuitem) {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
             sharedPreferenceClass.setClassID(id);
@@ -348,7 +347,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
         Intent intent = new Intent(getContext(), RateAndFeedbackActivity.class);
         intent.putExtra("id", 2);
         intent.putExtra("teacherID", teacherData.getUid());
-        intent.putExtra("Message", "How was your experience with");
+        intent.putExtra("Message", getString(R.string.feedback_msg_1));
         intent.putExtra("userID", user.getUid());
         intent.putExtra("token", teacherData.getFCM_TOKEN());
         requireContext().startActivity(intent);
@@ -385,10 +384,10 @@ public class HomeFragment extends Fragment implements MenuProvider {
         try{
             ContentProviderResult[] results = requireContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, op_list);
             androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
-            alert.setTitle("Chat with teacher");
-            alert.setMessage("Chat with teacher on whatsapp");
-            alert.setPositiveButton("open whatsapp", (dialogInterface, i) -> openWhatsappContact(teacherData.getPhoneNumber()));
-            alert.setNegativeButton("cancel", null);
+            alert.setTitle(getString(R.string.chat_with_teacher));
+            alert.setMessage(getString(R.string.chat_with_teacher_whatsapp));
+            alert.setPositiveButton(getString(R.string.open_whatsapp), (dialogInterface, i) -> openWhatsappContact(teacherData.getPhoneNumber()));
+            alert.setNegativeButton(getString(R.string.cancel), null);
             alert.show();
         }catch(Exception e){
             Log.d(CONSTANTS.TAG2, e.toString());

@@ -75,7 +75,7 @@ public class Notify {
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
                 Request request = new Request.Builder()
                         .header("Authorization", sharedPreferenceClass.getFCMKey().getKEY())
-                        .url(context.getString(R.string.fcm))
+                        .url("https://fcm.googleapis.com/fcm/send")
                         .post(body)
                         .build();
                 Response response = client.newCall(request).execute();

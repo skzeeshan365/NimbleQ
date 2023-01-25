@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,7 +92,7 @@ public class dialogs {
             CONSTANTS.student_teacher_flag = 1;
             buttonDesign.buttonFill(student_btn);
             buttonDesign.setButtonOutline(teacher_btn);
-            snackbarTop.showSnackBar("Logged in as learner", true);
+            snackbarTop.showSnackBar(context.getString(R.string.logged_in_as_learner), true);
 
             FirebaseMessaging fcm = FirebaseMessaging.getInstance();
 
@@ -140,7 +141,7 @@ public class dialogs {
             CONSTANTS.student_teacher_flag = 2;
             buttonDesign.buttonFill(teacher_btn);
             buttonDesign.setButtonOutline(student_btn);
-            snackbarTop.showSnackBar("Logged in as teacher", true);
+            snackbarTop.showSnackBar(context.getString(R.string.logged_in_as_teacher), true);
 
             databaseReference.child("subjectForTeacher").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -208,7 +209,7 @@ public class dialogs {
             buttonDesign.buttonFill(student_btn);
             buttonDesign.setButtonOutline(teacher_btn);
             updateUserType(uid, CONSTANTS.student_teacher_flag);
-            snackbarTop.showSnackBar("Logged in as learner", true);
+            snackbarTop.showSnackBar(context.getString(R.string.logged_in_as_learner), true);
             alert.dismiss();
         });
 
@@ -217,7 +218,7 @@ public class dialogs {
             buttonDesign.buttonFill(teacher_btn);
             buttonDesign.setButtonOutline(student_btn);
             updateUserType(uid, CONSTANTS.student_teacher_flag);
-            snackbarTop.showSnackBar("Logged in as teacher", true);
+            snackbarTop.showSnackBar(context.getString(R.string.logged_in_as_teacher), true);
             alert.dismiss();
         });
         alert.setView(mView);
@@ -238,7 +239,7 @@ public class dialogs {
         final Spinner subject_spinner = mView.findViewById(R.id.subject_spinner);
 
         final TextView sub_txt = mView.findViewById(R.id.sub_txt);
-        sub_txt.setText("Select subject, topic and time slot");
+        sub_txt.setText(context.getString(R.string.select_slot_hint));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -429,7 +430,7 @@ public class dialogs {
         time_spinner.setVisibility(View.GONE);
 
         final TextView sub_txt = mView.findViewById(R.id.sub_txt);
-        sub_txt.setText("Select subject topic");
+        sub_txt.setText(context.getString(R.string.select_sub_and_topic));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -437,7 +438,7 @@ public class dialogs {
         buttonDesign.setButtonOutline(next_btn);
 
         subjectList  = new ArrayList<>();
-        subjectList.add("Select subject");
+        subjectList.add(context.getString(R.string.select_subject));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -465,9 +466,9 @@ public class dialogs {
             CONSTANTS.student_teacher_flag = 2;
             buttonDesign.buttonFill(next_btn);
             if (subject_spinner.getSelectedItemPosition() == 0) {
-                Toast.makeText(context, "Please select your subject", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.select_your_subject), Toast.LENGTH_SHORT).show();
             } else if (topic_edittext.getText().toString().trim().equals("")) {
-                topic_edittext.setError("Please enter your topic");
+                topic_edittext.setError(context.getString(R.string.please_enter_topic));
             } else {
                 subjectAndTimeSlot subjectAndTimeSlot = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim());
                 updateSubjectForStudents(subjectAndTimeSlot, uid, 2);
@@ -620,16 +621,16 @@ public class dialogs {
                         }
                         FirebaseMessaging fcm = FirebaseMessaging.getInstance();
                         fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot)).addOnFailureListener(e -> {
-                            snackbarTop.showSnackBar("Failed to subscribe for notification ".concat(e.toString()), false);
+                            snackbarTop.showSnackBar(context.getString(R.string.failed_to_subscribe_for_notification).concat(e.toString()), false);
                         });;
                         reference.push().setValue(subjectAndTimeSlot);
-                        snackbarTop.showSnackBar("Slot saved", true);
+                        snackbarTop.showSnackBar(context.getString(R.string.slot_saved), true);
                     } else {
-                        snackbarTop.showSnackBar("Your slots are full, you can view it in settings", false);
+                        snackbarTop.showSnackBar(context.getString(R.string.your_slots_are_full), false);
                     }
                 } else {
                     reference.push().setValue(subjectAndTimeSlot);
-                    snackbarTop.showSnackBar("Slot saved", true);
+                    snackbarTop.showSnackBar(context.getString(R.string.slot_saved), true);
                 }
             }
 
@@ -651,7 +652,7 @@ public class dialogs {
         final Button open_class = mView.findViewById(R.id.open_class_btn);
 
         final TextView success_txt = mView.findViewById(R.id.success_txt);
-        success_txt.setText("Class created with ID: ".concat(classID));
+        success_txt.setText(context.getString(R.string.class_created_with_id).concat(classID));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -686,7 +687,7 @@ public class dialogs {
         final Spinner subject_spinner = mView.findViewById(R.id.subject_spinner);
 
         final TextView sub_txt = mView.findViewById(R.id.sub_txt);
-        sub_txt.setText("Select subject, topic and time slot");
+        sub_txt.setText(context.getString(R.string.select_slot_hint));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -694,7 +695,7 @@ public class dialogs {
         buttonDesign.setButtonOutline(next_btn);
 
         subjectList  = new ArrayList<>();
-        subjectList.add("Select subject");
+        subjectList.add(context.getString(R.string.select_subject));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -714,7 +715,7 @@ public class dialogs {
         });
 
         timeSlotsList  = new ArrayList<>();
-        timeSlotsList.add("Select time slot");
+        timeSlotsList.add(context.getString(R.string.select_time_slot));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -751,11 +752,11 @@ public class dialogs {
             CONSTANTS.student_teacher_flag = 2;
             buttonDesign.buttonFill(next_btn);
             if (subject_spinner.getSelectedItemPosition() == 0) {
-                Toast.makeText(context, "Please select your subject", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.select_your_subject), Toast.LENGTH_SHORT).show();
             } else if (topic_edittext.getText().toString().trim().equals("")) {
-                topic_edittext.setError("Please enter your topic");
+                topic_edittext.setError(context.getString(R.string.please_enter_topic));
             } else if (time_spinner.getSelectedItemPosition() == 0) {
-                Toast.makeText(context, "Please select your time slot", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.please_select_time_slot), Toast.LENGTH_SHORT).show();
             } else {
                 FirebaseMessaging fcm = FirebaseMessaging.getInstance();
                 fcm.unsubscribeFromTopic(TopicSubscription.getTopicForSlot(model));
@@ -765,7 +766,7 @@ public class dialogs {
                     models = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim(), time_spinner.getSelectedItem().toString(), false);
                 reference.setValue(models);
                 fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(models)).addOnSuccessListener(unused -> alert.dismiss()).addOnFailureListener(e -> {
-                    snackbarTop.showSnackBar("Failed to subscribe for notification ".concat(e.toString()), false);
+                    snackbarTop.showSnackBar(context.getString(R.string.failed_to_subscribe_for_notification).concat(e.toString()), false);
                     alert.dismiss();
                 });
             }
@@ -795,7 +796,7 @@ public class dialogs {
         buttonDesign.setButtonOutline(next_btn);
 
         subjectList  = new ArrayList<>();
-        subjectList.add("Select subject");
+        subjectList.add(context.getString(R.string.select_subject));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -828,9 +829,9 @@ public class dialogs {
             CONSTANTS.student_teacher_flag = 2;
             buttonDesign.buttonFill(next_btn);
             if (subject_spinner.getSelectedItemPosition() == 0) {
-                Toast.makeText(context, "Please select your subject", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.select_your_subject), Toast.LENGTH_SHORT).show();
             } else if (topic_edittext.getText().toString().trim().equals("")) {
-                topic_edittext.setError("Please enter your topic");
+                topic_edittext.setError(context.getString(R.string.please_enter_topic));
             } else {
                 if (model.isCurrent())
                     models = new subjectAndTimeSlot(subject_spinner.getSelectedItem().toString(), topic_edittext.getText().toString().trim(), true);
@@ -888,7 +889,7 @@ public class dialogs {
                 teacherList = new ArrayList<>();
                 userData = new ArrayList<>();
 
-                teacherList.add("Select teacher");
+                teacherList.add(context.getString(R.string.select_teacher));
                 userData.add(null);
 
                 TeacherListSpinnerAdapter adapter = new TeacherListSpinnerAdapter(context, teacherList, userData);
@@ -954,19 +955,19 @@ public class dialogs {
         send_btn.setOnClickListener(view -> {
             buttonDesign.buttonFill(send_btn);
             if (topic_edittext.getText().toString().trim().equals("")) {
-                topic_edittext.setError("Please enter your topic");
+                topic_edittext.setError(context.getString(R.string.please_enter_topic));
             } else if (checkBox.isChecked()) {
                 if (spinner.getSelectedItemPosition() == 0)
-                    snackbarTop.showSnackBar("Please select teacher preference", false);
+                    snackbarTop.showSnackBar(context.getString(R.string.please_select_teacher), false);
                 else {
                     ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, requestTeacherData.getUid(), userID);
                     Notify notify = new Notify(context);
-                    String sb = "Subject: "+subject+"\n";
-                    String tp = "Topic: "+topic_edittext.getText().toString().trim()+"\n";
-                    String slot = "Time: "+time_slot;
-                    notify.classRequestPayload("A student has request a class from you", sb+tp+slot, requestTeacherData.getFCM_TOKEN());
+                    String sb = context.getString(R.string.subject1)+subject+"\n";
+                    String tp = context.getString(R.string.topic1)+topic_edittext.getText().toString().trim()+"\n";
+                    String slot = context.getString(R.string.time1)+time_slot;
+                    notify.classRequestPayload(context.getString(R.string.a_student_has_requested_a_class_from_you), sb+tp+slot, requestTeacherData.getFCM_TOKEN());
                     reference.add(classRequestModel).addOnSuccessListener(documentReference -> {
-                        snackbarTop.showSnackBar("Request submitted", true);
+                        snackbarTop.showSnackBar(context.getString(R.string.request_submitted), true);
                         alert.dismiss();
                     }).addOnFailureListener(e -> {
                         snackbarTop.showSnackBar(e.toString(), false);
@@ -976,7 +977,7 @@ public class dialogs {
             } else {
                 ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, userID);
                 reference.add(classRequestModel).addOnSuccessListener(documentReference -> {
-                    snackbarTop.showSnackBar("Request submitted", true);
+                    snackbarTop.showSnackBar(context.getString(R.string.request_submitted), true);
                     alert.dismiss();
                 }).addOnFailureListener(e -> {
                     snackbarTop.showSnackBar(e.toString(), false);
@@ -1023,5 +1024,71 @@ public class dialogs {
             }
         }
         return (5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1) / (rating5 + rating4 + rating3 + rating2 + rating1);
+    }
+
+    public void setLanguage(Activity activity) {
+
+        AlertDialog alert = new AlertDialog.Builder(context).create();
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.change_lang_layout, null);
+
+        final RadioButton btn1 = mView.findViewById(R.id.radioButton1);
+        final RadioButton btn2 = mView.findViewById(R.id.radioBtn2);
+        final RadioButton btn3 = mView.findViewById(R.id.radioBtn3);
+
+        alert.setTitle(context.getString(R.string.app_language_title));
+        alert.setMessage(context.getString(R.string.app_lang_message));
+        alert.setView(mView);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("selectedLanguage", Context.MODE_PRIVATE);
+
+        if (sharedPreferences.getString("language", null) == null)
+            btn1.setChecked(true);
+        else if (sharedPreferences.getString("language", null).equals("en"))
+            btn2.setChecked(true);
+        else if (sharedPreferences.getString("language", null).equals("hi"))
+            btn3.setChecked(true);
+
+        btn1.setText(context.getString(R.string.app_lang_default));
+        btn1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn1.isChecked()) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear().apply();
+                alert.dismiss();
+                snackbarTop.showSnackBar("Settings applied", true);
+                restart(activity);
+            }
+        });
+
+        btn2.setText(context.getString(R.string.app_lang_english));
+        btn2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn2.isChecked()) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("language","en");
+                editor.commit();
+                alert.dismiss();
+                snackbarTop.showSnackBar("Settings applied", true);
+                restart(activity);
+            }
+        });
+
+        btn3.setText(context.getString(R.string.app_lang_hindi));
+        btn3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn3.isChecked()) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("language","hi");
+                editor.commit();
+                alert.dismiss();
+                snackbarTop.showSnackBar("Settings applied", true);
+                restart(activity);
+            }
+        });
+        alert.show();
+    }
+    public void restart(Activity activity){
+        Intent intent = new Intent(context, MainActivity.class);
+        activity.startActivity(intent);
+        activity.finishAffinity();
     }
 }

@@ -3,6 +3,7 @@ package com.reiserx.nimbleq.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,12 +23,15 @@ import com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListActivity;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.zoomCredentials;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityMainBinding;
+
+import java.util.Locale;
 
 import us.zoom.sdk.ZoomSDK;
 import us.zoom.sdk.ZoomSDKInitParams;
@@ -46,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     UserTypeClass userTypeClass;
 
     private slotsViewModel viewModel;
+
+    public static final String Default="en";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,46 +132,46 @@ public class MainActivity extends AppCompatActivity {
         if (userTypeClass.isUserLearner()) {
 
             //holder 1
-            binding.classTxt.setText("View class");
-            binding.classDesc.setText("Click to view avaibale classes");
+            binding.classTxt.setText(getString(R.string.view_class));
+            binding.classDesc.setText(getString(R.string.view_class_msg));
             //holder 1
 
             //holder 2
-            binding.textView23.setText("Solve doubts");
-            binding.textView24.setText("Click to solve your doubts");
+            binding.textView23.setText(getString(R.string.solve_doubts));
+            binding.textView24.setText(getString(R.string.solve_doubts_msg));
             //holder 2
 
             //holder 3
-            binding.classTxt2.setText("View joined classes");
-            binding.classDesc2.setText("Click to view classes you have joined");
+            binding.classTxt2.setText(getString(R.string.view_joined_class));
+            binding.classDesc2.setText(getString(R.string.view_joined_class_msg));
             //holder 3
 
             //holder 4
-            binding.classTxt3.setText("View your class requests");
-            binding.classDesc3.setText("Click to view your class requests");
+            binding.classTxt3.setText(getString(R.string.view_your_class_requests));
+            binding.classDesc3.setText(getString(R.string.view_your_class_requests_msg));
             //holder 4
             binding.feedbacksHolder.setVisibility(View.GONE);
 
         } else if (!userTypeClass.isUserLearner()) {
 
             //holder 1
-            binding.classTxt.setText("Create class");
-            binding.classDesc.setText("Click to view available class slots");
+            binding.classTxt.setText(getString(R.string.create_class));
+            binding.classDesc.setText(getString(R.string.create_class_msg));
             //holder 1
 
             //holder 2
-            binding.textView23.setText("View doubts");
-            binding.textView24.setText("Click to view learner's doubts");
+            binding.textView23.setText(getString(R.string.view_doubts));
+            binding.textView24.setText(getString(R.string.view_doubts_msg));
             //holder 2
 
             //holder 3
-            binding.classTxt2.setText("View your classes");
-            binding.classDesc2.setText("Click to view classes you have created");
+            binding.classTxt2.setText(getString(R.string.view_your_class));
+            binding.classDesc2.setText(getString(R.string.view_your_class_msg));
             //holder 3
 
             //holder 4
-            binding.classTxt3.setText("View class requests");
-            binding.classDesc3.setText("Click to view available class requests");
+            binding.classTxt3.setText(getString(R.string.view_class_requests));
+            binding.classDesc3.setText(getString(R.string.view_class_requests_msg));
             //holder 4
 
             //holder 5
@@ -263,5 +269,19 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+    }
+
+    protected void onStart() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("selectedLanguage", Context.MODE_PRIVATE);
+        String pine = sharedPreferences.getString("language", Default);
+        Locale locale;
+        locale = new Locale(pine);
+        Locale.setDefault(locale);//set new locale as default
+        Configuration config = new Configuration();//get Configuration
+        config.locale = locale;//set config locale as selected locale
+        this.getResources().updateConfiguration(config, this.getResources().getDisplayMetrics());
+        invalidateOptionsMenu();
+        setTitle(R.string.app_name);
+        super.onStart();
     }
 }

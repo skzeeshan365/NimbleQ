@@ -44,14 +44,14 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        data.add("User list");
-        data.add("Student list");
-        data.add("Teacher list");
-        data.add("Grade list");
-        data.add("Subject list");
-        data.add("Time slot list");
-        data.add("Class list by demand");
-        data.add("Class list by rating");
+        data.add(getString(R.string.user_list));
+        data.add(getString(R.string.student_list));
+        data.add(getString(R.string.teacher_list));
+        data.add(getString(R.string.grade_list));
+        data.add(getString(R.string.subject_list));
+        data.add(getString(R.string.time_slot_list));
+        data.add(getString(R.string.class_list_by_demand));
+        data.add(getString(R.string.class_list_by_rating));
     }
 
     @Override

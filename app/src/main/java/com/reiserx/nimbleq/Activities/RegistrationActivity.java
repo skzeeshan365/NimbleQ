@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.userDetails;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
@@ -64,7 +65,7 @@ public class RegistrationActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        setTitle("Registration");
+        setTitle(getString(R.string.registration));
 
         snackbarTop = new SnackbarTop(findViewById(android.R.id.content));
 
@@ -84,17 +85,17 @@ public class RegistrationActivity extends AppCompatActivity {
 
         binding.button5.setOnClickListener(view -> {
             if (binding.editTextTextPersonName2.getText().toString().trim().equals(""))
-                binding.editTextTextPersonName2.setError("Please enter your name");
+                binding.editTextTextPersonName2.setError(getString(R.string.enter_user_name));
             else if (binding.gradeSpinner.getSelectedItemPosition() == 0) {
-                snackbarTop.showSnackBar("Please select your grade", false);
+                snackbarTop.showSnackBar(getString(R.string.select_grade), false);
             } else if (binding.schoolNameEdittext.getText().toString().trim().equals("")) {
-                binding.schoolNameEdittext.setError("Please enter your school");
+                binding.schoolNameEdittext.setError(getString(R.string.enter_school_name));
             } else if (binding.statesSpinner.getSelectedItemPosition() == 0) {
-                snackbarTop.showSnackBar("Please select your state", false);
+                snackbarTop.showSnackBar(getString(R.string.select_state), false);
             } else if (binding.citiesSpinner.getSelectedItemPosition() == 0) {
-                snackbarTop.showSnackBar("Please select your city", false);
+                snackbarTop.showSnackBar(getString(R.string.select_city), false);
             } else if (gender == null) {
-                snackbarTop.showSnackBar("Please select your gender", false);
+                snackbarTop.showSnackBar(getString(R.string.select_gender), false);
             } else {
                 buttonDesign.buttonFill(binding.button5);
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();

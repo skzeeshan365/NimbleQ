@@ -38,7 +38,7 @@
         android:layout_marginBottom="16dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:text="Open class"
+        android:text="@string/open_class"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/success_txt" />
@@ -50,7 +50,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="16dp"
-        android:text="close"
+        android:text="@string/close"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/success_txt" />

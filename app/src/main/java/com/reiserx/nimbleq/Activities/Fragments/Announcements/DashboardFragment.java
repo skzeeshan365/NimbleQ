@@ -101,7 +101,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
             binding.progHolder.setVisibility(View.GONE);
         });
         viewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
-            binding.textView9.setText("Announcements not available");
+            binding.textView9.setText(getString(R.string.announcements_not_avail));
             binding.recycler.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
             binding.progressBar2.setVisibility(View.GONE);
@@ -112,7 +112,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
             else {
                 binding.progButton.setVisibility(View.VISIBLE);
                 buttonDesign.setButtonOutline(binding.progButton);
-                binding.progButton.setText("Post announcement");
+                binding.progButton.setText(getString(R.string.post_announcements));
                 binding.progButton.setOnClickListener(view -> {
                     Intent intent = new Intent(getContext(), AnnouncementsActivity.class);
                     intent.putExtra("id", id);
@@ -177,7 +177,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
         }
         if (enabled) {
             if (filteredDataList.isEmpty()) {
-                binding.textView9.setText("Announcements not available");
+                binding.textView9.setText(getString(R.string.announcements_not_avail));
                 binding.recycler.setVisibility(View.GONE);
                 binding.progHolder.setVisibility(View.VISIBLE);
                 binding.progressBar2.setVisibility(View.GONE);

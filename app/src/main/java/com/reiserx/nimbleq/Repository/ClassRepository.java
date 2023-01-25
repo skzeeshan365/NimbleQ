@@ -24,6 +24,7 @@ import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.Notify;
 import com.reiserx.nimbleq.Utils.TopicSubscription;
 
@@ -74,14 +75,14 @@ public class ClassRepository {
     public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = "Class: " + classModel.getClassName() + "\n";
-            String subject = "Subject: " + classModel.getSubject() + "\n";
-            String topic = "Topic: " + classModel.getTopic() + "\n";
-            String schedule = "Time: " + classModel.getTime_slot() + "\n";
-            String teacher = "Teacher: " + teacherName;
+            String classNmae = context.getString(R.string.class1) + classModel.getClassName() + "\n";
+            String subject = context.getString(R.string.subject1) + classModel.getSubject() + "\n";
+            String topic = context.getString(R.string.topic1) + classModel.getTopic() + "\n";
+            String schedule = context.getString(R.string.time1) + classModel.getTime_slot() + "\n";
+            String teacher = context.getString(R.string.teacher1) + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
-            notify.createClassPayload("New class has been created based on your slot", message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
+            notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
             onCreateClassComplete.onClassCreated(reference.getId());
 
             userDataReference.child(request.getStudentID()).child("FCM_TOKEN").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -90,13 +91,12 @@ public class ClassRepository {
                     if (snapshot.exists()) {
                         String token = snapshot.getValue(String.class);
                         if (token != null)
-                            notify.createClassPayloadForSingleUser("New class has been created based on your request", message, token, reference.getId());
+                            notify.createClassPayloadForSingleUser(context.getString(R.string.new_class_has_been_created_based_on_your_request), message, token, reference.getId());
                     }
 
                     request.setAccepted(true);
 
                     FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests").document(request.getId()).set(request).addOnSuccessListener(unused -> {
-                        Log.d(CONSTANTS.TAG2, "done");
                     }).addOnFailureListener(e -> {
                         Log.d(CONSTANTS.TAG2, e.toString());
                     });
@@ -117,14 +117,14 @@ public class ClassRepository {
 
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = "Class: " + classModel.getClassName() + "\n";
-            String subject = "Subject: " + classModel.getSubject() + "\n";
-            String topic = "Topic: " + classModel.getTopic() + "\n";
-            String schedule = "Time: " + classModel.getTime_slot() + "\n";
-            String teacher = "Teacher: " + teacherName;
+            String classNmae = context.getString(R.string.class1) + classModel.getClassName() + "\n";
+            String subject = context.getString(R.string.subject1) + classModel.getSubject() + "\n";
+            String topic = context.getString(R.string.topic1) + classModel.getTopic() + "\n";
+            String schedule = context.getString(R.string.time1)+ classModel.getTime_slot() + "\n";
+            String teacher = context.getString(R.string.teacher1) + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
-            notify.createClassPayload("New class has been created based on your slot", message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
+            notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
             onCreateClassComplete.onClassCreated(reference.getId());
         }).addOnFailureListener(e -> {
             onCreateClassComplete.onFailure(e.toString());
@@ -419,9 +419,9 @@ public class ClassRepository {
         reference.collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating"), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating)), token);
             else
-                notify.classReviewPayload("New feedback for your class ".concat(className), userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating with \nfeedback: " + ratingModel.getFeedback()), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating_with_feedback) + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> {
             onRatingSubmitted.onFailure(e.toString());
@@ -464,9 +464,9 @@ public class ClassRepository {
         reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating"), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating)), token);
             else
-                notify.classReviewPayload("New feedback for you ", userID.getUserName().concat(" has given " + ratingModel.getRating() + " star rating with \nfeedback: " + ratingModel.getFeedback()), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating_with_feedback) + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> {
             onRatingSubmitted.onFailure(e.toString());

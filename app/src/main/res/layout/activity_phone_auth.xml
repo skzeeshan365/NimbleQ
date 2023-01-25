@@ -21,7 +21,7 @@
         android:id="@+id/phonelb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Verify your phone number"
+        android:text="@string/verify_your_phone_number"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Farae will send you a messege with OTP"
+        android:text="@string/app_will_send_a_message_with_otp"
         android:textColor="#9C9898"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="@+id/phonelb"
@@ -88,7 +88,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="32dp"
                 android:layout_marginBottom="8dp"
-                android:text="Next"
+                android:text="@string/next"
                 android:textColor="#FFFFFF"
                 android:visibility="gone" />
         </LinearLayout>

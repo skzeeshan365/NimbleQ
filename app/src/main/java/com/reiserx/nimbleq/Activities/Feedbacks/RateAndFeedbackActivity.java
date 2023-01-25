@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hsalf.smileyrating.SmileyRating;
 import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
@@ -36,7 +37,7 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
         binding = ActivityRateAndFeedbackBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setTitle("Rate and feedback");
+        setTitle(getString(R.string.rate_and_feedback));
 
         ButtonDesign buttonDesign = new ButtonDesign(this);
         buttonDesign.setButtonOutline(binding.button3);
@@ -100,9 +101,9 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
         }
         classViewModel.getRatingSubmittedMutableLiveData().observe(this, unused -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setTitle("Feedback submitted");
-            alert.setMessage("Thanks for submitting your feedback");
-            alert.setPositiveButton("close", (dialogInterface, i) -> {
+            alert.setTitle(getString(R.string.feedback_submitted));
+            alert.setMessage(getString(R.string.feedback_submitted_msg));
+            alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> {
                 finish();
             });
             alert.show();

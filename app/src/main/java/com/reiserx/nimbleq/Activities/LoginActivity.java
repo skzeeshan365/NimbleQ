@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
             buttonDesign.setButtonOutline(binding.includePhoneSignin.button);
             binding.includePhoneSignin.getRoot().setVisibility(View.VISIBLE);
             binding.includePhoneSignin.getRoot().startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-            binding.singinTxt.setText("Sign in with phone");
+            binding.singinTxt.setText(getString(R.string.sign_in_with_phone));
             isMoved_phone = true;
             process();
         });
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
             binding.loginMainHolder.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
             binding.loginMainHolder.setVisibility(View.VISIBLE);
 
-            binding.singinTxt.setText("Sign in with");
+            binding.singinTxt.setText(getString(R.string.sign_in_with));
             isMoved_phone = false;
         } else {
             finishAffinity();

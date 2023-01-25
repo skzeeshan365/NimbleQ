@@ -72,21 +72,21 @@ public class FragmentTimeSlots extends Fragment {
         View mView = inflater.inflate(R.layout.single_textview_dialog, null);
         final TextView editText = mView.findViewById(R.id.textView26);
 
-        editText.setHint("Enter a subject name");
+        editText.setHint(getString(R.string.select_time_slot));
 
-        alert.setTitle("Add time slot");
-        alert.setMessage("This slot list will be used throughout the app\nNote. Uppercase and lowercase letters are considered distinct");
+        alert.setTitle(getString(R.string.add_time_slot));
+        alert.setMessage(getString(R.string.add_time_slot_msg));
 
         editText.setOnClickListener(view -> showTimeDialog(editText));
-        alert.setPositiveButton("Add", (dialogInterface, i) -> {
+        alert.setPositiveButton(getString(R.string.add), (dialogInterface, i) -> {
             if (editText.getText().toString().trim().equals(""))
-                Toast.makeText(getContext(), "Please enter a subject", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.select_time_slot), Toast.LENGTH_SHORT).show();
             else {
                 viewModel.updateSlotModelList(editText.getText().toString().trim());
             }
         });
 
-        alert.setNegativeButton("cancel", null);
+        alert.setNegativeButton(getString(R.string.cancel), null);
 
         alert.setView(mView);
         alert.show();

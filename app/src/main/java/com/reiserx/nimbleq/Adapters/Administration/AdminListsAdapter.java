@@ -51,19 +51,16 @@ public class AdminListsAdapter extends RecyclerView.Adapter<AdminListsAdapter.Li
         AdminListModel model = data.get(position);
         holder.binding.textView25.setText(model.getName());
 
-        holder.binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                alert.setTitle("Delete element");
-                alert.setTitle("Are you sure you want to delete ".concat(model.getName()));
-                alert.setPositiveButton("delete", (dialogInterface, i) -> {
-                    model.getReference().removeValue();
-                });
-                alert.setNegativeButton("cancel", null);
-                alert.show();
-                return false;
-            }
+        holder.binding.getRoot().setOnLongClickListener(view -> {
+            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+            alert.setTitle(context.getString(R.string.delete_element));
+            alert.setTitle(context.getString(R.string.are_you_sure_you_want_to_delete).concat(model.getName()));
+            alert.setPositiveButton(context.getString(R.string.delete), (dialogInterface, i) -> {
+                model.getReference().removeValue();
+            });
+            alert.setNegativeButton(context.getString(R.string.cancel), null);
+            alert.show();
+            return false;
         });
     }
 

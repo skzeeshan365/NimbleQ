@@ -46,7 +46,7 @@ public class SlotsListActivity extends AppCompatActivity {
         binding.progressBar2.setVisibility(View.VISIBLE);
         binding.textView9.setVisibility(View.GONE);
 
-        setTitle("Available slots");
+        setTitle(getString(R.string.available_slots));
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();

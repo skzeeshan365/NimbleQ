@@ -15,7 +15,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/textbox_outline"
         android:padding="8dp"
-        android:text="Select time slot"
+        android:text="@string/select_time_slot"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -84,7 +84,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
 
         if (!userTypeClass.isUserLearner()) {
             if (dataType == 0) {
-                setTitle("Your Classes");
+                setTitle(getString(R.string.your_classes));
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
 
@@ -97,7 +97,6 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
                     binding.progHolder.setVisibility(View.GONE);
                 });
                 classViewModel.getClassListErrorMutableLiveData().observe(this, s -> {
-                    android.util.Log.d(CONSTANTS.TAG2, "gfgh");
                     binding.textView9.setText(s);
                     binding.recycler.setVisibility(View.GONE);
                     binding.progHolder.setVisibility(View.VISIBLE);
@@ -105,7 +104,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
                     binding.textView9.setVisibility(View.VISIBLE);
                 });
             } else if (dataType == 1) {
-                setTitle("Class Requests");
+                setTitle(getString(R.string.class_requests));
                 requestClassAdapter requestClassAdapter = new requestClassAdapter(this, findViewById(android.R.id.content), user.getUid());
                 binding.recycler.setAdapter(requestClassAdapter);
 
@@ -135,7 +134,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
             }
         } else {
             if (dataType == 0) {
-                setTitle("Classes");
+                setTitle(getString(R.string.classes));
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
 
@@ -177,7 +176,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
                     requestClass(subjectAndTimeSlot.getSubject(), subjectAndTimeSlot.getTopic(), subjectAndTimeSlot.getTimeSlot());
                 });
             } else if (dataType == 1) {
-                setTitle("Class Requests");
+                setTitle(getString(R.string.class_requests));
 
                 requestClassAdapter requestClassAdapter = new requestClassAdapter(this, findViewById(android.R.id.content), user.getUid());
                 binding.recycler.setAdapter(requestClassAdapter);
@@ -205,7 +204,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
                 });
             } else if (dataType == 2) {
 
-                setTitle("Joined classes");
+                setTitle(getString(R.string.joined_classes));
                 classListAdapter adapter = new classListAdapter(this);
                 binding.recycler.setAdapter(adapter);
 

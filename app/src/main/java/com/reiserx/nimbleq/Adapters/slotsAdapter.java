@@ -82,7 +82,7 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
 
             holder.binding.slotHolder.setOnClickListener(view -> {
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                snackbarTop.showSnackBar("Checking class", true);
+                snackbarTop.showSnackBar(context.getString(R.string.checking_class), true);
                 CollectionReference collection = firestore.collection("Main").document("Class").collection("ClassInfo");
 
                 Query query = collection
@@ -103,21 +103,21 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                             classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                             if (classModel != null) {
                                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                                alert.setTitle("Class already exist");
-                                alert.setMessage("Class name: ".concat(classModel.getClassName()) + "\nDo you want to open it");
-                                alert.setPositiveButton("open class", (dialogInterface, i) -> {
+                                alert.setTitle(context.getString(R.string.class_already_exists));
+                                alert.setMessage(context.getString(R.string.class_name1).concat(classModel.getClassName()) + "\n".concat(context.getString(R.string.do_you_want_to_open_it)));
+                                alert.setPositiveButton(context.getString(R.string.open_class), (dialogInterface, i) -> {
                                     Intent intent = new Intent(context, ClassActivity.class);
                                     intent.putExtra("classID", document.getId());
                                     context.startActivity(intent);
                                 });
-                                alert.setNegativeButton("create class", (dialogInterface, i) -> {
+                                alert.setNegativeButton(context.getString(R.string.create_class), (dialogInterface, i) -> {
                                     Intent intent = new Intent(context, CreateClass.class);
                                     intent.putExtra("subject", model.getSubject());
                                     intent.putExtra("topic", model.getTopic());
                                     intent.putExtra("slot", model.getTimeSlot());
                                     context.startActivity(intent);
                                 });
-                                alert.setNeutralButton("cancel", null);
+                                alert.setNeutralButton(context.getString(R.string.cancel), null);
                                 alert.show();
                             }
                         }
@@ -133,9 +133,9 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
 
             holder.binding.deleteImg.setOnClickListener(view -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                alert.setTitle("Delete slot");
-                alert.setMessage("Are you sure you want to delete this slot");
-                alert.setPositiveButton("Delete", (dialogInterface, i) -> {
+                alert.setTitle(context.getString(R.string.delete_slot));
+                alert.setMessage(context.getString(R.string.delete_slot_msg));
+                alert.setPositiveButton(context.getString(R.string.delete), (dialogInterface, i) -> {
                     FirebaseMessaging fcm = FirebaseMessaging.getInstance();
                     fcm.unsubscribeFromTopic(TopicSubscription.getTopicForSlot(model));
 
@@ -169,9 +169,9 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                         });
                     }
                     model.getReference().child(model.getKey()).removeValue();
-                    snackbarTop.showSnackBar("Slot deleted", true);
+                    snackbarTop.showSnackBar(context.getString(R.string.slot_deleted), true);
                 });
-                alert.setNegativeButton("cancel", null);
+                alert.setNegativeButton(context.getString(R.string.cancel), null);
                 alert.show();
             });
 

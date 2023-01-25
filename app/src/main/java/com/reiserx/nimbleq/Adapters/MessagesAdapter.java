@@ -174,7 +174,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 viewHolder.binding.replyMsgAdapter.setOnClickListener(view -> clickReply(message.getReplyid()));
                 viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
                 if (message.getReplyuid().equals(uid)) {
-                    viewHolder.binding.replyName.setText("me");
+                    viewHolder.binding.replyName.setText(context.getString(R.string.me));
                 } else viewHolder.binding.replyName.setText(message.getReplyname());
             } else {
                 viewHolder.binding.replyName.setVisibility(View.GONE);
@@ -244,7 +244,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
 
                 if (message.getReplyuid().equals(uid)) {
-                    viewHolder.binding.replyName.setText("me");
+                    viewHolder.binding.replyName.setText(context.getString(R.string.me));
                 } else viewHolder.binding.replyName.setText(message.getReplyname());
             } else {
                 viewHolder.binding.replyName.setVisibility(View.GONE);
@@ -271,7 +271,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
 
                 if (message.getReplyuid().equals(uid)) {
-                    viewHolder.binding.replyName.setText("me");
+                    viewHolder.binding.replyName.setText(context.getString(R.string.me));
                 } else viewHolder.binding.replyName.setText(message.getReplyname());
             } else {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.GONE);
@@ -298,7 +298,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
 
                 if (message.getReplyuid().equals(uid)) {
-                    viewHolder.binding.replyName.setText("me");
+                    viewHolder.binding.replyName.setText(context.getString(R.string.me));
                 } else viewHolder.binding.replyName.setText(message.getReplyname());
             } else {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.GONE);
@@ -326,7 +326,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 viewHolder.binding.replyName.setOnClickListener(view -> clickReply(message.getReplyid()));
 
                 if (message.getReplyuid().equals(uid)) {
-                    viewHolder.binding.replyName.setText("me");
+                    viewHolder.binding.replyName.setText(context.getString(R.string.me));
                 } else viewHolder.binding.replyName.setText(message.getReplyname());
             } else {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.GONE);
@@ -441,9 +441,9 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
     public void deleteMessage(Message message, int pos) {
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
-        alert.setTitle("Delete message");
-        alert.setMessage("Are you sure you want to delete this message");
-        alert.setPositiveButton("delete", (dialogInterface, i) -> {
+        alert.setTitle(context.getString(R.string.delete_message));
+        alert.setMessage(context.getString(R.string.delete_message_msg));
+        alert.setPositiveButton(context.getString(R.string.delete), (dialogInterface, i) -> {
             Calendar c = Calendar.getInstance();
             @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
             HashMap<String, Object> map = new HashMap<>();
@@ -461,12 +461,11 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 message1.setMessageId(message.getMessageId());
                 map.clear();
                 messages.set(pos, message1);
-                Log.d(CONSTANTS.TAG2, "deleted");
                 adapter.notifyItemChanged(pos, message1);
             }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
         });
 
-        alert.setNegativeButton("cancel", null);
+        alert.setNegativeButton(context.getString(R.string.cancel), null);
         alert.show();
     }
 
@@ -481,7 +480,6 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         if (filePath.exists()) {
             openFile(context, filePath.getPath());
         } else {
-            Log.d(CONSTANTS.TAG2, "file not exist");
             FileDownloader fileDownloader = new FileDownloader(context);
             fileDownloader.download(url, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Padhai Madad", filename);
         }

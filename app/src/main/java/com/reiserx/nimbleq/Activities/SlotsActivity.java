@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Adapters.slotsAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.Utils.dialogs;
@@ -46,7 +47,7 @@ public class SlotsActivity extends AppCompatActivity {
         binding = ActivitySlotsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setTitle("Slots");
+        setTitle(getString(R.string.slots));
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();

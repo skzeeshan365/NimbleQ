@@ -171,7 +171,7 @@ public class FragmentLearnerListForClass extends Fragment implements MenuProvide
             }
         }
             if (userData1.isEmpty()) {
-                binding.textView9.setText("Users not available");
+                binding.textView9.setText(getString(R.string.users_not_avail));
                 binding.recycler.setVisibility(View.GONE);
                 binding.progHolder.setVisibility(View.VISIBLE);
                 binding.progressBar2.setVisibility(View.GONE);
@@ -323,7 +323,7 @@ public class FragmentLearnerListForClass extends Fragment implements MenuProvide
             binding.recycler.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         } else {
-            binding.textView9.setText("No user available for this filter");
+            binding.textView9.setText(getString(R.string.no_user_avail_for_this_filter));
             binding.recycler.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
             binding.progressBar2.setVisibility(View.GONE);
@@ -343,7 +343,7 @@ public class FragmentLearnerListForClass extends Fragment implements MenuProvide
             binding.recycler.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         } else {
-            binding.textView9.setText("No user available for this filter");
+            binding.textView9.setText(getString(R.string.no_user_avail_for_this_filter));
             binding.recycler.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
             binding.progressBar2.setVisibility(View.GONE);

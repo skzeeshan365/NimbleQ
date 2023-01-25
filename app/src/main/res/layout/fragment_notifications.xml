@@ -43,7 +43,7 @@
                     android:cursorVisible="true"
                     android:ems="10"
                     android:fontFamily="sans-serif"
-                    android:hint="Type a messege"
+                    android:hint="@string/type_a_msg"
                     android:inputType="textMultiLine"
                     android:maxLines="5"
                     android:paddingLeft="10dp"

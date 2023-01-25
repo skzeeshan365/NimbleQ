@@ -128,13 +128,13 @@ public class SecondFragment extends Fragment {
 
     void submitDoubt() {
         if (binding.subjectTxt.getText().toString().trim().equals(""))
-            binding.subjectTxt.setError("Please enter subject");
+            binding.subjectTxt.setError(getString(R.string.please_enter_a_subject));
         else if (binding.doubtTopicTxt.getText().toString().trim().equals(""))
-            binding.doubtTopicTxt.setError("Please enter topic");
+            binding.doubtTopicTxt.setError(getString(R.string.please_enter_topic));
         else if (binding.doubtOneLineXt.getText().toString().trim().equals(""))
-            binding.doubtOneLineXt.setError("Please enter short description");
+            binding.doubtOneLineXt.setError(getString(R.string.please_enter_short_desc));
         else if (binding.doubtDescTxt.getText().toString().trim().equals(""))
-            binding.doubtDescTxt.setError("Please enter description");
+            binding.doubtDescTxt.setError(getString(R.string.please_enter_desc));
         else {
             Calendar cal = Calendar.getInstance();
             long currentTime = cal.getTimeInMillis();
@@ -144,9 +144,9 @@ public class SecondFragment extends Fragment {
             doubtsViewModel.submitDoubt(model, links);
             doubtsViewModel.getFileSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                alert.setTitle("Success");
-                alert.setMessage("Doubt has been submitted");
-                alert.setPositiveButton("close", (dialogInterface, i) -> requireActivity().onBackPressed());
+                alert.setTitle(getString(R.string.success));
+                alert.setMessage(getString(R.string.doubt_submitted));
+                alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> requireActivity().onBackPressed());
                 alert.setCancelable(false);
                 alert.show();
             });
@@ -158,9 +158,9 @@ public class SecondFragment extends Fragment {
         binding.attachHolder.setOnClickListener(view -> {
             if (mimetype != null && mimetype.length != 0) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                alert.setMessage("Send a photo");
+                alert.setMessage(getString(R.string.send_a_photo));
 
-                alert.setPositiveButton("Files", (dialogInterface, i) -> {
+                alert.setPositiveButton(getString(R.string.files), (dialogInterface, i) -> {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("*/*");
@@ -168,7 +168,7 @@ public class SecondFragment extends Fragment {
                     intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
                     FilesActivityResultLauncher.launch(intent);
                 });
-                alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> {
                     FishBun.with(SecondFragment.this)
                             .setImageAdapter(new GlideAdapter())
                             .setIsUseDetailView(true)
@@ -179,10 +179,10 @@ public class SecondFragment extends Fragment {
                             .setButtonInAlbumActivity(false)
                             .setCamera(true)
                             .setReachLimitAutomaticClose(true)
-                            .setAllViewTitle("All")
-                            .setActionBarTitle("Image Library")
-                            .textOnImagesSelectionLimitReached("Limit Reached!")
-                            .textOnNothingSelected("Nothing Selected")
+                            .setAllViewTitle(getString(R.string.all))
+                            .setActionBarTitle(getString(R.string.images))
+                            .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                            .textOnNothingSelected(getString(R.string.nothing_selected))
                             .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
                             .isStartInAllView(false)
                             .exceptMimeType(listOf(MimeType.GIF))
@@ -201,10 +201,10 @@ public class SecondFragment extends Fragment {
                         .setButtonInAlbumActivity(false)
                         .setCamera(true)
                         .setReachLimitAutomaticClose(true)
-                        .setAllViewTitle("All")
-                        .setActionBarTitle("Image Library")
-                        .textOnImagesSelectionLimitReached("Limit Reached!")
-                        .textOnNothingSelected("Nothing Selected")
+                        .setAllViewTitle(getString(R.string.all))
+                        .setActionBarTitle(getString(R.string.images))
+                        .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                        .textOnNothingSelected(getString(R.string.nothing_selected))
                         .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
                         .isStartInAllView(false)
                         .exceptMimeType(listOf(MimeType.GIF))
@@ -243,7 +243,7 @@ public class SecondFragment extends Fragment {
                             if (!adapter.isElementExist(getFileName(getContext(), result.getData().getData()))) {
                                 firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), result.getData().getData());
                             } else
-                                snackbarTop.showSnackBar("File already added", false);
+                                snackbarTop.showSnackBar(getString(R.string.file_already_added), false);
                         }
                     }
                 }

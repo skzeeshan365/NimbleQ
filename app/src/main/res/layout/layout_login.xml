@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Sign in"
+        android:text="@string/sign_in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
@@ -38,7 +38,7 @@
             android:layout_marginBottom="8dp"
             android:background="@color/transparent"
             android:ems="10"
-            android:hint="Enter phone number"
+            android:hint="@string/enter_phone_number"
             android:inputType="phone"
             android:maxLength="10"
             android:paddingLeft="8dp"

@@ -78,7 +78,6 @@ public class SubmitAnswerFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentSubmitAnswerBinding.inflate(inflater, container, false);
 
         firebaseStorageViewModel = new ViewModelProvider(this).get(FirebaseStorageViewModel.class);
@@ -111,21 +110,21 @@ public class SubmitAnswerFragment extends Fragment {
         buttonDesign = new ButtonDesign(getContext());
         buttonDesign.setButtonOutline(binding.submitAnswerBtn);
 
-        postDoubt();
+        postAnswer();
         attachFile();
         observers();
     }
 
-    void postDoubt() {
+    void postAnswer() {
         binding.submitAnswerBtn.setOnClickListener(view -> {
             buttonDesign.buttonFill(binding.submitAnswerBtn);
-            submitDoubt();
+            submitAnswer();
         });
     }
 
-    void submitDoubt() {
+    void submitAnswer() {
         if (binding.answerDescTxt.getText().toString().trim().equals(""))
-            binding.answerDescTxt.setError("Please enter subject");
+            binding.answerDescTxt.setError(getString(R.string.field_required));
         else {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
             DoubtsModel doubtsModel = sharedPreferenceClass.getDoubtInfo();
@@ -137,11 +136,11 @@ public class SubmitAnswerFragment extends Fragment {
                 doubtsViewModel.submitAnswer(answerModel, links);
                 doubtsViewModel.getAnswerSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
                     Notify notify = new Notify(getContext());
-                    notify.submitAnswerPayload(userName.concat(" has answered your doubt"), binding.answerDescTxt.getText().toString().trim(), userData.getFCM_TOKEN(), doubtsModel);
+                    notify.submitAnswerPayload(userName.concat(getString(R.string.has_answered_doubt)), binding.answerDescTxt.getText().toString().trim(), userData.getFCM_TOKEN(), doubtsModel);
                     AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                    alert.setTitle("Success");
-                    alert.setMessage("Answer has been submitted");
-                    alert.setPositiveButton("close", (dialogInterface, i) -> requireActivity().onBackPressed());
+                    alert.setTitle(getString(R.string.success));
+                    alert.setMessage(getString(R.string.answer_has_been_submitted));
+                    alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> requireActivity().onBackPressed());
                     alert.setCancelable(false);
                     alert.show();
                 });
@@ -154,9 +153,9 @@ public class SubmitAnswerFragment extends Fragment {
         binding.attachHolder.setOnClickListener(view -> {
             if (mimetype != null && mimetype.length != 0) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                alert.setMessage("Send a photo");
+                alert.setMessage(getString(R.string.send_a_photo));
 
-                alert.setPositiveButton("Files", (dialogInterface, i) -> {
+                alert.setPositiveButton(getString(R.string.files), (dialogInterface, i) -> {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("*/*");
@@ -164,7 +163,7 @@ public class SubmitAnswerFragment extends Fragment {
                     intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
                     FilesActivityResultLauncher.launch(intent);
                 });
-                alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> {
                     FishBun.with(SubmitAnswerFragment.this)
                             .setImageAdapter(new GlideAdapter())
                             .setIsUseDetailView(true)
@@ -175,10 +174,10 @@ public class SubmitAnswerFragment extends Fragment {
                             .setButtonInAlbumActivity(false)
                             .setCamera(true)
                             .setReachLimitAutomaticClose(true)
-                            .setAllViewTitle("All")
-                            .setActionBarTitle("Image Library")
-                            .textOnImagesSelectionLimitReached("Limit Reached!")
-                            .textOnNothingSelected("Nothing Selected")
+                            .setAllViewTitle(getString(R.string.all))
+                            .setActionBarTitle(getString(R.string.images))
+                            .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                            .textOnNothingSelected(getString(R.string.nothing_selected))
                             .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
                             .isStartInAllView(false)
                             .exceptMimeType(listOf(MimeType.GIF))
@@ -197,10 +196,10 @@ public class SubmitAnswerFragment extends Fragment {
                         .setButtonInAlbumActivity(false)
                         .setCamera(true)
                         .setReachLimitAutomaticClose(true)
-                        .setAllViewTitle("All")
-                        .setActionBarTitle("Image Library")
-                        .textOnImagesSelectionLimitReached("Limit Reached!")
-                        .textOnNothingSelected("Nothing Selected")
+                        .setAllViewTitle(getString(R.string.all))
+                        .setActionBarTitle(getString(R.string.images))
+                        .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                        .textOnNothingSelected(getString(R.string.nothing_selected))
                         .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
                         .isStartInAllView(false)
                         .exceptMimeType(listOf(MimeType.GIF))
@@ -224,7 +223,7 @@ public class SubmitAnswerFragment extends Fragment {
                             if (!adapter.isElementExist(getFileName(getContext(), path.get(0)))) {
                                 firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), path.get(0));
                             } else
-                                snackbarTop.showSnackBar("File already added", false);
+                                snackbarTop.showSnackBar(getString(R.string.file_already_added), false);
                         }
                     }
                 }
@@ -243,7 +242,7 @@ public class SubmitAnswerFragment extends Fragment {
                             if (!adapter.isElementExist(getFileName(getContext(), datas.getData()))) {
                                 firebaseStorageViewModel.uploadSingleFile(getContext(), user.getUid(), datas.getData());
                             } else
-                                snackbarTop.showSnackBar("File already added", false);
+                                snackbarTop.showSnackBar(getString(R.string.file_already_added), false);
                         }
                     }
                 }

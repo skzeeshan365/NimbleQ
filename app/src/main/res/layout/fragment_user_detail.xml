@@ -114,7 +114,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Joined class list"
+        android:text="@string/joined_class_list"
         app:layout_constraintEnd_toEndOf="@+id/user_classes_created_txt"
         app:layout_constraintStart_toStartOf="@+id/user_classes_created_txt"
         app:layout_constraintTop_toBottomOf="@+id/user_classes_created_txt" />
@@ -124,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Created class list"
+        android:text="@string/created_class_list"
         app:layout_constraintEnd_toEndOf="@+id/joined_class_btn"
         app:layout_constraintStart_toStartOf="@+id/joined_class_btn"
         app:layout_constraintTop_toBottomOf="@+id/joined_class_btn" />
@@ -156,7 +156,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Feedbacks"
+        android:text="@string/feedbacks"
         app:layout_constraintEnd_toEndOf="@+id/created_class_btn"
         app:layout_constraintStart_toStartOf="@+id/created_class_btn"
         app:layout_constraintTop_toBottomOf="@+id/created_class_btn" />

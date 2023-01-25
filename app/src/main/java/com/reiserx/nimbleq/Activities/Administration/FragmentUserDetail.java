@@ -50,23 +50,23 @@ public class FragmentUserDetail extends Fragment {
         viewModel.getUserDetails(userData.getUid());
         viewModel.getUserDetailsMutableLiveData().observe(getViewLifecycleOwner(), userDetails -> {
 
-            binding.userNameTxt.setText("Username: "+userData.getUserName());
-            binding.useridTxt.setText("UserID: "+userData.getUid());
-            binding.userPhoneTxt.setText("Phone: "+userData.getPhoneNumber());
-            binding.userCreatedTxt.setText("Created on: "+ TimeAgo.using(userData.getCreated_timestamp()));
-            binding.userLastLoginTxt.setText("Last login: "+ TimeAgo.using(userData.getLastLogin_timestamp()));
+            binding.userNameTxt.setText(getString(R.string.username1).concat(userData.getUserName()));
+            binding.useridTxt.setText(getString(R.string.userID1).concat(userData.getUid()));
+            binding.userPhoneTxt.setText(getString(R.string.phone1).concat(userData.getPhoneNumber()));
+            binding.userCreatedTxt.setText(getString(R.string.created_on_1).concat(TimeAgo.using(userData.getCreated_timestamp())));
+            binding.userLastLoginTxt.setText(getString(R.string.last_login_1).concat(TimeAgo.using(userData.getLastLogin_timestamp())));
 
-            binding.userSchoolTxt.setText("School: "+userDetails.getSchoolName());
-            binding.userGradeTxt.setText("Grade: "+userDetails.getGrade());
-            binding.userGenderTxt.setText("Gender: "+userDetails.getGender());
-            binding.userStateCityTxt.setText("State/city: "+userDetails.getState()+", "+userDetails.getCity());
+            binding.userSchoolTxt.setText(getString(R.string.school_2).concat(userDetails.getSchoolName()));
+            binding.userGradeTxt.setText(getString(R.string.grade2).concat(userDetails.getGrade()));
+            binding.userGenderTxt.setText(getString(R.string.gender_2).concat(userDetails.getGender()));
+            binding.userStateCityTxt.setText(getString(R.string.state_city_1).concat(userDetails.getState()+", "+userDetails.getCity()));
         });
 
         viewModel.getClassJoinCount(userData.getUid());
-        viewModel.getClassJoinCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesTxt.setText("Classes joined: "+count));
+        viewModel.getClassJoinCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesTxt.setText(getString(R.string.classes_joined_1).concat(String.valueOf(count))));
 
         viewModel.getCreatedClassCount(userData.getUid());
-        viewModel.getClassCreateCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesCreatedTxt.setText("Classes created: "+count));
+        viewModel.getClassCreateCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesCreatedTxt.setText(getString(R.string.classes_created_1).concat(String.valueOf(count))));
 
         binding.joinedClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentJoinedClassList));
         binding.createdClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentCreateClassList));

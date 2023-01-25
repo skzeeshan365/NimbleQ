@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.NotificationUtils;
 import com.reiserx.nimbleq.Utils.Notify;
 
@@ -24,8 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseMessagingServices extends FirebaseMessagingService {
-
-    String TAG = "FCMMessage.logs";
 
     NotificationUtils notificationUtils;
 
@@ -71,7 +70,7 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
                         if (snapshot.exists()) {
                             for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                 if (snapshot1.exists()) {
-                                        notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, "Class announcement", title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
+                                        notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, getString(R.string.class_announcement), title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
                                 }
                             }
                         } else {

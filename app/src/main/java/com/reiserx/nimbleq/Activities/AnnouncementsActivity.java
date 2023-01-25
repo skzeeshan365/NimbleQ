@@ -27,6 +27,7 @@ import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.fileTypeModel;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.FileUtil;
 import com.reiserx.nimbleq.Utils.Notify;
@@ -81,7 +82,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        dataTypes = new String[]{"Select File", "Image", "PDF", "Audio"};
+        dataTypes = new String[]{getString(R.string.select_file), getString(R.string.image), getString(R.string.pdf), getString(R.string.audio)};
 
         data = new ArrayList<>();
         links = new ArrayList<>();
@@ -104,9 +105,9 @@ public class AnnouncementsActivity extends AppCompatActivity {
             Notify notify = new Notify(this);
 
             if (binding.titile.getText().toString().trim().equals(""))
-                binding.titile.setError("Field required");
+                binding.titile.setError(getString(R.string.field_required));
             else if (binding.message.getText().toString().trim().equals(""))
-                binding.message.setError("Field required");
+                binding.message.setError(getString(R.string.field_required));
             else if (links.isEmpty()) {
                 Calendar cal = Calendar.getInstance();
                 long currentTime = cal.getTimeInMillis();
@@ -118,9 +119,9 @@ public class AnnouncementsActivity extends AppCompatActivity {
                     notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID);
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
-                    alert.setTitle("Success");
-                    alert.setMessage("Announce has been uploaded");
-                    alert.setPositiveButton("close", (dialogInterface, i) -> finish());
+                    alert.setTitle(getString(R.string.success));
+                    alert.setMessage(getString(R.string.announcement_uploaded));
+                    alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finish());
                     alert.setCancelable(false);
                     alert.show();
                 });
@@ -149,13 +150,13 @@ public class AnnouncementsActivity extends AppCompatActivity {
                         notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID);
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
-                        alert.setTitle("Success");
-                        alert.setMessage("Announce has been uploaded");
-                        alert.setPositiveButton("close", (dialogInterface, i) -> finish());
+                        alert.setTitle(getString(R.string.success));
+                        alert.setMessage(getString(R.string.announcement_uploaded));
+                        alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finish());
                         alert.setCancelable(false);
                         alert.show();
                     });
-                } else snackbarTop.showSnackBar("Files not uploaded yet", false);
+                } else snackbarTop.showSnackBar(getString(R.string.files_not_uploaded), false);
             }
         });
     }

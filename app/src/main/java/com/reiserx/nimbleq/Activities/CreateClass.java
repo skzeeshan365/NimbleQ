@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.classModel;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
@@ -46,7 +47,7 @@ public class CreateClass extends AppCompatActivity {
         binding = ActivityCreateClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setTitle("Create class");
+        setTitle(getString(R.string.create_class));
 
         if (getIntent().getBooleanExtra("requestMode", false)) {
             Gson gson = new Gson();
@@ -90,19 +91,19 @@ public class CreateClass extends AppCompatActivity {
             buttonDesign.buttonFill(binding.button6);
 
             if (binding.classNameEdittext.getText().toString().trim().equals(""))
-                binding.classNameEdittext.setError("Please enter class name");
+                binding.classNameEdittext.setError(getString(R.string.enter_class_name));
             else if (binding.topicNameEdittext.getText().toString().trim().equals(""))
-                binding.topicNameEdittext.setError("Please enter topic");
+                binding.topicNameEdittext.setError(getString(R.string.please_enter_topic));
             else if (binding.topicInfoEdittext.getText().toString().trim().equals(""))
-                binding.topicInfoEdittext.setError("Field required");
+                binding.topicInfoEdittext.setError(getString(R.string.field_required));
             else if (binding.gradeSpinnerCreateClass.getSelectedItemPosition() == 0)
-                snackbarTop.showSnackBar("Please select grade", false);
+                snackbarTop.showSnackBar(getString(R.string.please_select_grade), false);
             else if (binding.zoomMeetingId.getText().toString().trim().equals(""))
-                binding.zoomMeetingId.setError("Field required");
+                binding.zoomMeetingId.setError(getString(R.string.field_required));
             else if (binding.zoomMeetingPass.getText().toString().trim().equals(""))
-                binding.zoomMeetingPass.setError("Field required");
+                binding.zoomMeetingPass.setError(getString(R.string.field_required));
             else {
-                snackbarTop.showSnackBar("Processing", true);
+                snackbarTop.showSnackBar(getString(R.string.processing), true);
 
                 binding.button6.setEnabled(false);
                 binding.button7.setEnabled(false);
@@ -142,16 +143,16 @@ public class CreateClass extends AppCompatActivity {
 
     void start_meeting() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Create zoom meeting");
-        alert.setMessage("Please open zoom and create a recurring meeting for this class\nAnd paste the meeting info below");
-        alert.setPositiveButton("open", (dialogInterface, i) -> {
+        alert.setTitle(getString(R.string.create_zoom_meeting));
+        alert.setMessage(getString(R.string.create_zoom_meeting_msg));
+        alert.setPositiveButton(getString(R.string.open), (dialogInterface, i) -> {
             PackageManager pm = getPackageManager();
             Intent intent = pm.getLaunchIntentForPackage("us.zoom.videomeetings");
             if (intent != null) {
                 startActivity(intent);
             }
         });
-        alert.setNegativeButton("cancel", null);
+        alert.setNegativeButton(getString(R.string.cancel), null);
         alert.show();
     }
 }

@@ -27,7 +27,6 @@ public class FileOperations {
         if (filePath.exists()) {
             openFile(context, filePath.getPath());
         } else {
-            Log.d(CONSTANTS.TAG2, "file not exist");
             FileDownloader fileDownloader = new FileDownloader(context);
             fileDownloader.download(url, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Padhai Madad", filename);
         }
@@ -39,7 +38,6 @@ public class FileOperations {
             if (filePath.exists()) {
                 openFile(context, filePath.getPath());
             } else {
-                Log.d(CONSTANTS.TAG2, "file not exist");
                 FileDownloader fileDownloader = new FileDownloader(context);
                 fileDownloader.downloadWithoutProgress(url, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Padhai Madad", filename);
             }

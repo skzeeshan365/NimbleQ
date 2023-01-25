@@ -80,20 +80,20 @@ public class FragmentUpdateGradeList extends Fragment {
         View mView = inflater.inflate(R.layout.single_edittext_layout, null);
         final EditText editText = mView.findViewById(R.id.editTextNumber);
 
-        editText.setHint("Enter a subject name");
+        editText.setHint(getString(R.string.enter_a_grade));
 
-        alert.setTitle("Add Grade");
-        alert.setMessage("This grade list will be used throughout the app\nNote. Uppercase and lowercase letters are considered distinct");
+        alert.setTitle(getString(R.string.add_grade));
+        alert.setMessage(getString(R.string.add_grade_msg));
 
-        alert.setPositiveButton("Add", (dialogInterface, i) -> {
+        alert.setPositiveButton(getString(R.string.add), (dialogInterface, i) -> {
             if (editText.getText().toString().trim().equals(""))
-                Toast.makeText(getContext(), "Please enter a grade", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.enter_a_grade), Toast.LENGTH_SHORT).show();
             else {
                 viewModel.updateGradeModelList(editText.getText().toString().trim());
             }
         });
 
-        alert.setNegativeButton("cancel", null);
+        alert.setNegativeButton(getString(R.string.cancel), null);
 
         alert.setView(mView);
         alert.show();

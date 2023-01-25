@@ -1,8 +1,11 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -15,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.userType;
+import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
@@ -49,7 +53,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
-        setTitle("Settings");
+        setTitle(getString(R.string.settings));
 
         dialogs = new dialogs(this, findViewById(android.R.id.content));
 
@@ -75,6 +79,20 @@ public class UserProfileActivity extends AppCompatActivity {
 
         getUserInfo();
         getUserType();
+
+        binding.langHolder.setOnClickListener(view -> dialogs.setLanguage(UserProfileActivity.this));
+
+        SharedPreferences sharedPreferences = getSharedPreferences("selectedLanguage", Context.MODE_PRIVATE);
+        if (sharedPreferences != null) {
+            if (sharedPreferences.getString("language", null) == null)
+                binding.langTxt.setText(getString(R.string.app_lang_default));
+            else if (sharedPreferences.getString("language", null).equals("en"))
+                binding.langTxt.setText(getString(R.string.app_lang_english));
+            else if (sharedPreferences.getString("language", null).equals("hi"))
+                binding.langTxt.setText(getString(R.string.app_lang_hindi));
+            else
+                binding.langTxt.setText(getString(R.string.app_lang_default));
+        }
     }
 
     void getUserInfo() {
@@ -117,7 +135,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 binding.subjectAndTimeSlotTxt.setText(subjectAndTimeSlot.getSubject().concat(" • ").concat(subjectAndTimeSlot.getTopic()));
         });
         slotsViewModel.getDatabaseErrorMutableLiveData().observe(this, databaseError -> {
-            Log.d(CONSTANTS.TAG2, "sfgsg");
             if (studentOrTecher == 1) {
                 dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
             } else if (studentOrTecher == 2)

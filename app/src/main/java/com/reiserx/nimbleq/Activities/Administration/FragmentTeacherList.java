@@ -109,11 +109,11 @@ public class FragmentTeacherList extends Fragment implements MenuProvider {
     void initializeSpinners() {
         filters = new ArrayList<>();
 
-        filters.add("Select your filter");
-        filters.add("Filter by grade");
-        filters.add("Filter by gender");
-        filters.add("Filter by state");
-        filters.add("Filter by city");
+        filters.add(getString(R.string.select_your_filter));
+        filters.add(getString(R.string.filter_by_grade));
+        filters.add(getString(R.string.filter_by_gender));
+        filters.add(getString(R.string.filter_by_state));
+        filters.add(getString(R.string.filter_by_city));
 
         binding.spinner3.setVisibility(View.GONE);
         binding.spinner4.setVisibility(View.GONE);
@@ -147,9 +147,9 @@ public class FragmentTeacherList extends Fragment implements MenuProvider {
                 case 2:
                     binding.spinner3.setVisibility(View.VISIBLE);
                     gradelist = new ArrayList<>();
-                    gradelist.add("Select gender");
-                    gradelist.add("Male");
-                    gradelist.add("Female");
+                    gradelist.add(getString(R.string.select_gender));
+                    gradelist.add(getString(R.string.male));
+                    gradelist.add(getString(R.string.female));
                     subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, gradelist);
                     subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     binding.spinner3.setAdapter(subjectsAdapter);
@@ -264,7 +264,7 @@ public class FragmentTeacherList extends Fragment implements MenuProvider {
             binding.recycler.setAdapter(userListAdapter);
             userListAdapter.notifyDataSetChanged();
         } else {
-            binding.textView9.setText("No user available for this filter");
+            binding.textView9.setText(getString(R.string.no_user_avail_for_this_filter));
             binding.recycler.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
             binding.progressBar2.setVisibility(View.GONE);
@@ -284,7 +284,7 @@ public class FragmentTeacherList extends Fragment implements MenuProvider {
             binding.recycler.setAdapter(userListAdapter);
             userListAdapter.notifyDataSetChanged();
         } else {
-            binding.textView9.setText("No user available for this filter");
+            binding.textView9.setText(getString(R.string.no_user_avail_for_this_filter));
             binding.recycler.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
             binding.progressBar2.setVisibility(View.GONE);
@@ -337,7 +337,7 @@ public class FragmentTeacherList extends Fragment implements MenuProvider {
             }
         }
         if (userData1.isEmpty()) {
-            binding.textView9.setText("Users not available");
+            binding.textView9.setText(getString(R.string.users_not_avail));
             binding.recycler.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
             binding.progressBar2.setVisibility(View.GONE);

@@ -59,10 +59,10 @@ public class requestClassAdapter extends RecyclerView.Adapter<requestClassAdapte
             holder.binding.status.setVisibility(View.VISIBLE);
             holder.binding.deleteImg.setVisibility(View.VISIBLE);
             if (model.isAccepted()) {
-                holder.binding.status.setText("Class allotted");
+                holder.binding.status.setText(context.getString(R.string.class_alloted));
                 holder.binding.status.setTextColor(context.getColor(R.color.GREEN));
             } else {
-                holder.binding.status.setText("Pending");
+                holder.binding.status.setText(context.getString(R.string.pending));
                 holder.binding.status.setTextColor(context.getColor(R.color.RED));
             }
         } else {

@@ -143,9 +143,9 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
             if (mimetype != null && mimetype.length != 0) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-                alert.setMessage("Send a photo");
+                alert.setMessage(getString(R.string.send_a_photo));
 
-                alert.setPositiveButton("Files", (dialogInterface, i) -> {
+                alert.setPositiveButton(getString(R.string.files), (dialogInterface, i) -> {
                         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                         intent.addCategory(Intent.CATEGORY_OPENABLE);
                         intent.setType("*/*");
@@ -153,7 +153,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
                         FilesActivityResultLauncher.launch(intent);
                 });
-                alert.setNegativeButton("Images", (dialogInterface, i) -> {
+                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> {
                     FishBun.with(NotificationsFragment.this)
                             .setImageAdapter(new GlideAdapter())
                             .setIsUseDetailView(true)
@@ -164,10 +164,10 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                             .setButtonInAlbumActivity(false)
                             .setCamera(true)
                             .setReachLimitAutomaticClose(true)
-                            .setAllViewTitle("All")
-                            .setActionBarTitle("Image Library")
-                            .textOnImagesSelectionLimitReached("Limit Reached!")
-                            .textOnNothingSelected("Nothing Selected")
+                            .setAllViewTitle(getString(R.string.all))
+                            .setActionBarTitle(getString(R.string.images))
+                            .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                            .textOnNothingSelected(getString(R.string.nothing_selected))
                             .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
                             .isStartInAllView(false)
                             .exceptMimeType(listOf(MimeType.GIF))
@@ -186,10 +186,10 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                         .setButtonInAlbumActivity(false)
                         .setCamera(true)
                         .setReachLimitAutomaticClose(true)
-                        .setAllViewTitle("All")
-                        .setActionBarTitle("Image Library")
-                        .textOnImagesSelectionLimitReached("Limit Reached!")
-                        .textOnNothingSelected("Nothing Selected")
+                        .setAllViewTitle(getString(R.string.all))
+                        .setActionBarTitle(getString(R.string.images))
+                        .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                        .textOnNothingSelected(getString(R.string.nothing_selected))
                         .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
                         .isStartInAllView(false)
                         .exceptMimeType(listOf(MimeType.GIF))
@@ -258,14 +258,13 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 replyID = null;
                 replyUId = null;
             });
-        } else Toast.makeText(getContext(), "Please type a message", Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(getContext(), getString(R.string.type_a_message), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void getMessages() {
         chatsViewModel.getMessages(classID, 15);
         chatsViewModel.getMessageListMutableLiveData().observe(getViewLifecycleOwner(), messages -> {
-            Log.d(CONSTANTS.TAG2, "get messages");
             adapter.setData(messages);
             dataList.addAll(messages);
             binding.recyclerView.setAdapter(adapter);
@@ -296,14 +295,14 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
             Message message = messages.get(position);
             replyID = message.getMessageId();
             if (message.getSenderId().equals(user.getUid())) {
-                binding.replyNameTxt.setText("me");
+                binding.replyNameTxt.setText(getString(R.string.me));
                 replyUId = user.getUid();
             } else {
                 binding.replyNameTxt.setText(message.getReplyname());
                 replyUId = message.getSenderId();
             }
             if (message.getImageUrl() != null) {
-                binding.replyMsg.setText("Photo");
+                binding.replyMsg.setText(getString(R.string.photo));
             } else {
                 binding.replyMsg.setText(message.getMessage());
             }
@@ -331,12 +330,10 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
                     if (pastVisiblesItems == 0) {
                         if (lastItem != totalItemCount) {
-                            Log.d(CONSTANTS.TAG, "load message");
                             chatsViewModel.paginateMessages(classID, adapter);
                             lastItem = totalItemCount;
 
-                        } else
-                            Log.d(CONSTANTS.TAG, "loaded all messages");
+                        }
                     }
                 }
             }
@@ -354,7 +351,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                             path = result.getData().getParcelableArrayListExtra(FishBun.INTENT_PATH);
                             Log.d(CONSTANTS.TAG2, String.valueOf(FileUtil.convertUriToFilePath(getContext(), path.get(0))));
                             firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
-                            Toast.makeText(requireContext(), "Uploading files", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.uploading_files), Toast.LENGTH_SHORT).show();
                             firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
                                 Calendar c = Calendar.getInstance();
                                 @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
@@ -370,7 +367,6 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
 
                                 chatsViewModel.submitMessage(message, classID);
                                 chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {
-                                    Log.d(CONSTANTS.TAG2, "messageSent");
                                     binding.messageBox.setText("");
                                     binding.replyHolder.setVisibility(View.GONE);
                                     binding.replyMsg.setText("");

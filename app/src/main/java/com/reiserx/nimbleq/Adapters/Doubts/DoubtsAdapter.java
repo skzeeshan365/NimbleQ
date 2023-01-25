@@ -90,7 +90,7 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
             viewHolder.binding.dSubject.setText(model.getSubject().concat(" • ").concat(model.getTopic()));
             viewHolder.binding.descOneLine.setText(model.getShort_desc());
             viewHolder.binding.dData.setContent(model.getLong_desc());
-            viewHolder.binding.answerCountTxt.setText(model.getAnswerCount()+" answers");
+            viewHolder.binding.answerCountTxt.setText(model.getAnswerCount()+context.getString(R.string.answers_lower));
 
             viewHolder.binding.elementHolder.setOnClickListener(view -> {
                 SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);

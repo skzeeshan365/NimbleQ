@@ -108,7 +108,7 @@ public class ViewDoubtsFragment extends Fragment {
                 binding.recycler.setVisibility(View.VISIBLE);
                 binding.progHolder.setVisibility(View.GONE);
             } else {
-                binding.textView9.setText("Answers not available");
+                binding.textView9.setText(getString(R.string.answers_not_available));
                 binding.recycler.setVisibility(View.GONE);
                 binding.progHolder.setVisibility(View.VISIBLE);
                 binding.progressBar2.setVisibility(View.GONE);
