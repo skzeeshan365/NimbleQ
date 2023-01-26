@@ -86,6 +86,14 @@
     <string name="close">close</string>
     <string name="app_language_title">App language</string>
     <string name="app_language_desc">Tap to change language</string>
+    <string name="user_details">User details</string>
+    <string name="teacher_ratings">Teacher rating</string>
+    <string name="limits">Limits</string>
+    <string name="ratings">Ratings</string>
+    <string name="learners">Learners</string>
+    <string name="doubts">Doubts</string>
+    <string name="post_doubts">Post Doubts</string>
+    <string name="submit_answer">Submit answer</string>
     <!-- xml strings -->
 
     <!-- java strings -->
@@ -260,6 +268,24 @@
     <string name="app_lang_default">System default</string>
     <string name="app_lang_english">English</string>
     <string name="app_lang_hindi">Hindi</string>
+    <string name="tap_to_switch_for_learner">Tap to switch for learner</string>
+    <string name="tap_to_switch_for_teacher">Tap to switch for teacher</string>
+    <string name="slot2">Slot </string>
+    <string name="supported_file_types">Supported file types</string>
+    <string name="add_file_type">Add file type</string>
+    <string name="enter_a_mime_type">Enter a MimeType</string>
+    <string name="add_file_type_msg">This MimeType will be used to allow file sharing in this app, you can get MimeTypes of each file on Android developers website\nNote. it should be correct without any mistakes</string>
+    <string name="images_only">Images only</string>
+    <string name="file_size">File size</string>
+    <string name="slot_limit">Slot limit</string>
+    <string name="slot_limit_msg">Slot limit will be used in slot creation</string>
+    <string name="file_size_limit">File size limit</string>
+    <string name="file_size_limit_msg">File size limit will be used in file sharing</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="no_internet_msg">No internet connection, please connect to network and retry</string>
+    <string name="no_network">No network connection</string>
+    <string name="no_network_msg">No network connection, please connect to network and retry</string>
+    <string name="hey1">hey, </string>
     <!-- java strings -->
 
 </resources>

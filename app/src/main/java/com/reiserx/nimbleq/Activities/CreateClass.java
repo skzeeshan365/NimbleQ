@@ -1,5 +1,6 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -7,12 +8,10 @@ import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
@@ -26,7 +25,6 @@ import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityCreateClassBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CreateClass extends AppCompatActivity {
@@ -134,7 +132,7 @@ public class CreateClass extends AppCompatActivity {
                 });
 
                 classViewModel.getCreateClassMutableLiveData().observe(this, s -> {
-                    dialogs dialogs = new dialogs(CreateClass.this, findViewById(android.R.id.content));
+                    @SuppressLint("CutPasteId") dialogs dialogs = new dialogs(CreateClass.this, findViewById(android.R.id.content));
                     dialogs.meetingCreated(CreateClass.this, s);
                 });
             }

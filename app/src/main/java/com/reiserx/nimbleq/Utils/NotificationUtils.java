@@ -18,11 +18,8 @@ import com.reiserx.nimbleq.Activities.ClassActivity;
 import com.reiserx.nimbleq.Activities.ClassListActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Activities.MainActivity;
-import com.reiserx.nimbleq.Adapters.Doubts.DoubtsAdapter;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.R;
-
-import java.util.Map;
 
 
 public class NotificationUtils {

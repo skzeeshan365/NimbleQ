@@ -1,23 +1,19 @@
 package com.reiserx.nimbleq.Activities.Doubts;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.reiserx.nimbleq.Adapters.Doubts.AnswersAdapter;
-import com.reiserx.nimbleq.Adapters.Doubts.DoubtsAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.R;
@@ -25,7 +21,6 @@ import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.ViewModels.DoubtsViewModel;
-import com.reiserx.nimbleq.databinding.FragmentFirstBinding;
 import com.reiserx.nimbleq.databinding.FragmentViewDoubtsBinding;
 
 import java.util.ArrayList;
@@ -38,14 +33,14 @@ public class ViewDoubtsFragment extends Fragment {
     AnswersAdapter adapter;
 
     LinearLayoutManager layoutManager;
-    List<AnswerModel> filteredDataList, dataList;
+    List<AnswerModel> dataList;
 
     SnackbarTop snackbarTop;
 
     DoubtsModel doubtsModel;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentViewDoubtsBinding.inflate(inflater, container, false);
 
         binding.recycler.setVisibility(View.GONE);
@@ -72,9 +67,7 @@ public class ViewDoubtsFragment extends Fragment {
 
         if (!userTypeClass.isUserLearner()) {
             binding.attachHolder.setVisibility(View.VISIBLE);
-            binding.attachHolder.setOnClickListener(view1 -> {
-                NavHostFragment.findNavController(ViewDoubtsFragment.this).navigate(R.id.action_ViewDoubtsFragment_to_SubmitAnswerFragment);
-            });
+            binding.attachHolder.setOnClickListener(view1 -> NavHostFragment.findNavController(ViewDoubtsFragment.this).navigate(R.id.action_ViewDoubtsFragment_to_SubmitAnswerFragment));
         } else
             binding.attachHolder.setVisibility(View.GONE);
 
@@ -95,6 +88,7 @@ public class ViewDoubtsFragment extends Fragment {
         binding = null;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void getData() {
         DoubtsViewModel viewModel = new ViewModelProvider(this).get(DoubtsViewModel.class);
 

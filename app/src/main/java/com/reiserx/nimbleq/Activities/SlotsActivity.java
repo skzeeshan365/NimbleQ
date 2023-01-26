@@ -1,7 +1,7 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -16,10 +16,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Adapters.slotsAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
+import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.databinding.ActivitySlotsBinding;
@@ -41,6 +41,7 @@ public class SlotsActivity extends AppCompatActivity {
 
     UserTypeClass userTypeClass;
 
+    @SuppressLint("CutPasteId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +71,7 @@ public class SlotsActivity extends AppCompatActivity {
         binding.button4.setOnClickListener(view -> {
             buttonDesign.buttonFill(binding.button4);
             dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
+            if (user != null)
             if (userTypeClass.isUserLearner())
                 dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
             else if (!userTypeClass.isUserLearner())
@@ -79,12 +81,15 @@ public class SlotsActivity extends AppCompatActivity {
     }
 
     void getSubject(FirebaseUser user) {
+
+        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(this);
         if (userTypeClass.isUserLearner()) {
             subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForStudents").child(user.getUid());
         } else if (!userTypeClass.isUserLearner())
             subjectReference = database.getReference().child("Data").child("Main").child("SubjectList").child("subjectForTeacher").child(user.getUid());
 
         subjectReference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 data.clear();
@@ -95,7 +100,7 @@ public class SlotsActivity extends AppCompatActivity {
                         subjectAndTimeSlot.setReference(subjectReference);
                         data.add(subjectAndTimeSlot);
                     }
-                    if (data.size() < 3)
+                    if (data.size() < sharedPreferenceClass.getSlotLimit())
                         binding.button4.setVisibility(View.VISIBLE);
                     else
                         binding.button4.setVisibility(View.GONE);

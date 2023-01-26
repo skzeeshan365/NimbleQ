@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.reiserx.nimbleq.Activities.Doubts.FirstFragment"
-        android:label="Doubts"
+        android:label="@string/doubts"
         tools:layout="@layout/fragment_first">
 
         <action
@@ -21,14 +21,14 @@
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.reiserx.nimbleq.Activities.Doubts.SecondFragment"
-        android:label="Post Doubts"
+        android:label="@string/post_doubts"
         tools:layout="@layout/fragment_second">
     </fragment>
 
     <fragment
         android:id="@+id/ViewDoubtsFragment"
         android:name="com.reiserx.nimbleq.Activities.Doubts.ViewDoubtsFragment"
-        android:label="View Doubts"
+        android:label="@string/view_doubts"
         tools:layout="@layout/fragment_view_doubts">
         <action
             android:id="@+id/action_ViewDoubtsFragment_to_SubmitAnswerFragment"
@@ -38,7 +38,7 @@
     <fragment
         android:id="@+id/SubmitAnswerFragment"
         android:name="com.reiserx.nimbleq.Activities.Doubts.SubmitAnswerFragment"
-        android:label="Submit answer"
+        android:label="@string/submit_answer"
         tools:layout="@layout/fragment_submit_answer">
     </fragment>
 </navigation>

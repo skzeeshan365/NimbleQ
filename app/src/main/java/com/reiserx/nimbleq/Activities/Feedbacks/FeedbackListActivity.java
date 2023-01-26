@@ -1,15 +1,15 @@
 package com.reiserx.nimbleq.Activities.Feedbacks;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.os.Bundle;
-import android.view.View;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.reiserx.nimbleq.Adapters.RatingsAdapter;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityFeedbackListBinding;
 
@@ -19,6 +19,7 @@ public class FeedbackListActivity extends AppCompatActivity {
 
     RatingsAdapter adapter;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

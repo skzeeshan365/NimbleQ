@@ -1,6 +1,5 @@
 package com.reiserx.nimbleq.Activities.Fragments.GroupChat;
 
-import static android.app.Activity.RESULT_OK;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
@@ -27,12 +26,10 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -153,27 +150,25 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
                         FilesActivityResultLauncher.launch(intent);
                 });
-                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> {
-                    FishBun.with(NotificationsFragment.this)
-                            .setImageAdapter(new GlideAdapter())
-                            .setIsUseDetailView(true)
-                            .setMaxCount(5)
-                            .setMinCount(1)
-                            .setPickerSpanCount(2)
-                            .setAlbumSpanCount(1, 2)
-                            .setButtonInAlbumActivity(false)
-                            .setCamera(true)
-                            .setReachLimitAutomaticClose(true)
-                            .setAllViewTitle(getString(R.string.all))
-                            .setActionBarTitle(getString(R.string.images))
-                            .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
-                            .textOnNothingSelected(getString(R.string.nothing_selected))
-                            .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                            .isStartInAllView(false)
-                            .exceptMimeType(listOf(MimeType.GIF))
-                            .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                            .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
-                });
+                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> FishBun.with(NotificationsFragment.this)
+                        .setImageAdapter(new GlideAdapter())
+                        .setIsUseDetailView(true)
+                        .setMaxCount(5)
+                        .setMinCount(1)
+                        .setPickerSpanCount(2)
+                        .setAlbumSpanCount(1, 2)
+                        .setButtonInAlbumActivity(false)
+                        .setCamera(true)
+                        .setReachLimitAutomaticClose(true)
+                        .setAllViewTitle(getString(R.string.all))
+                        .setActionBarTitle(getString(R.string.images))
+                        .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                        .textOnNothingSelected(getString(R.string.nothing_selected))
+                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                        .isStartInAllView(false)
+                        .exceptMimeType(listOf(MimeType.GIF))
+                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                        .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher));
                 alert.show();
             } else {
                 FishBun.with(NotificationsFragment.this)

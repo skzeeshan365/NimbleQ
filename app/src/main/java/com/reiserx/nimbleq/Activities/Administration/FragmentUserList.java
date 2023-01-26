@@ -1,7 +1,7 @@
 package com.reiserx.nimbleq.Activities.Administration;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,25 +16,19 @@ import androidx.annotation.NonNull;
 import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
 import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
-import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.StateCityData;
-import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class FragmentUserList extends Fragment implements MenuProvider {
 
@@ -56,7 +50,7 @@ public class FragmentUserList extends Fragment implements MenuProvider {
     static int FILTER_BY_CITY = 4;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentUserlistAdminBinding.inflate(inflater, container, false);
 
         binding.recycler.setVisibility(View.GONE);
@@ -79,6 +73,7 @@ public class FragmentUserList extends Fragment implements MenuProvider {
         return binding.getRoot();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -240,6 +235,7 @@ public class FragmentUserList extends Fragment implements MenuProvider {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void removeDuplicates(List<UserData> data, int requestCode, String value) {
         List<UserData> dataList = new ArrayList<>();
 
@@ -275,6 +271,7 @@ public class FragmentUserList extends Fragment implements MenuProvider {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void removeDuplicates(List<UserData> data, String state, String city) {
         List<UserData> dataList = new ArrayList<>();
 

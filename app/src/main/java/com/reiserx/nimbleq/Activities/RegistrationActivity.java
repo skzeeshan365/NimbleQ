@@ -1,5 +1,6 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -7,7 +8,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
@@ -53,6 +52,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     SnackbarTop snackbarTop;
 
+    @SuppressLint("CutPasteId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +70,7 @@ public class RegistrationActivity extends AppCompatActivity {
         snackbarTop = new SnackbarTop(findViewById(android.R.id.content));
 
         dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
+        if (user != null)
         dialogs.selectStudentOrTeacherNormal(user.getUid());
 
         initializeViews();
@@ -99,29 +100,26 @@ public class RegistrationActivity extends AppCompatActivity {
             } else {
                 buttonDesign.buttonFill(binding.button5);
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                DocumentReference documentReference = firestore.collection("UserData").document(user.getUid());
+                if (user != null) {
+                    DocumentReference documentReference = firestore.collection("UserData").document(user.getUid());
 
-                userDetails userDetails = new userDetails(binding.gradeSpinner.getSelectedItem().toString(), binding.schoolNameEdittext.getText().toString(), binding.statesSpinner.getSelectedItem().toString(), binding.citiesSpinner.getSelectedItem().toString(), gender);
+                    userDetails userDetails = new userDetails(binding.gradeSpinner.getSelectedItem().toString(), binding.schoolNameEdittext.getText().toString(), binding.statesSpinner.getSelectedItem().toString(), binding.citiesSpinner.getSelectedItem().toString(), gender);
 
-                UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+                    UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
-                userDataViewModel.updateUsername(user.getUid(), binding.editTextTextPersonName2.getText().toString().trim());
-                userDataViewModel.getUpdateUsernameMutableLiveData().observe(this, unused -> documentReference.set(userDetails).addOnSuccessListener(unuseds -> {
-                    if (CONSTANTS.student_teacher_flag == 1)
-                        dialogs.selectSubjectForLearnerRegistration(user.getUid());
-                    else if (CONSTANTS.student_teacher_flag == 2)
-                        dialogs.selectSubjectForTeacherRegistration(user.getUid());
-                }).addOnFailureListener(e -> {
-                    Log.d(CONSTANTS.TAG, e.toString());
-                    snackbarTop.showSnackBar("Faled: " + e, false);
-                }));
+                    userDataViewModel.updateUsername(user.getUid(), binding.editTextTextPersonName2.getText().toString().trim());
+                    userDataViewModel.getUpdateUsernameMutableLiveData().observe(this, unused -> documentReference.set(userDetails).addOnSuccessListener(unuseds -> {
+                        if (CONSTANTS.student_teacher_flag == 1)
+                            dialogs.selectSubjectForLearnerRegistration(user.getUid());
+                        else if (CONSTANTS.student_teacher_flag == 2)
+                            dialogs.selectSubjectForTeacherRegistration(user.getUid());
+                    }).addOnFailureListener(e -> {
+                        Log.d(CONSTANTS.TAG, e.toString());
+                        snackbarTop.showSnackBar("Faled: " + e, false);
+                    }));
 
-                userDataViewModel.getDatabaseErrorMutableLiveData().observe(this, new Observer<String>() {
-                    @Override
-                    public void onChanged(String s) {
-                        snackbarTop.showSnackBar("Faled: " + s, false);
-                    }
-                });
+                    userDataViewModel.getDatabaseErrorMutableLiveData().observe(this, s -> snackbarTop.showSnackBar("Faled: " + s, false));
+                }
             }
         });
     }

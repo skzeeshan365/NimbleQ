@@ -18,22 +18,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.reiserx.nimbleq.Adapters.Administration.AdminListsAdapter;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
-import com.reiserx.nimbleq.databinding.FragmentUpdateGradeListBinding;
+import com.reiserx.nimbleq.databinding.FragmentFileTypesBinding;
 
-public class FragmentUpdateGradeList extends Fragment {
+public class FragmentFileTypes extends Fragment {
 
-    private FragmentUpdateGradeListBinding binding;
+    private FragmentFileTypesBinding binding;
 
     AdminListsAdapter adapter;
     AdministrationViewModel viewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentUpdateGradeListBinding.inflate(inflater, container, false);
+        binding = FragmentFileTypesBinding.inflate(inflater, container, false);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.recycler.setLayoutManager(layoutManager);
         adapter = new AdminListsAdapter(getContext());
+
+        binding.recycler.setVisibility(View.GONE);
+        binding.floatingActionButton.setVisibility(View.GONE);
 
         return binding.getRoot();
     }
@@ -44,7 +47,20 @@ public class FragmentUpdateGradeList extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
 
-        viewModel.getGradeModelList();
+        updateSwitch();
+
+        viewModel.getFileEnabled();
+        viewModel.getFileEnabledMutableLiveData().observe(getViewLifecycleOwner(), fileEnabled -> {
+            binding.switch1.setChecked(fileEnabled);
+            if (fileEnabled) {
+                binding.recycler.setVisibility(View.GONE);
+                binding.floatingActionButton.setVisibility(View.GONE);
+            } else {
+                binding.recycler.setVisibility(View.VISIBLE);
+                binding.floatingActionButton.setVisibility(View.VISIBLE);
+                viewModel.getFileList();
+            }
+        });
         viewModel.getAdminModelListMutableLiveData().observe(getViewLifecycleOwner(), models -> {
             adapter.setData(models);
             binding.recycler.setAdapter(adapter);
@@ -60,6 +76,10 @@ public class FragmentUpdateGradeList extends Fragment {
         binding = null;
     }
 
+    void updateSwitch() {
+        binding.switch1.setOnCheckedChangeListener((compoundButton, b) -> viewModel.updateFilesEnabled(binding.switch1.isChecked()));
+    }
+
     public void update() {
         AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
 
@@ -67,16 +87,16 @@ public class FragmentUpdateGradeList extends Fragment {
         View mView = inflater.inflate(R.layout.single_edittext_layout, null);
         final EditText editText = mView.findViewById(R.id.editTextNumber);
 
-        editText.setHint(getString(R.string.enter_a_grade));
+        editText.setHint(getString(R.string.enter_a_mime_type));
 
-        alert.setTitle(getString(R.string.add_grade));
-        alert.setMessage(getString(R.string.add_grade_msg));
+        alert.setTitle(getString(R.string.add_file_type));
+        alert.setMessage(getString(R.string.add_file_type_msg));
 
         alert.setPositiveButton(getString(R.string.add), (dialogInterface, i) -> {
             if (editText.getText().toString().trim().equals(""))
-                Toast.makeText(getContext(), getString(R.string.enter_a_grade), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.enter_a_mime_type), Toast.LENGTH_SHORT).show();
             else {
-                viewModel.updateGradeModelList(editText.getText().toString().trim());
+                viewModel.updateFIleModelList(editText.getText().toString().trim());
             }
         });
 

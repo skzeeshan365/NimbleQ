@@ -7,15 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.marlonlom.utilities.timeago.TimeAgo;
-import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
 import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.FeedbackListLayoutBinding;
-import com.reiserx.nimbleq.databinding.LtHomeListAdminBinding;
 
 import java.util.List;
 

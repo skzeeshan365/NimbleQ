@@ -37,12 +37,12 @@
     <fragment
         android:id="@+id/FragmentFeedback"
         android:name="com.reiserx.nimbleq.Activities.Feedbacks.FragmentFeedbacks"
-        android:label="Ratings"
+        android:label="@string/ratings"
         tools:layout="@layout/fragment_class_list" />
 
     <fragment
         android:id="@+id/FragmentLearnerListForClass"
         android:name="com.reiserx.nimbleq.Activities.Fragments.ClassView.FragmentLearnerListForClass"
-        android:label="Learners"
+        android:label="@string/learners"
         tools:layout="@layout/fragment_userlist_admin" />
 </navigation>

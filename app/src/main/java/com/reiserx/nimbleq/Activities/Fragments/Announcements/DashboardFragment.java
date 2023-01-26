@@ -1,5 +1,6 @@
 package com.reiserx.nimbleq.Activities.Fragments.Announcements;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -88,6 +89,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
         binding = null;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void getData(String id) {
         AnnouncementsViewModel viewModel = new ViewModelProvider(this).get(AnnouncementsViewModel.class);
 
@@ -133,9 +135,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
                 = (SearchView) MenuItemCompat
                 .getActionView(searchViewItem);
 
-        searchView.setOnSearchClickListener(view -> {
-            enabled = true;
-        });
+        searchView.setOnSearchClickListener(view -> enabled = true);
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
 
@@ -158,7 +158,7 @@ public class DashboardFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.post_announcements) {
             Intent intent = new Intent(getContext(), AnnouncementsActivity.class);
             intent.putExtra("id", id);
-            getContext().startActivity(intent);
+            requireContext().startActivity(intent);
         }
         return false;
     }

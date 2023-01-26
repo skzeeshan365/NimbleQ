@@ -1,6 +1,6 @@
 package com.reiserx.nimbleq.Activities.Feedbacks;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hsalf.smileyrating.SmileyRating;
@@ -31,6 +30,7 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
     String userID;
     UserData userData;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +74,7 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
 
         userDataViewModel.getUserData(userID);
         userDataViewModel.getUserData().observe(this, userData -> {
-            binding.usernameTxtRate.setText("hey, ".concat(userData.getUserName()));
+            binding.usernameTxtRate.setText(getString(R.string.hey1)+" ".concat(userData.getUserName()));
             this.userData = userData;
         });
         if (state == 1) {
@@ -86,9 +86,7 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
             String message = getIntent().getExtras().getString("Message");
             teacherID = getIntent().getExtras().getString("teacherID");
             userDataViewModel.getUsername(teacherID);
-            userDataViewModel.getUserName().observe(this, s -> {
-                binding.msgTxtRate.setText(message.concat(" ".concat(s)));
-            });
+            userDataViewModel.getUserName().observe(this, s -> binding.msgTxtRate.setText(message.concat(" ".concat(s))));
         }
     }
 
@@ -103,9 +101,7 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle(getString(R.string.feedback_submitted));
             alert.setMessage(getString(R.string.feedback_submitted_msg));
-            alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> {
-                finish();
-            });
+            alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finish());
             alert.show();
         });
     }

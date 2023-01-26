@@ -140,6 +140,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
 
                     announcementsModel announcementsModel = new announcementsModel(binding.titile.getText().toString(), binding.message.getText().toString(), classID, currentTime);
                     String key = db_reference.push().getKey();
+                    if (key != null)
                     db_reference.child(key).setValue(announcementsModel).addOnSuccessListener(unused -> {
                         for (int i = 0; i < links.size(); i++) {
                             linkModel linkModel = links.get(i);
@@ -195,7 +196,7 @@ public class AnnouncementsActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("Range")
+    @SuppressLint({"Range", "NotifyDataSetChanged"})
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent datas) {
         super.onActivityResult(requestCode, resultCode, datas);
@@ -228,43 +229,42 @@ public class AnnouncementsActivity extends AppCompatActivity {
             case 13:
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file
-                    Uri uri = datas.getData();
-                    String uriString = uri.toString();
-                    File myFile = new File(uriString);
-                    String path = myFile.getAbsolutePath();
-                    String displayName = null;
+                    if (datas.getData() != null) {
+                        Uri uri = datas.getData();
+                        String uriString = uri.toString();
+                        File myFile = new File(uriString);
+                        String path = myFile.getAbsolutePath();
+                        String displayName = null;
 
-                    if (uriString.startsWith("content://")) {
-                        Cursor cursor = null;
-                        try {
-                            cursor = getContentResolver().query(uri, null, null, null, null);
-                            if (cursor != null && cursor.moveToFirst()) {
-                                displayName = String.valueOf(data.size()).concat(cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)));
-                                fileTypeModel model = new fileTypeModel(displayName, false);
-                                model.setFilePath(path);
-                                data.add(model);
-                                adapter.notifyDataSetChanged();
-                                binding.attachHolder.setVisibility(View.GONE);
-                                binding.spinner.setSelection(0);
+                        if (uriString.startsWith("content://")) {
+                            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    displayName = String.valueOf(data.size()).concat(cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)));
+                                    fileTypeModel model = new fileTypeModel(displayName, false);
+                                    model.setFilePath(path);
+                                    data.add(model);
+                                    adapter.notifyDataSetChanged();
+                                    binding.attachHolder.setVisibility(View.GONE);
+                                    binding.spinner.setSelection(0);
+                                }
                             }
-                        } finally {
-                            cursor.close();
+                        } else if (uriString.startsWith("file://")) {
+                            displayName = String.valueOf(data.size()).concat(myFile.getName());
+                            fileTypeModel model = new fileTypeModel(displayName, false);
+                            model.setFilePath(path);
+                            data.add(model);
+                            adapter.notifyDataSetChanged();
+                            binding.attachHolder.setVisibility(View.GONE);
+                            binding.spinner.setSelection(0);
+                            uploadFiles(CONSTANTS.fileType_PDF, uri, displayName);
                         }
-                    } else if (uriString.startsWith("file://")) {
-                        displayName = String.valueOf(data.size()).concat(myFile.getName());
-                        fileTypeModel model = new fileTypeModel(displayName, false);
-                        model.setFilePath(path);
-                        data.add(model);
-                        adapter.notifyDataSetChanged();
-                        binding.attachHolder.setVisibility(View.GONE);
-                        binding.spinner.setSelection(0);
-                        uploadFiles(CONSTANTS.fileType_PDF, uri, displayName);
                     }
                 }
                 break;
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void uploadFiles(int fileType, Uri file, String fileName) {
 
         Calendar cal = Calendar.getInstance();
@@ -284,16 +284,14 @@ public class AnnouncementsActivity extends AppCompatActivity {
             int pos = adapter.getTargetPosition(fileName);
             adapter.updateProg(pos, (int) progress);
             adapter.notifyItemChanged(pos);
-        }).addOnSuccessListener(taskSnapshot -> {
-            reference.getDownloadUrl().addOnSuccessListener(uri -> {
-                if (uri != null) {
-                    linkModel linkModel = new linkModel(uri.toString(), fileName);
-                    links.add(linkModel);
-                    adapter.uploadDone(adapter.getTargetPosition(fileName));
-                    adapter.notifyDataSetChanged();
-                    binding.button9.setEnabled(true);
-                }
-            });
-        });
+        }).addOnSuccessListener(taskSnapshot -> reference.getDownloadUrl().addOnSuccessListener(uri -> {
+            if (uri != null) {
+                linkModel linkModel = new linkModel(uri.toString(), fileName);
+                links.add(linkModel);
+                adapter.uploadDone(adapter.getTargetPosition(fileName));
+                adapter.notifyDataSetChanged();
+                binding.button9.setEnabled(true);
+            }
+        }));
     }
 }

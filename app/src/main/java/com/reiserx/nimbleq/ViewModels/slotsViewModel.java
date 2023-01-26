@@ -3,11 +3,8 @@ package com.reiserx.nimbleq.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.database.DatabaseError;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Repository.SlotsRepository;
-
-import java.util.Locale;
 
 public class slotsViewModel extends ViewModel implements SlotsRepository.OnRealtimeDbTaskComplete {
 
@@ -42,6 +39,6 @@ public class slotsViewModel extends ViewModel implements SlotsRepository.OnRealt
 
     @Override
     public void onFailure(String error) {
-        databaseErrorMutableLiveData.setValue(error.toString());
+        databaseErrorMutableLiveData.setValue(error);
     }
 }

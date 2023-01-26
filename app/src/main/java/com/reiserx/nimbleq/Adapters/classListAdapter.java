@@ -3,7 +3,6 @@ package com.reiserx.nimbleq.Adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.reiserx.nimbleq.Activities.ClassActivity;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.ClassListLayoutBinding;
@@ -49,7 +47,7 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
         holder.binding.subTopic.setText(model.getSubject() + " • " + model.getTopic());
         holder.binding.timeSlotTxt.setText(model.getTime_slot());
         if (model.getTeacher_name() != null)
-            holder.binding.teacherTxt.setText(context.getString(R.string.teacher).concat(model.getTeacher_name()));
+            holder.binding.teacherTxt.setText(context.getString(R.string.teacher)+" ".concat(model.getTeacher_name()));
 
         if (model.getRating() > 0) {
             String rating = String.format("%.1f", model.getRating());
@@ -65,8 +63,6 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
             intent.putExtra("classID", model.getClassID());
             context.startActivity(intent);
         });
-
-        Log.d(CONSTANTS.TAG2, model.getClassName().concat(": ".concat(String.valueOf(model.getStudent_count()))));
     }
 
     @Override

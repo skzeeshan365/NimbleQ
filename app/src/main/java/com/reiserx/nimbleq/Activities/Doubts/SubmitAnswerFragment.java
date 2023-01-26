@@ -21,9 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +30,6 @@ import com.reiserx.nimbleq.Adapters.fileListAdapter;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
-import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
@@ -90,7 +87,9 @@ public class SubmitAnswerFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        userDataViewModel.getUsername(user.getUid());
+        if (user != null) {
+            userDataViewModel.getUsername(user.getUid());
+        }
         userDataViewModel.getUserName().observe(getViewLifecycleOwner(), s -> userName = s);
         data = new ArrayList<>();
         links = new ArrayList<>();
@@ -163,27 +162,25 @@ public class SubmitAnswerFragment extends Fragment {
                     intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
                     FilesActivityResultLauncher.launch(intent);
                 });
-                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> {
-                    FishBun.with(SubmitAnswerFragment.this)
-                            .setImageAdapter(new GlideAdapter())
-                            .setIsUseDetailView(true)
-                            .setMaxCount(1)
-                            .setMinCount(1)
-                            .setPickerSpanCount(2)
-                            .setAlbumSpanCount(1, 2)
-                            .setButtonInAlbumActivity(false)
-                            .setCamera(true)
-                            .setReachLimitAutomaticClose(true)
-                            .setAllViewTitle(getString(R.string.all))
-                            .setActionBarTitle(getString(R.string.images))
-                            .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
-                            .textOnNothingSelected(getString(R.string.nothing_selected))
-                            .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                            .isStartInAllView(false)
-                            .exceptMimeType(listOf(MimeType.GIF))
-                            .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                            .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
-                });
+                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> FishBun.with(SubmitAnswerFragment.this)
+                        .setImageAdapter(new GlideAdapter())
+                        .setIsUseDetailView(true)
+                        .setMaxCount(1)
+                        .setMinCount(1)
+                        .setPickerSpanCount(2)
+                        .setAlbumSpanCount(1, 2)
+                        .setButtonInAlbumActivity(false)
+                        .setCamera(true)
+                        .setReachLimitAutomaticClose(true)
+                        .setAllViewTitle(getString(R.string.all))
+                        .setActionBarTitle(getString(R.string.images))
+                        .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                        .textOnNothingSelected(getString(R.string.nothing_selected))
+                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                        .isStartInAllView(false)
+                        .exceptMimeType(listOf(MimeType.GIF))
+                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                        .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher));
                 alert.show();
             } else {
                 FishBun.with(SubmitAnswerFragment.this)
@@ -248,6 +245,7 @@ public class SubmitAnswerFragment extends Fragment {
                 }
             });
 
+    @SuppressLint("NotifyDataSetChanged")
     void observers() {
         firebaseStorageViewModel.getUploadStartMutableLiveData().observe(getViewLifecycleOwner(), fileTypeModel -> {
             data.add(fileTypeModel);

@@ -5,27 +5,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.marlonlom.utilities.timeago.TimeAgo;
-import com.google.android.exoplayer2.util.Log;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Adapters.Announcements.announcementLinksAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;
-import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.databinding.AnswerListLayoutBinding;
-import com.reiserx.nimbleq.databinding.DoubtsLayoutBinding;
 
 import java.util.List;
 
@@ -52,7 +42,7 @@ public class AnswersAdapter extends RecyclerView.Adapter<AnswersAdapter.UsersVie
         return new AnswersAdapter.UsersViewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     @Override
     public void onBindViewHolder(@NonNull AnswersAdapter.UsersViewHolder holder, int position) {
         AnswerModel model = answerModelList.get(position);
@@ -96,6 +86,7 @@ public class AnswersAdapter extends RecyclerView.Adapter<AnswersAdapter.UsersVie
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilter(List<AnswerModel> FilteredDataList) {
         answerModelList = FilteredDataList;
         notifyDataSetChanged();

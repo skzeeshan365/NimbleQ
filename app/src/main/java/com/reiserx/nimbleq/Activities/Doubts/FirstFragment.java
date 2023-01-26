@@ -1,16 +1,14 @@
 package com.reiserx.nimbleq.Activities.Doubts;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,18 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.reiserx.nimbleq.Activities.AnnouncementsActivity;
-import com.reiserx.nimbleq.Adapters.Announcements.announcementsAdapter;
 import com.reiserx.nimbleq.Adapters.Doubts.DoubtsAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
-import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
-import com.reiserx.nimbleq.ViewModels.AnnouncementsViewModel;
 import com.reiserx.nimbleq.ViewModels.DoubtsViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.FragmentFirstBinding;
@@ -44,7 +36,7 @@ public class FirstFragment extends Fragment {
     DoubtsAdapter adapter;
 
     LinearLayoutManager layoutManager;
-    List<DoubtsModel> filteredDataList, dataList;
+    List<DoubtsModel> dataList;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -61,7 +53,7 @@ public class FirstFragment extends Fragment {
     String subject;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentFirstBinding.inflate(inflater, container, false);
 
         userTypeClass = new UserTypeClass(getContext());
@@ -105,6 +97,7 @@ public class FirstFragment extends Fragment {
         binding = null;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void getData() {
         viewModel = new ViewModelProvider(this).get(DoubtsViewModel.class);
 
@@ -162,15 +155,8 @@ public class FirstFragment extends Fragment {
             viewModel.paginateDoubts(subject, adapter);
             loading = true;
 
-            viewModel.getDoubtPageListModelMutableLiveData().observe(getViewLifecycleOwner(), doubtsModelList -> {
-                loading = false;
-            });
-            viewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
-                @Override
-                public void onChanged(String s) {
-                    Log.d(CONSTANTS.TAG2, s);
-                }
-            });
+            viewModel.getDoubtPageListModelMutableLiveData().observe(getViewLifecycleOwner(), doubtsModelList -> loading = false);
+            viewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), s -> Log.d(CONSTANTS.TAG2, s));
         }
     }
 }

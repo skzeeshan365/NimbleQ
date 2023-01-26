@@ -31,9 +31,7 @@ public class FileDownloader {
         Log.d(CONSTANTS.TAG2, fileName);
         prog.setTitle(fileName);
         PRDownloader.download(url, path, fileName).build()
-                .setOnStartOrResumeListener(() -> {
-                    prog.show();
-                })
+                .setOnStartOrResumeListener(() -> prog.show())
                 .setOnPauseListener(() -> {
 
                 })

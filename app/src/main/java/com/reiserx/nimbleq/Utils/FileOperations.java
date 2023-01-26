@@ -1,16 +1,13 @@
 package com.reiserx.nimbleq.Utils;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
 import com.reiserx.nimbleq.BuildConfig;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 
 import java.io.File;
 import java.util.Objects;
@@ -20,16 +17,6 @@ public class FileOperations {
 
     public FileOperations(Context context) {
         this.context = context;
-    }
-
-    public void checkFile(String url, String filename) {
-        File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/Padhai Madad/".concat(filename));
-        if (filePath.exists()) {
-            openFile(context, filePath.getPath());
-        } else {
-            FileDownloader fileDownloader = new FileDownloader(context);
-            fileDownloader.download(url, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Padhai Madad", filename);
-        }
     }
 
     public void checkFile(String url, String filename, boolean downloadWithoutProg) {

@@ -1,5 +1,6 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +27,6 @@ public class SlotsListActivity extends AppCompatActivity {
     ActivitySlotsListBinding binding;
 
     ArrayList<subjectAndTimeSlot> data;
-    ArrayList<subjectAndTimeSlot> data2;
     slotsAdapter adapter;
 
     LinearLayoutManager layoutManager;
@@ -61,6 +61,7 @@ public class SlotsListActivity extends AppCompatActivity {
         getData();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void getData() {
 
         SlotListViewModel viewModel = new ViewModelProvider(this).get(SlotListViewModel.class);

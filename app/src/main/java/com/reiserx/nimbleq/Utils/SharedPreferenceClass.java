@@ -4,15 +4,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SharedPreferenceClass {
     Context context;
@@ -82,5 +78,25 @@ public class SharedPreferenceClass {
 
     public FCMCREDENTIALS getFCMKey() {
         return gson.fromJson(save.getString("FCM_KEY", null), FCMCREDENTIALS.class);
+    }
+
+    public void setSlotLimit(Long limit) {
+        SharedPreferences.Editor myEdit = save.edit();
+        myEdit.putLong("SLOT_LIMIT", limit);
+        myEdit.apply();
+    }
+
+    public Long getSlotLimit() {
+        return save.getLong("SLOT_LIMIT", 3);
+    }
+
+    public void setFileSizeLimit(Long limit) {
+        SharedPreferences.Editor myEdit = save.edit();
+        myEdit.putLong("FILE_SIZE_LIMIT", limit);
+        myEdit.apply();
+    }
+
+    public Long getFileSizeLimit() {
+        return save.getLong("FILE_SIZE_LIMIT", 50);
     }
 }

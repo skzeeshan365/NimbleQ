@@ -2,41 +2,25 @@ package com.reiserx.nimbleq.Adapters.Doubts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.marlonlom.utilities.timeago.TimeAgo;
-import com.google.android.exoplayer2.util.Log;
-import com.google.firebase.auth.FirebaseAuth;
 import com.reiserx.nimbleq.Adapters.Announcements.announcementLinksAdapter;
-import com.reiserx.nimbleq.Adapters.Announcements.announcementsAdapter;
-import com.reiserx.nimbleq.Adapters.MessagesAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
-import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
-import com.reiserx.nimbleq.databinding.AnnouncementsLayoutBinding;
 import com.reiserx.nimbleq.databinding.DoubtsLayoutBinding;
 import com.reiserx.nimbleq.databinding.ListLoadingLayoutBinding;
-import com.vdurmont.emoji.EmojiManager;
 
 import java.util.List;
-import java.util.Objects;
 
 public class DoubtsAdapter extends RecyclerView.Adapter {
 
@@ -80,6 +64,7 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
         }
     }
 
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DoubtsModel model = doubtsModelList.get(position);
@@ -182,6 +167,7 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilter(List<DoubtsModel> FilteredDataList) {
         doubtsModelList = FilteredDataList;
         notifyDataSetChanged();

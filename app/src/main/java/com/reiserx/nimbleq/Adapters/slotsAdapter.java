@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -36,7 +35,6 @@ import com.reiserx.nimbleq.databinding.SlotsLayoutBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.ToDoubleBiFunction;
 
 public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHolder> {
 
@@ -125,7 +123,7 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                 });
             });
         } else {
-            holder.binding.slotsSubTxt.setText("Slot ".concat(String.valueOf(position + 1)));
+            holder.binding.slotsSubTxt.setText(context.getString(R.string.slot2)+" ".concat(String.valueOf(position + 1)));
             if (model.getTimeSlot() != null)
                 holder.binding.slotsDescTxt.setText(model.getTimeSlot().concat(" • ".concat(model.getSubject().concat(" • ".concat(model.getTopic())))));
             else
@@ -149,6 +147,7 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                                         if (subjectAndTimeSlot != null) {
                                             HashMap<String, Object> map = new HashMap<>();
                                             map.put("current", true);
+                                            if (snapshot1.getKey() != null)
                                             model.getReference().child(snapshot1.getKey()).updateChildren(map);
                                             if (model.getTimeSlot() == null) {
                                                 SharedPreferences save = context.getSharedPreferences("subjectSlots", MODE_PRIVATE);
@@ -185,37 +184,35 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                     dialogs.updateSubjectForTeacher(model, model.getReference().child(model.getKey()));
             });
 
-            holder.binding.slotHolder.setOnClickListener(view -> {
-
-                model.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("current", false);
-                                model.getReference().child(snapshot1.getKey()).updateChildren(map);
-                            }
+            holder.binding.slotHolder.setOnClickListener(view -> model.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             HashMap<String, Object> map = new HashMap<>();
-                            map.put("current", true);
-                            model.getReference().child(model.getKey()).updateChildren(map);
+                            map.put("current", false);
+                            if (snapshot1.getKey() != null)
+                            model.getReference().child(snapshot1.getKey()).updateChildren(map);
+                        }
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("current", true);
+                        model.getReference().child(model.getKey()).updateChildren(map);
 
-                            if (model.getTimeSlot() == null) {
-                                SharedPreferences save = context.getSharedPreferences("subjectSlots", MODE_PRIVATE);
-                                SharedPreferences.Editor myEdit = save.edit();
-                                myEdit.putString("subject", model.getSubject());
-                                myEdit.putString("topic", model.getTopic());
-                                myEdit.apply();
-                            }
+                        if (model.getTimeSlot() == null) {
+                            SharedPreferences save = context.getSharedPreferences("subjectSlots", MODE_PRIVATE);
+                            SharedPreferences.Editor myEdit = save.edit();
+                            myEdit.putString("subject", model.getSubject());
+                            myEdit.putString("topic", model.getTopic());
+                            myEdit.apply();
                         }
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
-            });
+                }
+            }));
 
             if (model.isCurrent())
                 holder.binding.selectedImg.setVisibility(View.VISIBLE);

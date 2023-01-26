@@ -24,7 +24,9 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnUpdateModelListComplete,
         AdministrationRepository.OnGetZoomCredentialsComplete,
         AdministrationRepository.OnGetFCMCredentialsComplete,
-        AdministrationRepository.OnGetAdministratorComplete{
+        AdministrationRepository.OnGetAdministratorComplete,
+        AdministrationRepository.OnGetSlotLimitComplete,
+        AdministrationRepository.OnGetFileSizeLimitComplete{
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -39,6 +41,8 @@ public class AdministrationViewModel extends ViewModel implements
     private final MutableLiveData<zoomCredentials> zoomCredentialsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<FCMCREDENTIALS> FCMCredentialsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> adminMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> slotLimitMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> fileSizeLimitMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userListErrorMutableLiveData = new MutableLiveData<>();
@@ -48,6 +52,14 @@ public class AdministrationViewModel extends ViewModel implements
 
     public MutableLiveData<List<String>> getMimeTypesListMutableLiveData() {
         return mimeTypesListMutableLiveData;
+    }
+
+    public MutableLiveData<Long> getSlotLimitMutableLiveData() {
+        return slotLimitMutableLiveData;
+    }
+
+    public MutableLiveData<Long> getFileSizeLimitMutableLiveData() {
+        return fileSizeLimitMutableLiveData;
     }
 
     public MutableLiveData<Boolean> getAdminMutableLiveData() {
@@ -82,10 +94,6 @@ public class AdministrationViewModel extends ViewModel implements
         return listStringMutableLiveData;
     }
 
-    public MutableLiveData<AdminListModel> getAdminListModelMutableLiveData() {
-        return adminListModelMutableLiveData;
-    }
-
     public MutableLiveData<List<AdminListModel>> getAdminModelListMutableLiveData() {
         return adminModelListMutableLiveData;
     }
@@ -107,7 +115,7 @@ public class AdministrationViewModel extends ViewModel implements
     }
 
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this,this,this,this,this, this,this, this, this,this, this, this);
+        firebaseRepo = new AdministrationRepository(this,this,this,this,this,this,this, this,this, this, this,this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -170,6 +178,14 @@ public class AdministrationViewModel extends ViewModel implements
         firebaseRepo.getSlotModelList();
     }
 
+    public void getFileList() {
+        firebaseRepo.getFileList();
+    }
+
+    public void updateFIleModelList(String name) {
+        firebaseRepo.updateFileModelList(name);
+    }
+
     public void updateSlotModelList(String grade) {
         firebaseRepo.updateSlotModelList(grade);
     }
@@ -183,6 +199,26 @@ public class AdministrationViewModel extends ViewModel implements
 
     public void getAdministrator(String userID) {
         firebaseRepo.getAdministrator(userID);
+    }
+
+    public void updateFilesEnabled(boolean value) {
+        firebaseRepo.updateFilesEnabled(value);
+    }
+
+    public void getSlotLimit() {
+        firebaseRepo.getSlotLimit();
+    }
+
+    public void getFileSizeLimit() {
+        firebaseRepo.getFileSizeLimit();
+    }
+
+    public void updateFileSizeLimit(Long value) {
+        firebaseRepo.updateFileSizeLimit(value);
+    }
+
+    public void updateSlotLimit(Long value) {
+        firebaseRepo.updateSlotLimit(value);
     }
 
     @Override
@@ -253,6 +289,16 @@ public class AdministrationViewModel extends ViewModel implements
     @Override
     public void onGetAdminSuccess(Boolean admin) {
         adminMutableLiveData.setValue(admin);
+    }
+
+    @Override
+    public void onGetSlotLimitSuccess(Long limit) {
+        slotLimitMutableLiveData.setValue(limit);
+    }
+
+    @Override
+    public void onGetFileSizeLimitSuccess(Long limit) {
+        fileSizeLimitMutableLiveData.setValue(limit);
     }
 
     @Override

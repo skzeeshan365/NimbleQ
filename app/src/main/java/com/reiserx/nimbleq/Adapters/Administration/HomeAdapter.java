@@ -2,23 +2,15 @@ package com.reiserx.nimbleq.Adapters.Administration;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.airbnb.lottie.L;
-import com.reiserx.nimbleq.Activities.Administration.HomeFragment;
-import com.reiserx.nimbleq.Activities.ClassActivity;
-import com.reiserx.nimbleq.Adapters.classListAdapter;
-import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.databinding.ClassListLayoutBinding;
 import com.reiserx.nimbleq.databinding.LtHomeListAdminBinding;
 
 import java.util.List;
@@ -50,44 +42,34 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
         switch (position) {
             case 0:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentUserList);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentUserList));
                 break;
             case 1:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentStudentList);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentStudentList));
                 break;
             case 2:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentTeacherList);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentTeacherList));
                 break;
             case 3:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentUpdateGradeList);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentUpdateGradeList));
                 break;
             case 4:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentSubjectList);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentSubjectList));
                 break;
             case 5:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentSlotList);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentSlotList));
                 break;
             case 6:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentClassListByDemand);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentClassListByDemand));
                 break;
             case 7:
-                holder.binding.getRoot().setOnClickListener(view -> {
-                    navController.navigate(R.id.action_HomeFragment_to_FragmentClassListByRating);
-                });
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentClassListByRating));
+                break;
+            case 8:
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentFileTypes));
+                break;
+            case 9:
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentLimits));
                 break;
         }
     }

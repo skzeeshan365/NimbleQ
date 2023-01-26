@@ -25,7 +25,7 @@ public class StateCityData {
     }
 
     public String loadJSONFile() {
-        String json = null;
+        String json;
         try {
             InputStream inputStream = context.getAssets().open("cities.json");
             int size = inputStream.available();

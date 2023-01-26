@@ -1,6 +1,7 @@
 package com.reiserx.nimbleq.Activities.Fragments.ClassView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
@@ -22,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -157,13 +157,11 @@ public class HomeFragment extends Fragment implements MenuProvider {
             }
         });
 
-        userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
-            snackbarTop.showSnackBar(error, false);
-        });
+        userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> snackbarTop.showSnackBar(error, false));
 
         snackbarTop = new SnackbarTop(binding.getRoot());
 
-        id = getActivity().getIntent().getExtras().getString("classID");
+        id = requireActivity().getIntent().getExtras().getString("classID");
 
         fetchClass();
 
@@ -191,19 +189,17 @@ public class HomeFragment extends Fragment implements MenuProvider {
         UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
 
         userDataViewModel.getUsername(user.getUid());
-        userDataViewModel.getUserName().observe(getViewLifecycleOwner(), username -> {
-            binding.button8.setOnClickListener(view -> {
-                if (username != null) {
-                    buttonDesign.buttonFill(binding.button8);
-                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                    alert.setTitle(getString(R.string.join_meeting));
-                    alert.setMessage(getString(R.string.are_you_sure_you_want_to_join_this_meeting));
-                    alert.setPositiveButton(getString(R.string.join), (dialogInterface, i) -> joinMeeting(username, MEETING_ID, MEETING_PASSWORD));
-                    alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> buttonDesign.setButtonOutline(binding.button8));
-                    alert.show();
-                }
-            });
-        });
+        userDataViewModel.getUserName().observe(getViewLifecycleOwner(), username -> binding.button8.setOnClickListener(view -> {
+            if (username != null) {
+                buttonDesign.buttonFill(binding.button8);
+                AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                alert.setTitle(getString(R.string.join_meeting));
+                alert.setMessage(getString(R.string.are_you_sure_you_want_to_join_this_meeting));
+                alert.setPositiveButton(getString(R.string.join), (dialogInterface, i) -> joinMeeting(username, MEETING_ID, MEETING_PASSWORD));
+                alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> buttonDesign.setButtonOutline(binding.button8));
+                alert.show();
+            }
+        }));
 
         userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
             snackbarTop.showSnackBar(error, false);
@@ -233,7 +229,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 binding.gradeTxt.setText(classModel.getGrade());
                 userDataViewModel.getUserData(classModel.getTeacher_info());
                 if (classModel.getRating() > 0) {
-                    String rating = String.format("%.1f", classModel.getRating());
+                    @SuppressLint("DefaultLocale") String rating = String.format("%.1f", classModel.getRating());
                     binding.ratingRxt.setText(rating);
                     binding.ratingBar.setRating(Float.parseFloat(rating) / 5);
                 } else  {
@@ -303,9 +299,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 String gender = "\n"+getString(R.string.gender_2)+userDetails.getGender();
                 String schoolname = "\n"+getString(R.string.school_2)+userDetails.getSchoolName();
                 alert.setMessage(grade+schoolname+stateCity+gender);
-                alert.setPositiveButton(getString(R.string.rate), (dialogInterface, i) -> {
-                    rateTeacher();
-                });
+                alert.setPositiveButton(getString(R.string.rate), (dialogInterface, i) -> rateTeacher());
                 alert.setNegativeButton(getString(R.string.cancel), null);
                 alert.show();
             });
@@ -399,14 +393,10 @@ public class HomeFragment extends Fragment implements MenuProvider {
         if (number != null) {
             Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
             String[] mPhoneNumberProjection = { ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME };
-            Cursor cur = requireContext().getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null);
-            try {
+            try (Cursor cur = requireContext().getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null)) {
                 if (cur.moveToFirst()) {
                     return true;
                 }
-            } finally {
-                if (cur != null)
-                    cur.close();
             }
         }
         return false;

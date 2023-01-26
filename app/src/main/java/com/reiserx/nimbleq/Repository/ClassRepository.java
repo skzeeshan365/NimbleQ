@@ -5,7 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,7 +29,6 @@ import com.reiserx.nimbleq.Utils.TopicSubscription;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ClassRepository {
@@ -97,9 +95,7 @@ public class ClassRepository {
                     request.setAccepted(true);
 
                     FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests").document(request.getId()).set(request).addOnSuccessListener(unused -> {
-                    }).addOnFailureListener(e -> {
-                        Log.d(CONSTANTS.TAG2, e.toString());
-                    });
+                    }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
                     onCreateClassComplete.onClassCreated(reference.getId());
                 }
 
@@ -108,9 +104,7 @@ public class ClassRepository {
 
                 }
             });
-        }).addOnFailureListener(e -> {
-            onCreateClassComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onCreateClassComplete.onFailure(e.toString()));
     }
 
     public void createClass(Context context, classModel classModel, String teacherName) {
@@ -126,9 +120,7 @@ public class ClassRepository {
 
             notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
             onCreateClassComplete.onClassCreated(reference.getId());
-        }).addOnFailureListener(e -> {
-            onCreateClassComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onCreateClassComplete.onFailure(e.toString()));
     }
 
     public void getClassData(String classID) {
@@ -320,7 +312,7 @@ public class ClassRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-
+                        if (snapshot1.getKey() != null)
                         reference.collection("ClassInfo").document(snapshot1.getKey()).get().addOnSuccessListener(documentSnapshot -> {
                             if (documentSnapshot.exists()) {
                                 com.reiserx.nimbleq.Models.classModel models = documentSnapshot.toObject(classModel.class);
@@ -423,9 +415,7 @@ public class ClassRepository {
             else
                 notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating_with_feedback) + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
-        }).addOnFailureListener(e -> {
-            onRatingSubmitted.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onRatingSubmitted.onFailure(e.toString()));
     }
 
     public void getClassRating(String classID) {
@@ -468,9 +458,7 @@ public class ClassRepository {
             else
                 notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating_with_feedback) + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
-        }).addOnFailureListener(e -> {
-            onRatingSubmitted.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onRatingSubmitted.onFailure(e.toString()));
     }
 
     public void getTeacherRating(String userID) {
@@ -561,12 +549,7 @@ public class ClassRepository {
                                                 data.add(classModel);
                                             }
                                         }
-                                        Collections.sort(data, new Comparator<classModel>() {
-                                            @Override
-                                            public int compare(classModel lhs, classModel rhs) {
-                                                return Long.compare(rhs.getStudent_count(), lhs.getStudent_count());
-                                            }
-                                        });
+                                        Collections.sort(data, (lhs, rhs) -> Long.compare(rhs.getStudent_count(), lhs.getStudent_count()));
                                         OnGetClassListComplete.onSuccess(data);
                                     }
 
@@ -616,12 +599,7 @@ public class ClassRepository {
                                         data.add(classModel);
                                     }
                                 }
-                                Collections.sort(data, new Comparator<classModel>() {
-                                    @Override
-                                    public int compare(classModel lhs, classModel rhs) {
-                                        return Float.compare(lhs.getRating(), rhs.getRating());
-                                    }
-                                });
+                                Collections.sort(data, (lhs, rhs) -> Float.compare(lhs.getRating(), rhs.getRating()));
                                 OnGetClassListComplete.onSuccess(data);
                             }
 

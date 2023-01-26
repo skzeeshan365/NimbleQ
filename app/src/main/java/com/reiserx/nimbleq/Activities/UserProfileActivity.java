@@ -4,11 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,8 +13,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.userType;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
@@ -105,19 +100,16 @@ public class UserProfileActivity extends AppCompatActivity {
 
     void getUserType() {
         userDataViewModel.getUserType(user.getUid());
-        userDataViewModel.getUserTypeMutableLiveData().observe(this, new Observer<userType>() {
-            @Override
-            public void onChanged(userType userType) {
-                studentOrTecher = userType.getCurrentStatus();
-                if (userType.getCurrentStatus() == 1) {
-                    binding.usertypeTxt.setText("Logged in as learner");
-                    binding.textView17.setText("Tap to switch for teacher");
-                } else {
-                    binding.usertypeTxt.setText("Logged in as teacher");
-                    binding.textView17.setText("Tap to switch for learner");
-                }
-                getSubject();
+        userDataViewModel.getUserTypeMutableLiveData().observe(this, userType -> {
+            studentOrTecher = userType.getCurrentStatus();
+            if (userType.getCurrentStatus() == 1) {
+                binding.usertypeTxt.setText(getString(R.string.logged_in_as_learner));
+                binding.textView17.setText(getString(R.string.tap_to_switch_for_teacher));
+            } else {
+                binding.usertypeTxt.setText(getString(R.string.logged_in_as_teacher));
+                binding.textView17.setText(getString(R.string.tap_to_switch_for_learner));
             }
+            getSubject();
         });
     }
 

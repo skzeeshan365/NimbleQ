@@ -23,8 +23,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +37,6 @@ import com.reiserx.nimbleq.Activities.ClassActivity;
 import com.reiserx.nimbleq.Activities.MainActivity;
 import com.reiserx.nimbleq.Adapters.TeacherListSpinnerAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
@@ -49,7 +46,6 @@ import com.reiserx.nimbleq.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class dialogs {
@@ -63,10 +59,12 @@ public class dialogs {
     UserData requestTeacherData;
     List<subjectAndTimeSlot> list;
     float rating1, rating2, rating3, rating4, rating5;
+    SharedPreferenceClass sharedPreferenceClass;
 
     public dialogs(Context context, View view) {
         this.context = context;
         snackbarTop = new SnackbarTop(view);
+        sharedPreferenceClass = new SharedPreferenceClass(context);
     }
 
     public void selectStudentOrTeacherForLogin(String uid) {
@@ -96,6 +94,8 @@ public class dialogs {
 
             FirebaseMessaging fcm = FirebaseMessaging.getInstance();
 
+            SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);
+
             databaseReference.child("subjectForStudents").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -116,7 +116,7 @@ public class dialogs {
                                 databaseReference.child("subjectForStudents").child(uid).child(model.getKey()).updateChildren(map);
                             }
                             context.startActivity(intent);
-                        } else if (snapshot.getChildrenCount() < 3) {
+                        } else if (snapshot.getChildrenCount() < sharedPreferenceClass.getSlotLimit()) {
                             selectSubjectForLearnerNormal(uid, true);
                             for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                 subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
@@ -162,7 +162,7 @@ public class dialogs {
                                 databaseReference.child("subjectForTeacher").child(uid).child(model.getKey()).updateChildren(map);
                             }
                             context.startActivity(intent);
-                        } else if (snapshot.getChildrenCount() < 3) {
+                        } else if (snapshot.getChildrenCount() < sharedPreferenceClass.getSlotLimit()) {
                             selectSubjectForTeacherNormal(uid, true);
                         }
                     } else
@@ -334,7 +334,7 @@ public class dialogs {
         final Spinner subject_spinner = mView.findViewById(R.id.subject_spinner);
 
         final TextView sub_txt = mView.findViewById(R.id.sub_txt);
-        sub_txt.setText("Select subject, topic and time slot");
+        sub_txt.setText(context.getString(R.string.select_slot_hint));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -501,7 +501,7 @@ public class dialogs {
         time_spinner.setVisibility(View.GONE);
 
         final TextView sub_txt = mView.findViewById(R.id.sub_txt);
-        sub_txt.setText("Select subject topic");
+        sub_txt.setText(context.getString(R.string.select_sub_and_topic));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -613,16 +613,15 @@ public class dialogs {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    if (snapshot.getChildrenCount() < 3) {
+                    if (snapshot.getChildrenCount() < sharedPreferenceClass.getSlotLimit()) {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("current", false);
+                            if (snapshot1.getKey() != null)
                             reference.child(snapshot1.getKey()).updateChildren(map);
                         }
                         FirebaseMessaging fcm = FirebaseMessaging.getInstance();
-                        fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot)).addOnFailureListener(e -> {
-                            snackbarTop.showSnackBar(context.getString(R.string.failed_to_subscribe_for_notification).concat(e.toString()), false);
-                        });;
+                        fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot)).addOnFailureListener(e -> snackbarTop.showSnackBar(context.getString(R.string.failed_to_subscribe_for_notification).concat(e.toString()), false));
                         reference.push().setValue(subjectAndTimeSlot);
                         snackbarTop.showSnackBar(context.getString(R.string.slot_saved), true);
                     } else {
@@ -660,9 +659,7 @@ public class dialogs {
         buttonDesign.setButtonOutline(close_btn);
         buttonDesign.setButtonOutline(open_class);
 
-        close_btn.setOnClickListener(view -> {
-            activity.finish();
-        });
+        close_btn.setOnClickListener(view -> activity.finish());
 
         open_class.setOnClickListener(view -> {
             Intent intent = new Intent(context, ClassActivity.class);
@@ -788,7 +785,7 @@ public class dialogs {
         final Spinner subject_spinner = mView.findViewById(R.id.subject_spinner);
 
         final TextView sub_txt = mView.findViewById(R.id.sub_txt);
-        sub_txt.setText("Select subject and topic");
+        sub_txt.setText(context.getString(R.string.select_sub_and_topic));
 
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -906,6 +903,7 @@ public class dialogs {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                if (snapshot1.getKey() != null)
                                 database.getReference().child("Data").child("UserData").child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -1066,7 +1064,7 @@ public class dialogs {
             if (btn2.isChecked()) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("language","en");
-                editor.commit();
+                editor.apply();
                 alert.dismiss();
                 snackbarTop.showSnackBar("Settings applied", true);
                 restart(activity);
@@ -1078,7 +1076,7 @@ public class dialogs {
             if (btn3.isChecked()) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("language","hi");
-                editor.commit();
+                editor.apply();
                 alert.dismiss();
                 snackbarTop.showSnackBar("Settings applied", true);
                 restart(activity);

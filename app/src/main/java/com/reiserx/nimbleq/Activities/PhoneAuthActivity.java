@@ -1,5 +1,6 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +11,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,6 +54,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     SnackbarTop snackbarTop;
 
+    @SuppressLint("CutPasteId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +118,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
                         FirebaseUser user = auth.getCurrentUser();
 
                         AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+                        if (user != null)
                         viewModel.getAdministrator(user.getUid());
                         viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
                             Intent intent = new Intent(PhoneAuthActivity.this, AdministrationActivity.class);
@@ -127,15 +128,18 @@ public class PhoneAuthActivity extends AppCompatActivity {
                         });
                         viewModel.getAdminErrorMutableLiveData().observe(PhoneAuthActivity.this, s -> {
                             UserDataViewModel userDataViewModel = new ViewModelProvider(PhoneAuthActivity.this).get(UserDataViewModel.class);
-                            userDataViewModel.updateFCMToken(user.getUid());
-                            binding.continueBtn.setOnClickListener(view -> {
-                                Map<String, Object> map = new HashMap<>();
-                                map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
-                                FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
-                                buttonDesign.buttonFill(binding.continueBtn);
-                                dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
-                                dialogs.selectStudentOrTeacherForLogin(auth.getUid());
-                            });
+                            if (user != null) {
+                                userDataViewModel.updateFCMToken(user.getUid());
+                                binding.continueBtn.setOnClickListener(view -> {
+                                    Map<String, Object> map = new HashMap<>();
+                                    if (user.getMetadata() != null)
+                                    map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
+                                    FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
+                                    buttonDesign.buttonFill(binding.continueBtn);
+                                    dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
+                                    dialogs.selectStudentOrTeacherForLogin(auth.getUid());
+                                });
+                            }
                         });
                     }
                     TransitionManager.beginDelayedTransition(binding.cardHolder, new AutoTransition());
@@ -155,17 +159,19 @@ public class PhoneAuthActivity extends AppCompatActivity {
         FirebaseMessaging fcm = FirebaseMessaging.getInstance();
 
         fcm.getToken().addOnSuccessListener(s -> {
-            reference = database.getReference().child("Data").child("UserData").child(auth.getUid());
-            FirebaseUser user = auth.getCurrentUser();
-            UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), "null", s, user.getMetadata().getCreationTimestamp(), user.getMetadata().getLastSignInTimestamp());
-            reference.setValue(userData).addOnSuccessListener(unused -> {
-                binding.continueBtn.setOnClickListener(view -> {
-                    Intent intent = new Intent(PhoneAuthActivity.this, RegistrationActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                });
-            });
+            if (auth.getUid() != null) {
+                reference = database.getReference().child("Data").child("UserData").child(auth.getUid());
+                FirebaseUser user = auth.getCurrentUser();
+                if (user != null && user.getMetadata() != null) {
+                    UserData userData = new UserData(user.getUid(), user.getPhoneNumber(), "null", s, user.getMetadata().getCreationTimestamp(), user.getMetadata().getLastSignInTimestamp());
+                    reference.setValue(userData).addOnSuccessListener(unused -> binding.continueBtn.setOnClickListener(view -> {
+                        Intent intent = new Intent(PhoneAuthActivity.this, RegistrationActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }));
+                }
+            }
         });
     }
 }

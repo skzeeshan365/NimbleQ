@@ -30,6 +30,8 @@ android {
             // your project's release build type.
             minifyEnabled true
 
+            shrinkResources true
+
             // Includes the default ProGuard rules files that are packaged with
             // the Android Gradle plugin. To learn more, go to the section about
             // R8 configuration files.
@@ -38,6 +40,18 @@ android {
                     'proguard-rules.pro'
         }
     }
+    bundle {
+        language {
+            enableSplit = true
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

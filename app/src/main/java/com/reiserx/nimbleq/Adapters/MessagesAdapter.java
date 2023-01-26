@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -286,6 +287,8 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             AlphaAnimation aa = new AlphaAnimation(0.1f, 1.0f);
             aa.setDuration(400);
 
+            checkFile(message.getFilename(), viewHolder.binding.fileIcon);
+
             viewHolder.binding.filenameTxt.setText(message.getFilename());
 
             viewHolder.binding.fileHolder.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
@@ -315,6 +318,8 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             viewHolder.binding.filenameTxt.setText(message.getFilename());
             viewHolder.binding.username.setText(message.getSenderName());
+
+            checkFile(message.getFilename(), viewHolder.binding.fileIcon);
 
             viewHolder.binding.recFileHolder.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
 
@@ -495,5 +500,16 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+    private void checkFile(String file, ImageView imageView) {
+
+        if (file.endsWith(".jpg") || file.endsWith(".jpeg") || file.endsWith(".png"))
+            imageView.setImageResource(R.drawable.ic_baseline_image_24);
+        if (file.endsWith(".mp3") || file.endsWith(".mp4a") || file.endsWith(".wma") || file.endsWith(".m4a") || file.endsWith(".aac"))
+            imageView.setImageResource(R.drawable.ic_baseline_audio_file_24);
+        else if (file.endsWith(".pdf") || file.endsWith(".docx"))
+            imageView.setImageResource(R.drawable.ic_baseline_picture_as_pdf_24);
+        else if (file.endsWith(".txt"))
+            imageView.setImageResource(R.drawable.ic_baseline_insert_drive_file_24);
     }
 }

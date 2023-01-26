@@ -7,13 +7,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.reiserx.nimbleq.Activities.Doubts.FirstFragment;
 import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
-import com.reiserx.nimbleq.Adapters.slotsAdapter;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.FragmentAdminHomeBinding;
 
@@ -29,7 +26,7 @@ public class HomeFragment extends Fragment {
     List<String> data;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentAdminHomeBinding.inflate(inflater, container, false);
 
         data = new ArrayList<>();
@@ -52,6 +49,8 @@ public class HomeFragment extends Fragment {
         data.add(getString(R.string.time_slot_list));
         data.add(getString(R.string.class_list_by_demand));
         data.add(getString(R.string.class_list_by_rating));
+        data.add(getString(R.string.supported_file_types));
+        data.add(getString(R.string.limits));
     }
 
     @Override

@@ -1,16 +1,17 @@
 package com.reiserx.nimbleq.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.FirebaseApp;
@@ -20,9 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListActivity;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
-import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
@@ -31,6 +29,8 @@ import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityMainBinding;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 import us.zoom.sdk.ZoomSDK;
@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     UserTypeClass userTypeClass;
 
-    private slotsViewModel viewModel;
-
     public static final String Default="en";
 
     @Override
@@ -58,9 +56,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         FirebaseApp.initializeApp(this);
 
+        if (isNetworkAvailable(this)) {
+            Thread thread = new Thread(() -> {
+                try {
+                    if (!isInternetAvailable()) {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                        alertDialog.setTitle(getString(R.string.no_internet));
+                        alertDialog.setMessage(getString(R.string.no_internet_msg));
+                        alertDialog.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finishAffinity());
+                        alertDialog.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            thread.start();
+        } else {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            alertDialog.setTitle(getString(R.string.no_network));
+            alertDialog.setMessage(getString(R.string.no_network_msg));
+            alertDialog.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finishAffinity());
+            alertDialog.show();
+        }
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         user = auth.getCurrentUser();
@@ -81,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             getUserType();
 
             initializeSlot();
+            initializeLimits();
 
             initializeZoomSdk(this);
             initializeFCM();
@@ -129,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void getUserType() {
+        binding.textView34.setText(getString(R.string.app_name_upper_case));
+        binding.textView31.setText(getString(R.string.current_slot));
         if (userTypeClass.isUserLearner()) {
 
             //holder 1
@@ -215,9 +238,10 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getDatabaseErrorMutableLiveData().observe(this, s -> Toast.makeText(context, s, Toast.LENGTH_SHORT).show());
     }
 
+    @SuppressLint("SetTextI18n")
     void initializeSlot() {
 
-        viewModel = new ViewModelProvider(this).get(slotsViewModel.class);
+        slotsViewModel viewModel = new ViewModelProvider(this).get(slotsViewModel.class);
 
         if (save.getInt("userType", 0) == 1) {
             viewModel.getSubjectForStudents(user.getUid());
@@ -248,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getDatabaseErrorMutableLiveData().observe(this, error -> Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show());
+        viewModel.getDatabaseErrorMutableLiveData().observe(this, error -> Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show());
     }
     void initializeFCM() {
         AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
@@ -283,5 +307,31 @@ public class MainActivity extends AppCompatActivity {
         invalidateOptionsMenu();
         setTitle(R.string.app_name);
         super.onStart();
+    }
+
+    void initializeLimits() {
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(this);
+
+        viewModel.getSlotLimit();
+        viewModel.getSlotLimitMutableLiveData().observe(this, sharedPreferenceClass::setSlotLimit);
+
+        viewModel.getFileSizeLimit();
+        viewModel.getFileSizeLimitMutableLiveData().observe(this, sharedPreferenceClass::setFileSizeLimit);
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress address = InetAddress.getByName("www.google.com");
+            return !address.equals("");
+        } catch (UnknownHostException e) {
+            // Log error
+        }
+        return false;
     }
 }

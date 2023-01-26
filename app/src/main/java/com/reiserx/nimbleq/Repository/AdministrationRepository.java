@@ -1,18 +1,11 @@
 package com.reiserx.nimbleq.Repository;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 
-import com.google.android.exoplayer2.util.Log;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.AggregateQuery;
@@ -20,23 +13,17 @@ import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.AdminListModel;
-import com.reiserx.nimbleq.Models.Announcements.linkModel;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.mimeTypesModel;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.zoomCredentials;
-import com.reiserx.nimbleq.Utils.MapComparator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class AdministrationRepository {
     private final AdministrationRepository.OnGetMimetypesCompleted onGetMimetypesCompleted;
@@ -51,6 +38,8 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetZoomCredentialsComplete onGetZoomCredentialsComplete;
     private final AdministrationRepository.OnGetFCMCredentialsComplete onGetFCMCredentialsComplete;
     private final AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete;
+    private final AdministrationRepository.OnGetSlotLimitComplete onGetSlotLimitComplete;
+    private final AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete;
 
     DatabaseReference reference;
     DatabaseReference userDataReference;
@@ -72,7 +61,9 @@ public class AdministrationRepository {
                                     AdministrationRepository.OnUpdateModelListComplete onUpdateModelListComplete,
                                     AdministrationRepository.OnGetZoomCredentialsComplete onGetZoomCredentialsComplete,
                                     AdministrationRepository.OnGetFCMCredentialsComplete onGetFCMCredentialsComplete,
-                                    AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete) {
+                                    AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete,
+                                    AdministrationRepository.OnGetSlotLimitComplete onGetSlotLimitComplete,
+                                    AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete) {
 
         this.onGetMimetypesCompleted = onGetMimetypesCompleted;
         this.onGetFileEnabledComplete = onGetFileEnabledComplete;
@@ -86,6 +77,8 @@ public class AdministrationRepository {
         this.onGetZoomCredentialsComplete = onGetZoomCredentialsComplete;
         this.onGetFCMCredentialsComplete = onGetFCMCredentialsComplete;
         this.onGetAdministratorComplete = onGetAdministratorComplete;
+        this.onGetSlotLimitComplete = onGetSlotLimitComplete;
+        this.onGetFileSizeLimitComplete = onGetFileSizeLimitComplete;
 
         reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -120,7 +113,7 @@ public class AdministrationRepository {
     }
 
     public void getFilesEnabled() {
-        reference.child("Filetypes").child("ImagesOnly").addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("Filetypes").child("ImagesOnly").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -134,6 +127,10 @@ public class AdministrationRepository {
                 onGetFileEnabledComplete.onFailure(error.toString());
             }
         });
+    }
+
+    public void updateFilesEnabled(boolean value) {
+        reference.child("Filetypes").child("ImagesOnly").setValue(value);
     }
 
     public void getGradeList() {
@@ -168,7 +165,7 @@ public class AdministrationRepository {
                     gradeList.clear();
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         String value = snapshot1.getValue(String.class);
-                        if (value != null)
+                        if (value != null && snapshot1.getKey() != null)
                             gradeList.add(new AdminListModel(value, reference.child("Lists").child("GradeList").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
@@ -191,7 +188,7 @@ public class AdministrationRepository {
                     gradeList.clear();
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         String value = snapshot1.getValue(String.class);
-                        if (value != null)
+                        if (value != null && snapshot1.getKey() != null)
                             gradeList.add(new AdminListModel(value, reference.child("Lists").child("SubjectList").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
@@ -214,8 +211,31 @@ public class AdministrationRepository {
                     gradeList.clear();
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         String value = snapshot1.getValue(String.class);
-                        if (value != null)
+                        if (value != null && snapshot1.getKey() != null)
                             gradeList.add(new AdminListModel(value, reference.child("Lists").child("SlotList").child(snapshot1.getKey())));
+                    }
+                    onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetAdminModelListComplete.onFailed(error.toString());
+            }
+        });
+    }
+
+    public void getFileList() {
+        List<AdminListModel> gradeList = new ArrayList<>();
+        reference.child("Filetypes").child("GroupChats").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    gradeList.clear();
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        mimeTypesModel value = snapshot1.getValue(mimeTypesModel.class);
+                        if (value != null && snapshot1.getKey() != null)
+                            gradeList.add(new AdminListModel(value.getMimetype(), reference.child("Filetypes").child("GroupChats").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
                 }
@@ -231,31 +251,25 @@ public class AdministrationRepository {
     public void updateGradeModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Lists").child("GradeList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
-            onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("GradeList").child(String.valueOf(currentTime))));
-        }).addOnFailureListener(e -> {
-            onUpdateModelListComplete.onFailed(e.toString());
-        });
+        reference.child("Lists").child("GradeList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("GradeList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void updateSubjectModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
-            onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime))));
-        }).addOnFailureListener(e -> {
-            onUpdateModelListComplete.onFailed(e.toString());
-        });
+        reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void updateSlotModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Lists").child("SlotList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> {
-            onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SlotList").child(String.valueOf(currentTime))));
-        }).addOnFailureListener(e -> {
-            onUpdateModelListComplete.onFailed(e.toString());
-        });
+        reference.child("Lists").child("SlotList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SlotList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
+    }
+
+    public void updateFileModelList(String grade) {
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+        reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void getAllUserList() {
@@ -295,6 +309,7 @@ public class AdministrationRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        if (snapshot1.getKey() != null)
                         userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -337,6 +352,7 @@ public class AdministrationRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        if (snapshot1.getKey() != null)
                         userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -378,6 +394,7 @@ public class AdministrationRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        if (snapshot1.getKey() != null)
                         userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -420,9 +437,7 @@ public class AdministrationRepository {
             } else {
                 onGetUserDetailsComplete.onFailed("User does not exist in database");
             }
-        }).addOnFailureListener(e -> {
-            onGetUserDetailsComplete.onFailed(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetUserDetailsComplete.onFailed(e.toString()));
     }
 
     public void getClassJoinCount(String userID) {
@@ -450,6 +465,7 @@ public class AdministrationRepository {
                 AggregateQuerySnapshot snapshot1 = task1.getResult();
                 onGetClassCreateCountComplete.onGetClassCreateCountSuccess(snapshot1.getCount());
             } else {
+                if (task1.getException() != null)
                 onGetClassCreateCountComplete.onFailed(task1.getException().toString());
             }
         });
@@ -462,9 +478,7 @@ public class AdministrationRepository {
                 onGetZoomCredentialsComplete.onGetZoomCredentialsSuccess(zoomCredentials);
             } else
                 onGetZoomCredentialsComplete.onFailed("Failed to get credentials");
-        }).addOnFailureListener(e -> {
-            onGetZoomCredentialsComplete.onFailed(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetZoomCredentialsComplete.onFailed(e.toString()));
     }
 
     public void getFCMCredentials() {
@@ -474,9 +488,7 @@ public class AdministrationRepository {
                 onGetFCMCredentialsComplete.onGetFCMCredentialsSuccess(fcmcredentials);
             } else
                 onGetFCMCredentialsComplete.onFailed("Failed to get credentials");
-        }).addOnFailureListener(e -> {
-            onGetFCMCredentialsComplete.onFailed(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetFCMCredentialsComplete.onFailed(e.toString()));
     }
 
     public void getAdministrator(String userID) {
@@ -494,6 +506,50 @@ public class AdministrationRepository {
                 onGetAdministratorComplete.onAdminFailed(error.toString());
             }
         });
+    }
+
+    public void getSlotLimit() {
+        reference.child("Limits").child("slotLimit").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Long limit = snapshot.getValue(Long.class);
+                    onGetSlotLimitComplete.onGetSlotLimitSuccess(limit);
+                } else
+                    onGetSlotLimitComplete.onAdminFailed("Limit not available");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetSlotLimitComplete.onAdminFailed(error.toString());
+            }
+        });
+    }
+
+    public void updateSlotLimit(Long value) {
+        reference.child("Limits").child("slotLimit").setValue(value);
+    }
+
+    public void getFileSizeLimit() {
+        reference.child("Limits").child("fileSize").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Long limit = snapshot.getValue(Long.class);
+                    onGetFileSizeLimitComplete.onGetFileSizeLimitSuccess(limit);
+                } else
+                    onGetFileSizeLimitComplete.onAdminFailed("Limit not available");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetFileSizeLimitComplete.onAdminFailed(error.toString());
+            }
+        });
+    }
+
+    public void updateFileSizeLimit(Long value) {
+        reference.child("Limits").child("fileSize").setValue(value);
     }
 
     public interface OnGetMimetypesCompleted {
@@ -564,6 +620,18 @@ public class AdministrationRepository {
 
     public interface OnGetAdministratorComplete {
         void onGetAdminSuccess(Boolean admin);
+
+        void onAdminFailed(String error);
+    }
+
+    public interface OnGetSlotLimitComplete {
+        void onGetSlotLimitSuccess(Long limit);
+
+        void onAdminFailed(String error);
+    }
+
+    public interface OnGetFileSizeLimitComplete {
+        void onGetFileSizeLimitSuccess(Long limit);
 
         void onAdminFailed(String error);
     }

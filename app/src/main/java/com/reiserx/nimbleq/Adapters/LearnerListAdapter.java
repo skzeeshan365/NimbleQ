@@ -8,14 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
-import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.databinding.LtHomeListAdminBinding;
 
 import java.util.List;
@@ -24,7 +20,6 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
 
     Context context;
     List<UserData> data;
-    NavController navController;
 
     public void setData(List<UserData> data) {
         this.data = data;
@@ -87,6 +82,7 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilter(List<UserData> FilteredDataList) {
         data = FilteredDataList;
         notifyDataSetChanged();

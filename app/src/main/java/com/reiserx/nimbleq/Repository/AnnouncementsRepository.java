@@ -1,6 +1,7 @@
 package com.reiserx.nimbleq.Repository;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -10,6 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Announcements.announcementsModel;
 import com.reiserx.nimbleq.Models.Announcements.linkModel;
 
@@ -41,7 +43,7 @@ public class AnnouncementsRepository {
                         try {
                             announcementsModel.setTimeStamp(ds.child("timeStamp").getValue(long.class));
                         } catch (Exception e) {
-
+                            Log.d(CONSTANTS.TAG, e.toString());
                         }
 
 

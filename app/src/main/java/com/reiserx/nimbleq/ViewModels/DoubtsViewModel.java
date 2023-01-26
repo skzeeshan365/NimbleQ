@@ -1,8 +1,5 @@
 package com.reiserx.nimbleq.ViewModels;
 
-import android.content.Context;
-import android.net.Uri;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -53,10 +50,6 @@ public class DoubtsViewModel extends ViewModel implements DoubtsRepository.OnDou
 
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
-    }
-
-    public MutableLiveData<String> getPaginateErrorMutableLiveData() {
-        return paginateErrorMutableLiveData;
     }
 
     public DoubtsViewModel() {

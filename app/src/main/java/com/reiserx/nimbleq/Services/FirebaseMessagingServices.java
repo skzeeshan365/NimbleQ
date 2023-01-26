@@ -1,8 +1,5 @@
 package com.reiserx.nimbleq.Services;
 
-import android.content.SharedPreferences;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,7 +12,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.NotificationUtils;
 import com.reiserx.nimbleq.Utils.Notify;
@@ -58,7 +54,6 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-
         if (Boolean.parseBoolean(data.get("isTopic"))) {
             if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION) {
                 database = FirebaseDatabase.getInstance();
@@ -73,8 +68,6 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
                                         notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, getString(R.string.class_announcement), title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
                                 }
                             }
-                        } else {
-
                         }
                     }
 

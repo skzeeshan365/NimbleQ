@@ -71,7 +71,7 @@ public class SecondFragment extends Fragment {
     String[] mimetype;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSecondBinding.inflate(inflater, container, false);
 
         firebaseStorageViewModel = new ViewModelProvider(this).get(FirebaseStorageViewModel.class);
@@ -95,9 +95,7 @@ public class SecondFragment extends Fragment {
 
         slotsViewModel slotsViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.slotsViewModel.class);
         slotsViewModel.getSubjectForStudents(user.getUid());
-        slotsViewModel.getParentItemMutableLiveData().observe(getViewLifecycleOwner(), subjectAndTimeSlot -> {
-            binding.subjectTxt.setText(subjectAndTimeSlot.getSubject());
-        });
+        slotsViewModel.getParentItemMutableLiveData().observe(getViewLifecycleOwner(), subjectAndTimeSlot -> binding.subjectTxt.setText(subjectAndTimeSlot.getSubject()));
 
         return binding.getRoot();
     }
@@ -168,27 +166,25 @@ public class SecondFragment extends Fragment {
                     intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
                     FilesActivityResultLauncher.launch(intent);
                 });
-                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> {
-                    FishBun.with(SecondFragment.this)
-                            .setImageAdapter(new GlideAdapter())
-                            .setIsUseDetailView(true)
-                            .setMaxCount(1)
-                            .setMinCount(1)
-                            .setPickerSpanCount(2)
-                            .setAlbumSpanCount(1, 2)
-                            .setButtonInAlbumActivity(false)
-                            .setCamera(true)
-                            .setReachLimitAutomaticClose(true)
-                            .setAllViewTitle(getString(R.string.all))
-                            .setActionBarTitle(getString(R.string.images))
-                            .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
-                            .textOnNothingSelected(getString(R.string.nothing_selected))
-                            .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
-                            .isStartInAllView(false)
-                            .exceptMimeType(listOf(MimeType.GIF))
-                            .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
-                            .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher);
-                });
+                alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> FishBun.with(SecondFragment.this)
+                        .setImageAdapter(new GlideAdapter())
+                        .setIsUseDetailView(true)
+                        .setMaxCount(1)
+                        .setMinCount(1)
+                        .setPickerSpanCount(2)
+                        .setAlbumSpanCount(1, 2)
+                        .setButtonInAlbumActivity(false)
+                        .setCamera(true)
+                        .setReachLimitAutomaticClose(true)
+                        .setAllViewTitle(getString(R.string.all))
+                        .setActionBarTitle(getString(R.string.images))
+                        .textOnImagesSelectionLimitReached(getString(R.string.limit_reached))
+                        .textOnNothingSelected(getString(R.string.nothing_selected))
+                        .setSelectCircleStrokeColor(requireContext().getColor(R.color.primaryColor))
+                        .isStartInAllView(false)
+                        .exceptMimeType(listOf(MimeType.GIF))
+                        .setActionBarColor(requireContext().getColor(R.color.primaryColor), requireActivity().getColor(R.color.primaryColor), false)
+                        .startAlbumWithActivityResultCallback(ImagesActivityResultLauncher));
                 alert.show();
             } else {
                 FishBun.with(SecondFragment.this)
@@ -252,14 +248,10 @@ public class SecondFragment extends Fragment {
     @SuppressLint("Range")
     public String getFileName(Context context, Uri uri) {
         if (uri.toString().startsWith("content://")) {
-            Cursor cursor = null;
-            try {
-                cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     displayName = String.valueOf(cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)));
                 }
-            } finally {
-                cursor.close();
             }
         } else if (uri.toString().startsWith("file://")) {
             File myFile = new File(uri.toString());
@@ -268,6 +260,7 @@ public class SecondFragment extends Fragment {
         return displayName;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void observers() {
         firebaseStorageViewModel.getUploadStartMutableLiveData().observe(getViewLifecycleOwner(), fileTypeModel -> {
             data.add(fileTypeModel);

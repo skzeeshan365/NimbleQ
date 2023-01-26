@@ -100,6 +100,7 @@ public class DoubtsRepository {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getResult()) {
                     DoubtsModel doubtsModel = documentSnapshot.toObject(DoubtsModel.class);
                     if (doubtsModel != null) {
+                        if (user != null)
                         if (!doubtsModel.getUserID().equals(user.getUid())) {
                             reference.collection("DoubtList").document(documentSnapshot.getId()).collection("linkModels").get().addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
@@ -119,6 +120,7 @@ public class DoubtsRepository {
 
                                                 onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
                                             } else {
+                                                if (task1.getException() != null)
                                                 onGetDoubtsComplete.onFailure(task1.getException().toString());
                                             }
                                         });
@@ -131,9 +133,7 @@ public class DoubtsRepository {
                 lastVisible = queryDocumentSnapshots.getResult().getDocuments().get(queryDocumentSnapshots.getResult().size() - 1);
             } else
                 onGetDoubtsComplete.onFailure("Doubts not available");
-        }).addOnFailureListener(e -> {
-            onGetDoubtsComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetDoubtsComplete.onFailure(e.toString()));
     }
 
     public void getDoubtsForStudent(String userID) {
@@ -164,6 +164,7 @@ public class DoubtsRepository {
 
                                             onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
                                         } else {
+                                            if (task1.getException() != null)
                                             onGetDoubtsComplete.onFailure(task1.getException().toString());
                                         }
                                     });
@@ -174,9 +175,7 @@ public class DoubtsRepository {
                 }
             } else
                 onGetDoubtsComplete.onFailure("Doubts not available");
-        }).addOnFailureListener(e -> {
-            onGetDoubtsComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetDoubtsComplete.onFailure(e.toString()));
     }
 
     public void getAnswers(String DOUBT_ID) {
@@ -223,9 +222,7 @@ public class DoubtsRepository {
                 }
             } else
                 onGetAnswerComplete.onFailure("Answers not available");
-        }).addOnFailureListener(e -> {
-            onGetAnswerComplete.onFailure(e.toString());
-        });
+        }).addOnFailureListener(e -> onGetAnswerComplete.onFailure(e.toString()));
     }
 
     public void paginateMessages(String subject, DoubtsAdapter adapter) {
@@ -258,6 +255,7 @@ public class DoubtsRepository {
                                                 doubtsModel.setId(documentSnapshot.getId());
                                                 adapter.addData(doubtsModel);
                                             } else {
+                                                if (task1.getException() != null)
                                                 onPaginationComplete.onPaginateFailure(task1.getException().toString());
                                             }
                                             onPaginationComplete.onPaginateSuccess(doubtsModelList);
@@ -270,9 +268,7 @@ public class DoubtsRepository {
                     lastVisible = queryDocumentSnapshots.getResult().getDocuments().get(queryDocumentSnapshots.getResult().size() - 1);
                 } else
                     onPaginationComplete.onPaginateFailure("Loaded all doubts");
-            }).addOnFailureListener(e -> {
-                onPaginationComplete.onPaginateFailure(e.toString());
-            });
+            }).addOnFailureListener(e -> onPaginationComplete.onPaginateFailure(e.toString()));
         }
     }
 

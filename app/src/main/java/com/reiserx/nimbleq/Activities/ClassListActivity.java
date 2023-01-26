@@ -1,8 +1,7 @@
 package com.reiserx.nimbleq.Activities;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,21 +18,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Adapters.requestClassAdapter;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.Utils.dialogs;
-import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityClassListBinding;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClassListActivity extends AppCompatActivity implements MenuProvider {
 
@@ -51,6 +44,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
 
     subjectAndTimeSlot subjectAndTimeSlot;
 
+    @SuppressLint({"CutPasteId", "NotifyDataSetChanged"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,9 +70,7 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
         layoutManager = new LinearLayoutManager(this);
         binding.recycler.setLayoutManager(layoutManager);
 
-        binding.progButton.setOnClickListener(view -> {
-            buttonDesign.buttonFill(binding.progButton);
-        });
+        binding.progButton.setOnClickListener(view -> buttonDesign.buttonFill(binding.progButton));
 
         int dataType = getIntent().getIntExtra("dataType", 0);
 
@@ -129,8 +121,6 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
                         binding.textView9.setVisibility(View.VISIBLE);
                     });
                 });
-            } else if (dataType == 2) {
-
             }
         } else {
             if (dataType == 0) {

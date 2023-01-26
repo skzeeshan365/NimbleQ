@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="Profile info"
+        android:text="@string/profile_info"
         android:textColor="@color/primaryColor"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -99,10 +99,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="?attr/selectableItemBackground"
-        android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView14">
+        app:layout_constraintTop_toBottomOf="@+id/textView14"
+        android:clickable="true"
+        android:focusable="true">
 
         <ImageView
             android:id="@+id/imageView5"

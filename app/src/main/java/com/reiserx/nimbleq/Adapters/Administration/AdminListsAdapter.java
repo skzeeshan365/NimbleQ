@@ -2,19 +2,14 @@ package com.reiserx.nimbleq.Adapters.Administration;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.FirebaseDatabase;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.LtHomeListAdminBinding;
@@ -28,10 +23,6 @@ public class AdminListsAdapter extends RecyclerView.Adapter<AdminListsAdapter.Li
 
     public void setData(List<AdminListModel> data) {
         this.data = data;
-    }
-
-    public void AddData(AdminListModel model) {
-        data.add(model);
     }
 
     public AdminListsAdapter(Context context) {
@@ -55,9 +46,7 @@ public class AdminListsAdapter extends RecyclerView.Adapter<AdminListsAdapter.Li
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
             alert.setTitle(context.getString(R.string.delete_element));
             alert.setTitle(context.getString(R.string.are_you_sure_you_want_to_delete).concat(model.getName()));
-            alert.setPositiveButton(context.getString(R.string.delete), (dialogInterface, i) -> {
-                model.getReference().removeValue();
-            });
+            alert.setPositiveButton(context.getString(R.string.delete), (dialogInterface, i) -> model.getReference().removeValue());
             alert.setNegativeButton(context.getString(R.string.cancel), null);
             alert.show();
             return false;

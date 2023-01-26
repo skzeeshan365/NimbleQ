@@ -52,10 +52,6 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         return updateUsernameMutableLiveData;
     }
 
-    public MutableLiveData<List<String>> getLisStringMutableLiveData() {
-        return LisStringMutableLiveData;
-    }
-
     public UserDataViewModel() {
         firebaseRepo = new UserDataRepository(this, this, this, this, this, this);
     }
@@ -74,10 +70,6 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
 
     public void getUserDetails(String userID) {
         firebaseRepo.getUserDetails(userID);
-    }
-
-    public void getAllJoinedClasses(String userID) {
-        firebaseRepo.getAllJoinedClasses(userID);
     }
 
     public void updateFCMToken(String userID) {

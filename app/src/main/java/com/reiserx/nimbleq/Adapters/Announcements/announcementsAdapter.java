@@ -2,7 +2,6 @@ package com.reiserx.nimbleq.Adapters.Announcements;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdap
         return new announcementsAdapter.UsersViewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     @Override
     public void onBindViewHolder(@NonNull announcementsAdapter.UsersViewHolder holder, int position) {
         announcementsModel model = parentItemList.get(position);
@@ -86,6 +85,7 @@ public class announcementsAdapter extends RecyclerView.Adapter<announcementsAdap
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilter(List<announcementsModel> FilteredDataList) {
         parentItemList = FilteredDataList;
         notifyDataSetChanged();

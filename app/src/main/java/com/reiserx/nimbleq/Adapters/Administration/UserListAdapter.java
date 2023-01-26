@@ -2,7 +2,6 @@ package com.reiserx.nimbleq.Adapters.Administration;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
@@ -87,6 +85,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.HomeVi
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilter(List<UserData> FilteredDataList) {
         data = FilteredDataList;
         notifyDataSetChanged();

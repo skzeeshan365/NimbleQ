@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Doubts.DoubtsModel;
-import com.reiserx.nimbleq.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

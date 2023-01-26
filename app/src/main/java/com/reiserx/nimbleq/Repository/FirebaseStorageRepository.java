@@ -8,17 +8,14 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.fileTypeModel;
 import com.reiserx.nimbleq.Models.remoteFileModel;
 import com.reiserx.nimbleq.Models.uploadProgressModel;
 import com.reiserx.nimbleq.R;
+import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.fileSize;
 
 import java.io.File;
@@ -42,28 +39,26 @@ public class FirebaseStorageRepository {
     }
 
     public void uploadMultipleImages(Context context, String userID, List<Uri> list) {
+        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);
         for (Uri uri : list) {
 
-            if (filePermitted(context, 50, uri)) {
+            if (filePermitted(context, sharedPreferenceClass.getFileSizeLimit(), uri)) {
                 Calendar cal = Calendar.getInstance();
                 long currentTime = cal.getTimeInMillis();
 
-                reference.child(userID).child(String.valueOf(currentTime)).putFile(uri).addOnSuccessListener(taskSnapshot -> {
-                    reference.child(userID).child(String.valueOf(currentTime)).getDownloadUrl().addOnSuccessListener(uri1 -> {
-                        remoteFileModel remoteFileModel = new remoteFileModel(getFileName(context, uri), uri1.toString());
-                        onFileUploaded.onSuccess(remoteFileModel);
-                        Log.d(CONSTANTS.TAG2, remoteFileModel.getFilename());
-                    }).addOnFailureListener(e -> onFileUploaded.onFailure(e.toString()));
-                }).addOnFailureListener(e -> {
-                    onFileUploaded.onFailure(e.toString());
-                });
+                reference.child(userID).child(String.valueOf(currentTime)).putFile(uri).addOnSuccessListener(taskSnapshot -> reference.child(userID).child(String.valueOf(currentTime)).getDownloadUrl().addOnSuccessListener(uri1 -> {
+                    remoteFileModel remoteFileModel = new remoteFileModel(getFileName(context, uri), uri1.toString());
+                    onFileUploaded.onSuccess(remoteFileModel);
+                    Log.d(CONSTANTS.TAG2, remoteFileModel.getFilename());
+                }).addOnFailureListener(e -> onFileUploaded.onFailure(e.toString()))).addOnFailureListener(e -> onFileUploaded.onFailure(e.toString()));
             } else
                 onFileUploaded.onFailure(context.getString(R.string.failed_to_upload_file).concat(getFileName(context, uri)));
         }
     }
 
     public void uploadSingleFile(Context context, String userID, Uri uri) {
-        if (filePermitted(context, 50, uri)) {
+        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);
+        if (filePermitted(context, sharedPreferenceClass.getFileSizeLimit(), uri)) {
             Calendar cal = Calendar.getInstance();
             long currentTime = cal.getTimeInMillis();
 
@@ -78,16 +73,10 @@ public class FirebaseStorageRepository {
                 double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
                 uploadProgressModel uploadProgressModel = new uploadProgressModel((int) progress, fileName);
                 onFileSingleUploaded.onProgress(uploadProgressModel);
-            }).addOnSuccessListener(taskSnapshot -> {
-
-                reference.child(userID).child(String.valueOf(currentTime)).getDownloadUrl().addOnSuccessListener(uri1 -> {
-                    remoteFileModel remoteFileModel = new remoteFileModel(fileName, uri1.toString());
-                    onFileSingleUploaded.onUploadSuccess(remoteFileModel);
-                }).addOnFailureListener(e -> onFileSingleUploaded.onFailure(e.toString()));
-
-            }).addOnFailureListener(e -> {
-                onFileSingleUploaded.onFailure(e.toString());
-            });
+            }).addOnSuccessListener(taskSnapshot -> reference.child(userID).child(String.valueOf(currentTime)).getDownloadUrl().addOnSuccessListener(uri1 -> {
+                remoteFileModel remoteFileModel = new remoteFileModel(fileName, uri1.toString());
+                onFileSingleUploaded.onUploadSuccess(remoteFileModel);
+            }).addOnFailureListener(e -> onFileSingleUploaded.onFailure(e.toString()))).addOnFailureListener(e -> onFileSingleUploaded.onFailure(e.toString()));
         } else
             onFileSingleUploaded.onFailure(context.getString(R.string.failed_to_upload_file).concat(getFileName(context, uri)));
     }
@@ -95,14 +84,10 @@ public class FirebaseStorageRepository {
     @SuppressLint("Range")
     public String getFileName(Context context, Uri uri) {
         if (uri.toString().startsWith("content://")) {
-            Cursor cursor = null;
-            try {
-                cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     displayName = String.valueOf(cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)));
                 }
-            } finally {
-                cursor.close();
             }
         } else if (uri.toString().startsWith("file://")) {
             File myFile = new File(uri.toString());
@@ -111,16 +96,16 @@ public class FirebaseStorageRepository {
         return displayName;
     }
 
-    private boolean filePermitted(Context context, int max, Uri uri) {
+    private boolean filePermitted(Context context, Long max, Uri uri) {
         fileSize fileSize = new fileSize();
-        AssetFileDescriptor fileDescriptor = null;
+        AssetFileDescriptor fileDescriptor;
         try {
             fileDescriptor = context.getContentResolver().openAssetFileDescriptor(uri, "r");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         }
-        long fileSizes = 0;
+        long fileSizes;
         if (fileDescriptor != null) {
             fileSizes = fileDescriptor.getLength();
         } else
