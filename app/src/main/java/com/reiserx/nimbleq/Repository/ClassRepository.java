@@ -73,11 +73,11 @@ public class ClassRepository {
     public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = context.getString(R.string.class1) + classModel.getClassName() + "\n";
-            String subject = context.getString(R.string.subject1) + classModel.getSubject() + "\n";
+            String classNmae = context.getString(R.string.class1)+" " + classModel.getClassName() + "\n";
+            String subject = context.getString(R.string.subject1)+" " + classModel.getSubject() + "\n";
             String topic = context.getString(R.string.topic1) + classModel.getTopic() + "\n";
-            String schedule = context.getString(R.string.time1) + classModel.getTime_slot() + "\n";
-            String teacher = context.getString(R.string.teacher1) + teacherName;
+            String schedule = context.getString(R.string.time1)+" " + classModel.getTime_slot() + "\n";
+            String teacher = context.getString(R.string.teacher1)+" " + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
             notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
@@ -92,7 +92,7 @@ public class ClassRepository {
                             notify.createClassPayloadForSingleUser(context.getString(R.string.new_class_has_been_created_based_on_your_request), message, token, reference.getId());
                     }
 
-                    request.setAccepted(true);
+                    request.setAccepted(reference.getId());
 
                     FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests").document(request.getId()).set(request).addOnSuccessListener(unused -> {
                     }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
@@ -111,11 +111,11 @@ public class ClassRepository {
 
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = context.getString(R.string.class1) + classModel.getClassName() + "\n";
-            String subject = context.getString(R.string.subject1) + classModel.getSubject() + "\n";
-            String topic = context.getString(R.string.topic1) + classModel.getTopic() + "\n";
-            String schedule = context.getString(R.string.time1)+ classModel.getTime_slot() + "\n";
-            String teacher = context.getString(R.string.teacher1) + teacherName;
+            String classNmae = context.getString(R.string.class1) + " " + classModel.getClassName() + "\n";
+            String subject = context.getString(R.string.subject1) + " " + classModel.getSubject() + "\n";
+            String topic = context.getString(R.string.topic1) + " " + classModel.getTopic() + "\n";
+            String schedule = context.getString(R.string.time1) + " " + classModel.getTime_slot() + "\n";
+            String teacher = context.getString(R.string.teacher1) + " " + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
             notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
@@ -393,7 +393,7 @@ public class ClassRepository {
                 requestModelList.clear();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     ClassRequestModel classModel = document.toObject(com.reiserx.nimbleq.Models.ClassRequestModel.class);
-                    if (!classModel.getStudentID().equals(userID) && !classModel.isAccepted()) {
+                    if (!classModel.getStudentID().equals(userID) && classModel.isAccepted() == null) {
                         classModel.setId(document.getId());
                         requestModelList.add(classModel);
                     }

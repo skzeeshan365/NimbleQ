@@ -1,13 +1,17 @@
 package com.reiserx.nimbleq.Activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -54,11 +58,18 @@ public class UserProfileActivity extends AppCompatActivity {
 
         binding.settingsLogoutLt.setOnClickListener(view -> {
             if (user != null) {
-                auth.signOut();
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle(getString(R.string.logout));
+                alert.setMessage(getString(R.string.logout_msg));
+                alert.setPositiveButton(getString(R.string.logout), (dialogInterface, i) -> {
+                    auth.signOut();
+                    Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                });
+                alert.setNegativeButton(getString(R.string.cancel), null);
+                alert.show();
             }
         });
 
@@ -88,6 +99,10 @@ public class UserProfileActivity extends AppCompatActivity {
             else
                 binding.langTxt.setText(getString(R.string.app_lang_default));
         }
+
+        binding.licenseHolder.setOnClickListener(view -> {
+            startActivity(new Intent(this, OssLicensesMenuActivity.class));
+        });
     }
 
     void getUserInfo() {
@@ -141,5 +156,12 @@ public class UserProfileActivity extends AppCompatActivity {
         else if (subjectListener != null)
             subjectReference.removeEventListener(subjectListener);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        getSubject();
     }
 }

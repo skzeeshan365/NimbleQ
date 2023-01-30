@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Activities;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Adapters.requestClassAdapter;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
@@ -236,8 +238,10 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.request_class_menuitem) {
             if (subjectAndTimeSlot != null) {
-                requestClass(subjectAndTimeSlot.getSubject(), subjectAndTimeSlot.getTopic(), subjectAndTimeSlot.getTimeSlot());
-            }
+                dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
+                dialogs.requestClass(subjectAndTimeSlot.getSubject(), subjectAndTimeSlot.getTopic(), subjectAndTimeSlot.getTimeSlot(), user.getUid());
+            } else
+                Log.d(CONSTANTS.TAG2, "null");
         }
         return false;
     }

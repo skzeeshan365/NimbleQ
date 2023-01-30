@@ -94,6 +94,12 @@
     <string name="doubts">Doubts</string>
     <string name="post_doubts">Post Doubts</string>
     <string name="submit_answer">Submit answer</string>
+    <string name="language">Language</string>
+    <string name="settings_app">App</string>
+    <string name="about_app">About</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="terms">Terms of service</string>
+    <string name="open_source_license">Open source license</string>
     <!-- xml strings -->
 
     <!-- java strings -->
@@ -286,6 +292,7 @@
     <string name="no_network">No network connection</string>
     <string name="no_network_msg">No network connection, please connect to network and retry</string>
     <string name="hey1">hey, </string>
+    <string name="logout_msg">Are you sure you want to logout</string>
     <!-- java strings -->
 
 </resources>

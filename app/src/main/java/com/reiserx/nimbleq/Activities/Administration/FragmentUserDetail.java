@@ -23,11 +23,13 @@ public class FragmentUserDetail extends Fragment {
 
     UserData userData;
 
+    SharedPreferenceClass sharedPreferenceClass;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentUserDetailBinding.inflate(inflater, container, false);
 
-        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+        sharedPreferenceClass = new SharedPreferenceClass(requireContext());
         userData = sharedPreferenceClass.getUserInfo();
 
         return binding.getRoot();
@@ -41,16 +43,16 @@ public class FragmentUserDetail extends Fragment {
         viewModel.getUserDetails(userData.getUid());
         viewModel.getUserDetailsMutableLiveData().observe(getViewLifecycleOwner(), userDetails -> {
 
-            binding.userNameTxt.setText(getString(R.string.username1).concat(userData.getUserName()));
-            binding.useridTxt.setText(getString(R.string.userID1).concat(userData.getUid()));
-            binding.userPhoneTxt.setText(getString(R.string.phone1).concat(userData.getPhoneNumber()));
-            binding.userCreatedTxt.setText(getString(R.string.created_on_1).concat(TimeAgo.using(userData.getCreated_timestamp())));
-            binding.userLastLoginTxt.setText(getString(R.string.last_login_1).concat(TimeAgo.using(userData.getLastLogin_timestamp())));
+            binding.userNameTxt.setText(getString(R.string.username1)+" ".concat(userData.getUserName()));
+            binding.useridTxt.setText(getString(R.string.userID1)+" ".concat(userData.getUid()));
+            binding.userPhoneTxt.setText(getString(R.string.phone1)+" ".concat(userData.getPhoneNumber()));
+            binding.userCreatedTxt.setText(getString(R.string.created_on_1)+" ".concat(TimeAgo.using(userData.getCreated_timestamp())));
+            binding.userLastLoginTxt.setText(getString(R.string.last_login_1)+" ".concat(TimeAgo.using(userData.getLastLogin_timestamp())));
 
-            binding.userSchoolTxt.setText(getString(R.string.school_2).concat(userDetails.getSchoolName()));
-            binding.userGradeTxt.setText(getString(R.string.grade2).concat(userDetails.getGrade()));
-            binding.userGenderTxt.setText(getString(R.string.gender_2).concat(userDetails.getGender()));
-            binding.userStateCityTxt.setText(getString(R.string.state_city_1).concat(userDetails.getState()+", "+userDetails.getCity()));
+            binding.userSchoolTxt.setText(getString(R.string.school_2)+" ".concat(userDetails.getSchoolName()));
+            binding.userGradeTxt.setText(getString(R.string.grade2)+" ".concat(userDetails.getGrade()));
+            binding.userGenderTxt.setText(getString(R.string.gender_2)+" ".concat(userDetails.getGender()));
+            binding.userStateCityTxt.setText(getString(R.string.state_city_1)+" ".concat(userDetails.getState()+", "+userDetails.getCity()));
         });
 
         viewModel.getClassJoinCount(userData.getUid());
@@ -59,9 +61,16 @@ public class FragmentUserDetail extends Fragment {
         viewModel.getCreatedClassCount(userData.getUid());
         viewModel.getClassCreateCountMutableLiveData().observe(getViewLifecycleOwner(), count -> binding.userClassesCreatedTxt.setText(getString(R.string.classes_created_1).concat(String.valueOf(count))));
 
-        binding.joinedClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentJoinedClassList));
-        binding.createdClassBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentCreateClassList));
-        binding.feedbacksBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentFeedbacksForTeacher));
+        binding.joinedClassBtn.setOnClickListener(view1 -> {
+            NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentJoinedClassList);
+        });
+        binding.createdClassBtn.setOnClickListener(view1 -> {
+            NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentCreateClassList);
+        });
+        binding.feedbacksBtn.setOnClickListener(view1 -> {
+            NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentFeedbacksForTeacher);
+            sharedPreferenceClass.setUserID(userData.getUid());
+        });
     }
 
     @Override

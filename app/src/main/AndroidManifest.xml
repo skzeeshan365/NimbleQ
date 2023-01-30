@@ -31,7 +31,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NimbleQ"
         tools:replace="android:allowBackup"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name=".Activities.Feedbacks.FeedbackListActivity"
             android:exported="false" />

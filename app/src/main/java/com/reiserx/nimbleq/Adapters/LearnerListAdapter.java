@@ -54,10 +54,10 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
         holder.binding.getRoot().setOnClickListener(view -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
             alert.setTitle(model.getUserName());
-            String grade = context.getString(R.string.grade2)+model.getUserDetails().getGrade();
-            String stateCity = "\n"+context.getString(R.string.lives_in_1)+model.getUserDetails().getState()+", "+model.getUserDetails().getCity();
-            String gender = "\n"+context.getString(R.string.gender_2)+model.getUserDetails().getGender();
-            String schoolname = "\n"+context.getString(R.string.school_2)+model.getUserDetails().getSchoolName();
+            String grade = context.getString(R.string.grade2)+" "+model.getUserDetails().getGrade();
+            String stateCity = "\n"+context.getString(R.string.lives_in_1)+" "+model.getUserDetails().getState()+", "+model.getUserDetails().getCity();
+            String gender = "\n"+context.getString(R.string.gender_2)+" "+model.getUserDetails().getGender();
+            String schoolname = "\n"+context.getString(R.string.school_2)+" "+model.getUserDetails().getSchoolName();
             alert.setMessage(grade+schoolname+stateCity+gender);
             alert.setPositiveButton(context.getString(R.string.ok), null);
             alert.show();

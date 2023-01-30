@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 binding.button8.setOnClickListener(view -> {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle(getString(R.string.join_class_as_host));
-                    alert.setMessage(getString(R.string.join_class_msg_1)+MEETING_ID+"\n"+getString(R.string.join_class_msg_2)+MEETING_PASSWORD);
+                    alert.setMessage(getString(R.string.join_class_msg_1)+" "+MEETING_ID+"\n"+getString(R.string.join_class_msg_2)+" "+MEETING_PASSWORD);
                     alert.setPositiveButton(getString(R.string.open), (dialogInterface, i) -> {
                         PackageManager pm = requireContext().getPackageManager();
                         Intent intent = pm.getLaunchIntentForPackage("us.zoom.videomeetings");
@@ -266,16 +266,17 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menu.clear();
         UserTypeClass userTypeClass = new UserTypeClass(requireContext());
         AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         viewModel.getAdministrator(user.getUid());
         viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
+            menu.clear();
             menuInflater.inflate(R.menu.class_menu_teacher, menu);
             binding.button8.setVisibility(View.INVISIBLE);
             binding.rateClassBtn.setVisibility(View.GONE);
         });
         viewModel.getAdminErrorMutableLiveData().observe(this, s -> {
+            menu.clear();
             if (userTypeClass.isUserLearner())
                 menuInflater.inflate(R.menu.class_menu, menu);
             else
@@ -295,9 +296,9 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                 alert.setTitle(teacherData.getUserName());
                 String grade = getString(R.string.grade2)+userDetails.getGrade();
-                String stateCity = "\n"+getString(R.string.lives_in_1)+userDetails.getState()+", "+userDetails.getCity();
-                String gender = "\n"+getString(R.string.gender_2)+userDetails.getGender();
-                String schoolname = "\n"+getString(R.string.school_2)+userDetails.getSchoolName();
+                String stateCity = "\n"+getString(R.string.lives_in_1)+" "+userDetails.getState()+", "+userDetails.getCity();
+                String gender = "\n"+getString(R.string.gender_2)+" "+userDetails.getGender();
+                String schoolname = "\n"+getString(R.string.school_2)+" "+userDetails.getSchoolName();
                 alert.setMessage(grade+schoolname+stateCity+gender);
                 alert.setPositiveButton(getString(R.string.rate), (dialogInterface, i) -> rateTeacher());
                 alert.setNegativeButton(getString(R.string.cancel), null);

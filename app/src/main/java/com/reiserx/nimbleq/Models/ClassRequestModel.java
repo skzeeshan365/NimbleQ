@@ -2,7 +2,7 @@ package com.reiserx.nimbleq.Models;
 
 public class ClassRequestModel {
     String subject, topic, timeSlot, id, studentID, teacherID;
-    boolean accepted;
+    String accepted;
     String teacherName;
 
     public ClassRequestModel(String subject, String topic, String timeSlot, String teacher, String studentID) {
@@ -55,11 +55,11 @@ public class ClassRequestModel {
         this.id = id;
     }
 
-    public boolean isAccepted() {
+    public String isAccepted() {
         return accepted;
     }
 
-    public void setAccepted(boolean accepted) {
+    public void setAccepted(String accepted) {
         this.accepted = accepted;
     }
 

@@ -94,6 +94,12 @@
     <string name="doubts">संदेह</string>
     <string name="post_doubts">संदेह पोस्ट करें</string>
     <string name="submit_answer">उत्तर सबमिट करें</string>
+    <string name="language">भाषा</string>
+    <string name="settings_app">ऐप</string>
+    <string name="about_app">के बारे में</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="terms">सेवा की शर्तें</string>
+    <string name="open_source_license">ओपन सोर्स लाइसेंस</string>
     <!-- xml strings -->
 
     <!-- java strings -->
@@ -286,6 +292,7 @@
     <string name="no_network">कोई नेटवर्क कनेक्शन नहीं है</string>
     <string name="no_network_msg">कोई नेटवर्क कनेक्शन नहीं है, कृपया नेटवर्क से कनेक्ट करें और पुनः प्रयास करें</string>
     <string name="hey1">हाय, </string>
+    <string name="logout_msg">क्या आप वाकई लॉग आउट करना चाहते हैं?</string>
     <!-- java strings -->
 
 </resources>

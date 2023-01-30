@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+import com.reiserx.nimbleq.Activities.ClassActivity;
 import com.reiserx.nimbleq.Activities.CreateClass;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.R;
@@ -55,9 +56,12 @@ public class requestClassAdapter extends RecyclerView.Adapter<requestClassAdapte
         if (model.getStudentID().equals(userID)) {
             holder.binding.status.setVisibility(View.VISIBLE);
             holder.binding.deleteImg.setVisibility(View.VISIBLE);
-            if (model.isAccepted()) {
+            if (model.isAccepted() != null) {
                 holder.binding.status.setText(context.getString(R.string.class_alloted));
                 holder.binding.status.setTextColor(context.getColor(R.color.GREEN));
+                Intent intent = new Intent(context, ClassActivity.class);
+                intent.putExtra("classID", model.isAccepted());
+                context.startActivity(intent);
             } else {
                 holder.binding.status.setText(context.getString(R.string.pending));
                 holder.binding.status.setTextColor(context.getColor(R.color.RED));

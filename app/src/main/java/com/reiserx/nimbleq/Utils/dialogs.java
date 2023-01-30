@@ -317,7 +317,8 @@ public class dialogs {
             }
         });
         alert.setView(mView);
-        alert.setCancelable(false);
+        if (login)
+            alert.setCancelable(false);
         alert.show();
     }
 
@@ -481,7 +482,8 @@ public class dialogs {
             }
         });
         alert.setView(mView);
-        alert.setCancelable(false);
+        if (login)
+            alert.setCancelable(false);
         alert.show();
     }
 
