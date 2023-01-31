@@ -71,6 +71,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
             case 9:
                 holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentLimits));
                 break;
+            case 10:
+                holder.binding.getRoot().setOnClickListener(view -> navController.navigate(R.id.action_HomeFragment_to_FragmentLinkPolicies));
+                break;
         }
     }
 

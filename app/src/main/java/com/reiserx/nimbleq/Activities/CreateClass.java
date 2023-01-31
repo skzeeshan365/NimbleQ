@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AlertDialog;
@@ -74,6 +77,26 @@ public class CreateClass extends AppCompatActivity {
             ArrayAdapter<String> gradesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gradeList);
             gradesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             binding.gradeSpinnerCreateClass.setAdapter(gradesAdapter);
+        });
+
+        binding.topicNameEdittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (binding.topicNameEdittext.getText().toString().trim().equals(topic))
+                    binding.textView22.setVisibility(View.GONE);
+                else
+                    binding.textView22.setVisibility(View.VISIBLE);
+            }
         });
 
         ButtonDesign buttonDesign = new ButtonDesign(this);

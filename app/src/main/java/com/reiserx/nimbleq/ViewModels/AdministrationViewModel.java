@@ -1,8 +1,12 @@
 package com.reiserx.nimbleq.ViewModels;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
@@ -26,7 +30,9 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnGetFCMCredentialsComplete,
         AdministrationRepository.OnGetAdministratorComplete,
         AdministrationRepository.OnGetSlotLimitComplete,
-        AdministrationRepository.OnGetFileSizeLimitComplete{
+        AdministrationRepository.OnGetFileSizeLimitComplete,
+        AdministrationRepository.OnGetLinkPrivacyPolicyComplete,
+        AdministrationRepository.OnGetLinkTermsOfServiceComplete{
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -43,6 +49,8 @@ public class AdministrationViewModel extends ViewModel implements
     private final MutableLiveData<Boolean> adminMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> slotLimitMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> fileSizeLimitMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> linkPrivacyPolicyMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> linkTermsOfServiceMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userListErrorMutableLiveData = new MutableLiveData<>();
@@ -102,6 +110,14 @@ public class AdministrationViewModel extends ViewModel implements
         return FCMCredentialsMutableLiveData;
     }
 
+    public MutableLiveData<String> getLinkPrivacyPolicyMutableLiveData() {
+        return linkPrivacyPolicyMutableLiveData;
+    }
+
+    public MutableLiveData<String> getLinkTermsOfServiceMutableLiveData() {
+        return linkTermsOfServiceMutableLiveData;
+    }
+
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }
@@ -115,7 +131,7 @@ public class AdministrationViewModel extends ViewModel implements
     }
 
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this,this,this,this,this,this,this, this,this, this, this,this, this, this);
+        firebaseRepo = new AdministrationRepository(this, this,this,this,this,this,this,this,this, this,this, this, this,this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -221,6 +237,22 @@ public class AdministrationViewModel extends ViewModel implements
         firebaseRepo.updateSlotLimit(value);
     }
 
+    public void getLinkPrivacyPolicy() {
+        firebaseRepo.getLinkPrivacyPolicy();
+    }
+
+    public void updateLinkPrivacyPolicy(String link) {
+        firebaseRepo.updateLinkPrivacyPolicy(link);
+    }
+
+    public void getLinkTermsOfService() {
+        firebaseRepo.getLinkTermsOfService();
+    }
+
+    public void updateLinkTermsOfService(String link) {
+        firebaseRepo.updateLinkTermsOfService(link);
+    }
+
     @Override
     public void onSuccess(List<String> mimetypes) {
         mimeTypesListMutableLiveData.setValue(mimetypes);
@@ -299,6 +331,16 @@ public class AdministrationViewModel extends ViewModel implements
     @Override
     public void onGetFileSizeLimitSuccess(Long limit) {
         fileSizeLimitMutableLiveData.setValue(limit);
+    }
+
+    @Override
+    public void onGetLinkPrivacyPolicySuccess(String value) {
+        linkPrivacyPolicyMutableLiveData.setValue(value);
+    }
+
+    @Override
+    public void onGetLinkTermsOfServiceSuccess(String Value) {
+        linkTermsOfServiceMutableLiveData.setValue(Value);
     }
 
     @Override

@@ -333,7 +333,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:text="View feedbacks and ratings"
+                        android:text="@string/feedbackss_desc"
                         android:textColor="#F1F1F1"
                         app:layout_constraintStart_toEndOf="@+id/feedbacks_img"
                         app:layout_constraintTop_toBottomOf="@+id/feedbacks_title" />
@@ -344,7 +344,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
-                        android:text="View feedbacks"
+                        android:text="@string/feedbackss_title"
                         android:textColor="#FFFEFE"
                         android:textSize="20sp"
                         android:textStyle="bold"

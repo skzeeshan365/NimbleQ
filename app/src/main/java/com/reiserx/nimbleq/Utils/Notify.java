@@ -95,15 +95,16 @@ public class Notify {
         return random.nextInt(max - min + 1) + min;
     }
 
-    public void classJoinPayload(String name, String msg, String to) {
+    public void classJoinPayload(String name, String msg, String to, String classID) {
         JSONObject dataJson = new JSONObject();
         try {
             json = new JSONObject();
             dataJson.put("title", name);
             dataJson.put("content", msg);
             dataJson.put("id", String.valueOf(getRandom(0, 100)));
-            dataJson.put("requestCode", NORMAL_SMALL_TEXT_NOTIFICATION);
+            dataJson.put("requestCode", NORMAL_CREATE_CLASS_NOTIFICATION);
             dataJson.put("isTopic", false);
+            dataJson.put("classID", classID);
             json.put("data", dataJson);
             json.put("to", to);
 
@@ -186,8 +187,6 @@ public class Notify {
             dataJson.put("classID", classID);
             json.put("data", dataJson);
             json.put("to", to);
-
-            Log.d(CONSTANTS.TAG2, to);
 
             postNotification();
         } catch (JSONException e) {

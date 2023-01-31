@@ -59,9 +59,11 @@ public class requestClassAdapter extends RecyclerView.Adapter<requestClassAdapte
             if (model.isAccepted() != null) {
                 holder.binding.status.setText(context.getString(R.string.class_alloted));
                 holder.binding.status.setTextColor(context.getColor(R.color.GREEN));
-                Intent intent = new Intent(context, ClassActivity.class);
-                intent.putExtra("classID", model.isAccepted());
-                context.startActivity(intent);
+                holder.binding.reqClassHolder.setOnClickListener(view -> {
+                    Intent intent = new Intent(context, ClassActivity.class);
+                    intent.putExtra("classID", model.isAccepted());
+                    context.startActivity(intent);
+                });
             } else {
                 holder.binding.status.setText(context.getString(R.string.pending));
                 holder.binding.status.setTextColor(context.getColor(R.color.RED));

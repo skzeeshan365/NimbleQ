@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment {
         data.add(getString(R.string.class_list_by_rating));
         data.add(getString(R.string.supported_file_types));
         data.add(getString(R.string.limits));
+        data.add(getString(R.string.policy_links_title));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -199,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
 
             //holder 5
             binding.feedbacksHolder.setVisibility(View.VISIBLE);
+            binding.feedbacksTitle.setText(getString(R.string.feedbackss_title));
+            binding.feedbacksDesc.setText(getString(R.string.feedbackss_desc));
             binding.feedbacksLayout.setOnClickListener(view -> {
                 Intent intent = new Intent(this, FeedbackListActivity.class);
                 startActivity(intent);
@@ -288,10 +291,17 @@ public class MainActivity extends AppCompatActivity {
         AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         viewModel.getAdministrator(userID);
         viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
-            Intent intent = new Intent(MainActivity.this, AdministrationActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
+            AlertDialog.Builder alerts = new AlertDialog.Builder(MainActivity.this);
+            alerts.setTitle(getString(R.string.adminis_account));
+            alerts.setMessage(getString(R.string.adminis_account_msg));
+            alerts.setPositiveButton(getString(R.string.open), (dialogInterface, i) -> {
+                Intent intent = new Intent(MainActivity.this, AdministrationActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            });
+            alerts.setNegativeButton(getString(R.string.cancel), null);
+            alerts.show();
         });
     }
 

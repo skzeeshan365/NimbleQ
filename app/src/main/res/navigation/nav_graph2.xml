@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_HomeFragment_to_FragmentLimits"
             app:destination="@id/FragmentLimits" />
+        <action
+            android:id="@+id/action_HomeFragment_to_FragmentLinkPolicies"
+            app:destination="@id/FragmentLinkPolicies" />
     </fragment>
 
     <fragment
@@ -156,5 +159,12 @@
         android:name="com.reiserx.nimbleq.Activities.Administration.FragmentLimits"
         android:label="@string/limits"
         tools:layout="@layout/fragment_limits">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentLinkPolicies"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentLinkPolicies"
+        android:label="@string/policy_links_title"
+        tools:layout="@layout/fragment_link_policies">
     </fragment>
 </navigation>

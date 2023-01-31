@@ -21,6 +21,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -165,7 +166,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             AlphaAnimation aa = new AlphaAnimation(0.1f, 1.0f);
             aa.setDuration(400);
 
-            viewHolder.binding.timeSent.setText(message.getTimeStamp());
+            viewHolder.binding.timeSent.setText(TimeAgo.using(message.getQueryStamp()));
             viewHolder.binding.message.setContent(message.getMessage());
 
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
@@ -186,6 +187,11 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                     deleteMessage(message, viewHolder.getAbsoluteAdapterPosition());
                     return false;
                 });
+
+                viewHolder.binding.message.setOnLongClickListener(view -> {
+                    deleteMessage(message, viewHolder.getAbsoluteAdapterPosition());
+                    return false;
+                });
             }
             if (EmojiManager.isOnlyEmojis(message.getMessage())) {
                 viewHolder.binding.message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
@@ -199,7 +205,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             AlphaAnimation aa = new AlphaAnimation(0.1f, 1.0f);
             aa.setDuration(400);
 
-            viewHolder.binding.timeRec.setText(message.getTimeStamp());
+            viewHolder.binding.timeRec.setText(TimeAgo.using(message.getQueryStamp()));
             viewHolder.binding.messageReceive.setContent(message.getMessage());
             viewHolder.binding.username.setText(message.getSenderName());
 
@@ -232,6 +238,8 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             AlphaAnimation aa = new AlphaAnimation(0.1f, 1.0f);
             aa.setDuration(400);
 
+            viewHolder.binding.timeSent.setText(TimeAgo.using(message.getQueryStamp()));
+
             Glide.with(context)
                     .load(message.getImageUrl())
                     .thumbnail(0.01f)
@@ -259,6 +267,8 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             AlphaAnimation aa = new AlphaAnimation(0.1f, 1.0f);
             aa.setDuration(400);
+
+            viewHolder.binding.timeRec.setText(TimeAgo.using(message.getQueryStamp()));
 
             Glide.with(context)
                     .load(message.getImageUrl())
@@ -290,6 +300,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             checkFile(message.getFilename(), viewHolder.binding.fileIcon);
 
             viewHolder.binding.filenameTxt.setText(message.getFilename());
+            viewHolder.binding.timeSent.setText(TimeAgo.using(message.getQueryStamp()));
 
             viewHolder.binding.fileHolder.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
 
@@ -322,6 +333,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
             checkFile(message.getFilename(), viewHolder.binding.fileIcon);
 
             viewHolder.binding.recFileHolder.setOnClickListener(view -> checkFile(message.getImageUrl(), message.getFilename()));
+            viewHolder.binding.timeRec.setText(TimeAgo.using(message.getQueryStamp()));
 
             if (message.getReplymsg() != null && message.getReplyuid() != null && message.getReplyid() != null) {
                 viewHolder.binding.replyMsgAdapter.setVisibility(View.VISIBLE);
@@ -449,11 +461,12 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         alert.setTitle(context.getString(R.string.delete_message));
         alert.setMessage(context.getString(R.string.delete_message_msg));
         alert.setPositiveButton(context.getString(R.string.delete), (dialogInterface, i) -> {
-            Calendar c = Calendar.getInstance();
-            @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
+            Calendar cal = Calendar.getInstance();
+            long currentTime = cal.getTimeInMillis();
+
             HashMap<String, Object> map = new HashMap<>();
             map.put("message", "This message was deleted");
-            map.put("timeStamp", senttime);
+            map.put("queryStamp", currentTime);
             map.put("replymsg", null);
             map.put("imageUrl", null);
             map.put("replyuid", null);
@@ -462,7 +475,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             CollectionReference reference = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Message").document(room).collection("Groupchat");
             reference.document(message.getMessageId()).update(map).addOnSuccessListener(unused -> {
-                Message message1 = new Message("This message was deleted", message.getSenderId(), message.getSenderName(), senttime, null, null, null, null, message.getQueryStamp());
+                Message message1 = new Message("This message was deleted", message.getSenderId(), message.getSenderName(), null, null, null, null, currentTime);
                 message1.setMessageId(message.getMessageId());
                 map.clear();
                 messages.set(pos, message1);

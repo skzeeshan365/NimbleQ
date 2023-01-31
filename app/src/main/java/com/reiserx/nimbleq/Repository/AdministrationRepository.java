@@ -40,6 +40,8 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete;
     private final AdministrationRepository.OnGetSlotLimitComplete onGetSlotLimitComplete;
     private final AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete;
+    private final AdministrationRepository.OnGetLinkPrivacyPolicyComplete onGetLinkPrivacyPolicyComplete;
+    private final AdministrationRepository.OnGetLinkTermsOfServiceComplete onGetLinkTermsOfServiceComplete;
 
     DatabaseReference reference;
     DatabaseReference userDataReference;
@@ -63,7 +65,9 @@ public class AdministrationRepository {
                                     AdministrationRepository.OnGetFCMCredentialsComplete onGetFCMCredentialsComplete,
                                     AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete,
                                     AdministrationRepository.OnGetSlotLimitComplete onGetSlotLimitComplete,
-                                    AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete) {
+                                    AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete,
+                                    AdministrationRepository.OnGetLinkPrivacyPolicyComplete onGetLinkPrivacyPolicyComplete,
+                                    AdministrationRepository.OnGetLinkTermsOfServiceComplete onGetLinkTermsOfServiceComplete) {
 
         this.onGetMimetypesCompleted = onGetMimetypesCompleted;
         this.onGetFileEnabledComplete = onGetFileEnabledComplete;
@@ -79,6 +83,8 @@ public class AdministrationRepository {
         this.onGetAdministratorComplete = onGetAdministratorComplete;
         this.onGetSlotLimitComplete = onGetSlotLimitComplete;
         this.onGetFileSizeLimitComplete = onGetFileSizeLimitComplete;
+        this.onGetLinkPrivacyPolicyComplete = onGetLinkPrivacyPolicyComplete;
+        this.onGetLinkTermsOfServiceComplete = onGetLinkTermsOfServiceComplete;
 
         reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -552,6 +558,50 @@ public class AdministrationRepository {
         reference.child("Limits").child("fileSize").setValue(value);
     }
 
+    public void getLinkPrivacyPolicy() {
+        reference.child("Links").child("privacyPolicy").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String value = snapshot.getValue(String.class);
+                    onGetLinkPrivacyPolicyComplete.onGetLinkPrivacyPolicySuccess(value);
+                } else
+                    onGetLinkPrivacyPolicyComplete.onAdminFailed("Limit not available");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetLinkPrivacyPolicyComplete.onAdminFailed(error.toString());
+            }
+        });
+    }
+
+    public void updateLinkPrivacyPolicy(String link) {
+        reference.child("Links").child("privacyPolicy").setValue(link);
+    }
+
+    public void getLinkTermsOfService() {
+        reference.child("Links").child("termsOfService").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String value = snapshot.getValue(String.class);
+                    onGetLinkTermsOfServiceComplete.onGetLinkTermsOfServiceSuccess(value);
+                } else
+                    onGetLinkTermsOfServiceComplete.onAdminFailed("Limit not available");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetLinkTermsOfServiceComplete.onAdminFailed(error.toString());
+            }
+        });
+    }
+
+    public void updateLinkTermsOfService(String link) {
+        reference.child("Links").child("termsOfService").setValue(link);
+    }
+
     public interface OnGetMimetypesCompleted {
         void onSuccess(List<String> mimetypes);
 
@@ -632,6 +682,18 @@ public class AdministrationRepository {
 
     public interface OnGetFileSizeLimitComplete {
         void onGetFileSizeLimitSuccess(Long limit);
+
+        void onAdminFailed(String error);
+    }
+
+    public interface OnGetLinkPrivacyPolicyComplete {
+        void onGetLinkPrivacyPolicySuccess(String value);
+
+        void onAdminFailed(String error);
+    }
+
+    public interface OnGetLinkTermsOfServiceComplete {
+        void onGetLinkTermsOfServiceSuccess(String Value);
 
         void onAdminFailed(String error);
     }

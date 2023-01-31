@@ -293,6 +293,19 @@
     <string name="no_network_msg">No network connection, please connect to network and retry</string>
     <string name="hey1">hey, </string>
     <string name="logout_msg">Are you sure you want to logout</string>
+    <string name="feedbackss_title">View feedbacks</string>
+    <string name="feedbackss_desc">View feedbacks and ratings</string>
+    <string name="topic_warning">If you change this topic, notification will not be sent to students</string>
+    <string name="policy_links_title">Policy links</string>
+    <string name="privacy_msg">Add privacy policy link for the app</string>
+    <string name="terms_msg">Add terms of service link for the app</string>
+    <string name="update">Update</string>
+    <string name="new_learner_title">New learner in your class</string>
+    <string name="joined_class">has joined your class</string>
+    <string name="left_class_title">A learner left your class</string>
+    <string name="has_left_class">has left your class</string>
+    <string name="adminis_account">Admin account</string>
+    <string name="adminis_account_msg">You can open admin panel</string>
     <!-- java strings -->
 
 </resources>

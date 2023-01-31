@@ -95,7 +95,9 @@ public class SecondFragment extends Fragment {
 
         slotsViewModel slotsViewModel = new ViewModelProvider(this).get(com.reiserx.nimbleq.ViewModels.slotsViewModel.class);
         slotsViewModel.getSubjectForStudents(user.getUid());
-        slotsViewModel.getParentItemMutableLiveData().observe(getViewLifecycleOwner(), subjectAndTimeSlot -> binding.subjectTxt.setText(subjectAndTimeSlot.getSubject()));
+        slotsViewModel.getParentItemMutableLiveData().observe(getViewLifecycleOwner(), subjectAndTimeSlot -> {
+            binding.subjectTxt.setText(subjectAndTimeSlot.getSubject());
+        });
 
         return binding.getRoot();
     }

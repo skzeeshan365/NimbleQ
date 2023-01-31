@@ -17,17 +17,18 @@ import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
+import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
 import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
 public class FragmentjoinedClassList extends Fragment {
 
-    private FragmentUserlistAdminBinding binding;
+    private com.reiserx.nimbleq.databinding.FragmentClassListBinding binding;
 
     classListAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentUserlistAdminBinding.inflate(inflater, container, false);
+        binding = FragmentClassListBinding.inflate(inflater, container, false);
 
         binding.recycler.setVisibility(View.GONE);
         binding.progHolder.setVisibility(View.VISIBLE);

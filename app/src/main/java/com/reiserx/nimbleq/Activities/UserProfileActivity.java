@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
@@ -18,7 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.R;
+import com.reiserx.nimbleq.Repository.AdministrationRepository;
 import com.reiserx.nimbleq.Utils.dialogs;
+import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.slotsViewModel;
 import com.reiserx.nimbleq.databinding.ActivityUserProfileBinding;
@@ -103,6 +107,8 @@ public class UserProfileActivity extends AppCompatActivity {
         binding.licenseHolder.setOnClickListener(view -> {
             startActivity(new Intent(this, OssLicensesMenuActivity.class));
         });
+
+        updateLinks();
     }
 
     void getUserInfo() {
@@ -163,5 +169,26 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onPostResume();
 
         getSubject();
+    }
+
+    void updateLinks() {
+        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+
+        viewModel.getLinkPrivacyPolicy();
+        viewModel.getLinkTermsOfService();
+
+        viewModel.getLinkPrivacyPolicyMutableLiveData().observe(this, s -> {
+            binding.privacyHolder.setOnClickListener(view -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
+                startActivity(browserIntent);
+            });
+        });
+
+        viewModel.getLinkTermsOfServiceMutableLiveData().observe(this, s -> {
+            binding.licenseHolder.setOnClickListener(view -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
+                startActivity(browserIntent);
+            });
+        });
     }
 }

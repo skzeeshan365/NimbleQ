@@ -293,6 +293,19 @@
     <string name="no_network_msg">कोई नेटवर्क कनेक्शन नहीं है, कृपया नेटवर्क से कनेक्ट करें और पुनः प्रयास करें</string>
     <string name="hey1">हाय, </string>
     <string name="logout_msg">क्या आप वाकई लॉग आउट करना चाहते हैं?</string>
+    <string name="feedbackss_title">फीडबैक देखें</string>
+    <string name="feedbackss_desc">फीडबैक और रेटिंग देखें</string>
+    <string name="topic_warning">यदि आप इस विषय को बदलते हैं, तो छात्रों को सूचना नहीं भेजी जाएगी</string>
+    <string name="policy_links_title">नीति लिंक</string>
+    <string name="privacy_msg">ऐप के लिए गोपनीयता नीति लिंक जोड़ें</string>
+    <string name="terms_msg">ऐप के लिए सेवा की शर्तें लिंक जोड़ें</string>
+    <string name="update">अपडेट करें</string>
+    <string name="new_learner_title">अपने कक्षा में नया छात्र</string>
+    <string name="joined_class">अपने कक्षा में शामिल हुआ है</string>
+    <string name="left_class_title">एक छात्र अपने कक्षा से चले गए</string>
+    <string name="has_left_class">अपने कक्षा से छोड़ चुका है</string>
+    <string name="admin_account">व्यवस्थापक खाता</string>
+    <string name="admin_account_msg">आप व्यवस्थापक पैनल खोल सकते हैं</string>
     <!-- java strings -->
 
 </resources>

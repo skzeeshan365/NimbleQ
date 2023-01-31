@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -338,6 +339,12 @@ public class HomeFragment extends Fragment implements MenuProvider {
         return false;
     }
 
+    public void openWhatsappContact(String numberWithCountryCode) {
+        Uri uri = Uri.parse("https://api.whatsapp.com/send?phone=" + numberWithCountryCode + "&text=" + "");
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(sendIntent);
+    }
+
     void rateTeacher() {
         Intent intent = new Intent(getContext(), RateAndFeedbackActivity.class);
         intent.putExtra("id", 2);
@@ -346,13 +353,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
         intent.putExtra("userID", user.getUid());
         intent.putExtra("token", teacherData.getFCM_TOKEN());
         requireContext().startActivity(intent);
-    }
-
-    void openWhatsappContact(String number) {
-        Uri uri = Uri.parse("smsto:" + number);
-        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
-        i.setPackage("com.whatsapp");
-        startActivity(i);
     }
 
     private void addContact() {

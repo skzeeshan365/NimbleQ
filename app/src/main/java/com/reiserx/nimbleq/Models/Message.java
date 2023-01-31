@@ -3,15 +3,14 @@ package com.reiserx.nimbleq.Models;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 public class Message {
-    private String messageId, message, senderId, senderName, timeStamp, replymsg, replyuid, replyid, replyname;
+    private String messageId, message, senderId, senderName, replymsg, replyuid, replyid, replyname;
     long queryStamp;
     String imageUrl, filename;
     DocumentSnapshot snapshot;
 
-    public Message(String message, String senderId, String senderName, String timeStamp, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
+    public Message(String message, String senderId, String senderName, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
         this.message = message;
         this.senderId = senderId;
-        this.timeStamp = timeStamp;
         this.replymsg = replymsg;
         this.replyuid = replyuid;
         this.replyid = replyid;
@@ -20,27 +19,24 @@ public class Message {
         this.queryStamp = queryStamp;
     }
 
-    public Message(String message, String senderId, String senderName, String timeStamp, long queryStamp) {
+    public Message(String message, String senderId, String senderName, long queryStamp) {
         this.message = message;
         this.senderId = senderId;
-        this.timeStamp = timeStamp;
         this.senderName = senderName;
         this.queryStamp = queryStamp;
     }
 
-    public Message(String imageUrl, String filename, String senderId, String senderName, String timeStamp, long queryStamp) {
+    public Message(String imageUrl, String filename, String senderId, String senderName, long queryStamp) {
         this.imageUrl = imageUrl;
         this.filename = filename;
         this.senderId = senderId;
-        this.timeStamp = timeStamp;
         this.senderName = senderName;
         this.queryStamp = queryStamp;
     }
 
-    public Message(String imageUrl, String filename, String senderId, String senderName, String timeStamp, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
+    public Message(String imageUrl, String filename, String senderId, String senderName, String replymsg, String replyname, String replyuid, String replyid, long queryStamp) {
         this.message = message;
         this.senderId = senderId;
-        this.timeStamp = timeStamp;
         this.replymsg = replymsg;
         this.replyuid = replyuid;
         this.replyid = replyid;
@@ -64,10 +60,6 @@ public class Message {
         this.senderId = senderId;
     }
 
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
     public String getMessageId() {
         return messageId;
     }
@@ -78,10 +70,6 @@ public class Message {
 
     public String getSenderId() {
         return senderId;
-    }
-
-    public String getTimeStamp() {
-        return timeStamp;
     }
 
     public String getImageUrl() {

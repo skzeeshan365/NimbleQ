@@ -17,6 +17,21 @@
             android:layout_height="wrap_content"
             tools:context=".Activities.CreateClass">
 
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/topic_warning"
+                android:textColor="@color/primaryColor"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/topic_name_edittext"
+                app:layout_constraintStart_toStartOf="@+id/topic_name_edittext"
+                app:layout_constraintTop_toBottomOf="@+id/topic_name_edittext" />
+
             <EditText
                 android:id="@+id/class_name_edittext"
                 android:layout_width="0dp"
@@ -80,9 +95,11 @@
                 android:padding="8dp"
                 android:scrollbars="vertical"
                 android:singleLine="false"
+                app:layout_goneMarginTop="16dp"
                 app:layout_constraintEnd_toEndOf="@+id/topic_name_edittext"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/topic_name_edittext"
-                app:layout_constraintTop_toBottomOf="@+id/topic_name_edittext" />
+                app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
             <Spinner
                 android:id="@+id/grade_spinner_create_class"

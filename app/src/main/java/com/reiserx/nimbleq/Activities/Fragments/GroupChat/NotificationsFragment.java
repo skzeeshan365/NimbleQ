@@ -232,16 +232,14 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         String MessageTxt = binding.messageBox.getText().toString();
 
         if (!MessageTxt.equals("")) {
-            Calendar c = Calendar.getInstance();
-            @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
 
             Calendar cal = Calendar.getInstance();
             long currentTime = cal.getTimeInMillis();
 
             if (binding.replyMsg.getText().toString().trim().equals("")) {
-                message = new Message(MessageTxt, user.getUid(), senderName, senttime, currentTime);
+                message = new Message(MessageTxt, user.getUid(), senderName, currentTime);
             } else {
-                message = new Message(MessageTxt, user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                message = new Message(MessageTxt, user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
             }
 
             chatsViewModel.submitMessage(message, classID);
@@ -252,6 +250,8 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 binding.replyNameTxt.setText("");
                 replyID = null;
                 replyUId = null;
+                if (adapter.getList().isEmpty())
+                    getMessages();
             });
         } else Toast.makeText(getContext(), getString(R.string.type_a_message), Toast.LENGTH_SHORT).show();
     }
@@ -348,16 +348,14 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                             firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
                             Toast.makeText(requireContext(), getString(R.string.uploading_files), Toast.LENGTH_SHORT).show();
                             firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
-                                Calendar c = Calendar.getInstance();
-                                @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
 
                                 Calendar cal = Calendar.getInstance();
                                 long currentTime = cal.getTimeInMillis();
 
                                 if (binding.replyMsg.getText().toString().trim().equals("")) {
-                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, currentTime);
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, currentTime);
                                 } else {
-                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
                                 }
 
                                 chatsViewModel.submitMessage(message, classID);
@@ -394,16 +392,14 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                             firebaseStorageViewModel.uploadMultipleImages(getContext(), user.getUid(), path);
 
                             firebaseStorageViewModel.getRemoteFileModelMutableLiveData().observe(getViewLifecycleOwner(), remoteFileModel -> {
-                                Calendar c = Calendar.getInstance();
-                                @SuppressLint("SimpleDateFormat") String senttime = new SimpleDateFormat("hh:mm a").format(c.getTime());
 
                                 Calendar cal = Calendar.getInstance();
                                 long currentTime = cal.getTimeInMillis();
 
                                 if (binding.replyMsg.getText().toString().trim().equals("")) {
-                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, currentTime);
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, currentTime);
                                 } else {
-                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, senttime, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
                                 }
                                 chatsViewModel.submitMessage(message, classID);
                                 chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {

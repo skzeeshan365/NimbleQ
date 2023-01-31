@@ -162,7 +162,7 @@ public class ClassRepository {
                         String username = snapshot.getValue(String.class);
                         if (username != null) {
                             Notify notify = new Notify(context);
-                            notify.classJoinPayload("New learner in your class ", username.concat(" has joined your class"), token);
+                            notify.classJoinPayload(context.getString(R.string.new_learner_title)+" ", username.concat(" "+context.getString(R.string.joined_class)), token, classID);
                         }
                     }
                 }
@@ -181,7 +181,7 @@ public class ClassRepository {
                         String username = snapshot.getValue(String.class);
                         if (username != null) {
                             Notify notify = new Notify(context);
-                            notify.classJoinPayload("A learner left your class", username.concat(" has left your class"), token);
+                            notify.classJoinPayload(context.getString(R.string.left_class_title)+" ", username.concat(" "+context.getString(R.string.has_left_class)), token, classID);
                         }
                     }
                 }
@@ -411,9 +411,9 @@ public class ClassRepository {
         reference.collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating)), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
             else
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating_with_feedback) + ratingModel.getFeedback()), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating_with_feedback) + " " + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> onRatingSubmitted.onFailure(e.toString()));
     }
@@ -454,9 +454,9 @@ public class ClassRepository {
         reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating)), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
             else
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName().concat(context.getString(R.string.has_given) + ratingModel.getRating() + context.getString(R.string.star_rating_with_feedback) + ratingModel.getFeedback()), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating_with_feedback) +" " + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> onRatingSubmitted.onFailure(e.toString()));
     }
