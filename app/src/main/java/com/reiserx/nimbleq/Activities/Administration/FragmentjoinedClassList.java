@@ -18,7 +18,6 @@ import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
-import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
 public class FragmentjoinedClassList extends Fragment {
 

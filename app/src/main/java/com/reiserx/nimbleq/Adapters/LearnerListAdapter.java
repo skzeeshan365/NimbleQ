@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -71,19 +70,19 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
         holder.binding.getRoot().setOnClickListener(view -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
             alert.setTitle(model.getUserName());
-            String grade = context.getString(R.string.grade2)+" "+model.getUserDetails().getGrade();
-            String stateCity = "\n"+context.getString(R.string.lives_in_1)+" "+model.getUserDetails().getState()+", "+model.getUserDetails().getCity();
-            String gender = "\n"+context.getString(R.string.gender_2)+" "+model.getUserDetails().getGender();
-            String schoolname = "\n"+context.getString(R.string.school_2)+" "+model.getUserDetails().getSchoolName();
+            String grade = context.getString(R.string.grade2) + " " + model.getUserDetails().getGrade();
+            String stateCity = "\n" + context.getString(R.string.lives_in_1) + " " + model.getUserDetails().getState() + ", " + model.getUserDetails().getCity();
+            String gender = "\n" + context.getString(R.string.gender_2) + " " + model.getUserDetails().getGender();
+            String schoolname = "\n" + context.getString(R.string.school_2) + " " + model.getUserDetails().getSchoolName();
 
             if (model.getRating() > 0) {
                 String rating = String.format("%.1f", model.getRating());
-                ratings = "\n"+context.getString(R.string.ratings)+" "+rating;
-            } else  {
-                ratings = "\n"+context.getString(R.string.ratings)+" 0";
+                ratings = "\n" + context.getString(R.string.ratings) + " " + rating;
+            } else {
+                ratings = "\n" + context.getString(R.string.ratings) + " 0";
             }
 
-            alert.setMessage(grade+schoolname+stateCity+gender+ratings);
+            alert.setMessage(grade + schoolname + stateCity + gender + ratings);
             alert.setPositiveButton(context.getString(R.string.chat_with_learner), (dialogInterface, i) -> {
                 String[] permissions = {Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS};
                 Permissions.check(context, permissions, null, null, new PermissionHandler() {
@@ -142,12 +141,12 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
 
         op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
                 .build());
 
-        try{
+        try {
             ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, op_list);
             androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(context);
             alert.setTitle(context.getString(R.string.chat_with_learner));
@@ -155,7 +154,7 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
             alert.setPositiveButton(context.getString(R.string.open_whatsapp), (dialogInterface, i) -> openWhatsappContact(phone));
             alert.setNegativeButton(context.getString(R.string.cancel), null);
             alert.show();
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.d(CONSTANTS.TAG2, e.toString());
             e.printStackTrace();
         }
@@ -164,7 +163,7 @@ public class LearnerListAdapter extends RecyclerView.Adapter<LearnerListAdapter.
     public boolean contactExists(String number) {
         if (number != null) {
             Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-            String[] mPhoneNumberProjection = { ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME };
+            String[] mPhoneNumberProjection = {ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME};
             try (Cursor cur = context.getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null)) {
                 if (cur.moveToFirst()) {
                     return true;

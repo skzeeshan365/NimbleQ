@@ -1,12 +1,8 @@
 package com.reiserx.nimbleq.ViewModels;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
@@ -33,7 +29,7 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnGetSlotLimitComplete,
         AdministrationRepository.OnGetFileSizeLimitComplete,
         AdministrationRepository.OnGetLinkPrivacyPolicyComplete,
-        AdministrationRepository.OnGetLinkTermsOfServiceComplete{
+        AdministrationRepository.OnGetLinkTermsOfServiceComplete {
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -132,7 +128,7 @@ public class AdministrationViewModel extends ViewModel implements
     }
 
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this, this,this,this,this,this,this,this,this, this,this, this, this,this, this, this);
+        firebaseRepo = new AdministrationRepository(this, this, this, this, this, this, this, this, this, this, this, this, this, this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -210,6 +206,7 @@ public class AdministrationViewModel extends ViewModel implements
     public void getZoomCredentials() {
         firebaseRepo.getZoomCredentials();
     }
+
     public void getFCMCredentials() {
         firebaseRepo.getFCMCredentials();
     }

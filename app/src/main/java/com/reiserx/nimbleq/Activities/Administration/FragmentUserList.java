@@ -1,7 +1,6 @@
 package com.reiserx.nimbleq.Activities.Administration;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.reiserx.nimbleq.Activities.AnnouncementsActivity;
 import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
@@ -146,15 +144,15 @@ public class FragmentUserList extends Fragment implements MenuProvider {
                     spinner_flag = FILTER_BY_GRADE;
                     break;
                 case 2:
-                        binding.spinner3.setVisibility(View.VISIBLE);
-                        gradelist = new ArrayList<>();
-                        gradelist.add(getString(R.string.select_gender));
-                        gradelist.add(getString(R.string.male));
-                        gradelist.add(getString(R.string.female));
-                        subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, gradelist);
-                        subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        binding.spinner3.setAdapter(subjectsAdapter);
-                        binding.spinner3.setOnItemSelectedListener(new gradeListClass());
+                    binding.spinner3.setVisibility(View.VISIBLE);
+                    gradelist = new ArrayList<>();
+                    gradelist.add(getString(R.string.select_gender));
+                    gradelist.add(getString(R.string.male));
+                    gradelist.add(getString(R.string.female));
+                    subjectsAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, gradelist);
+                    subjectsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinner3.setAdapter(subjectsAdapter);
+                    binding.spinner3.setOnItemSelectedListener(new gradeListClass());
                     spinner_flag = FILTER_BY_GENDER;
                     break;
                 case 3:

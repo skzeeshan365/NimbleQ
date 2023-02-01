@@ -47,13 +47,13 @@ public class classListAdapter extends RecyclerView.Adapter<classListAdapter.User
         holder.binding.subTopic.setText(model.getSubject() + " • " + model.getTopic());
         holder.binding.timeSlotTxt.setText(model.getTime_slot());
         if (model.getTeacher_name() != null)
-            holder.binding.teacherTxt.setText(context.getString(R.string.teacher)+" ".concat(model.getTeacher_name()));
+            holder.binding.teacherTxt.setText(context.getString(R.string.teacher) + " ".concat(model.getTeacher_name()));
 
         if (model.getRating() > 0) {
             String rating = String.format("%.1f", model.getRating());
             holder.binding.ratingRxt.setText(rating);
             holder.binding.ratingBar.setRating(Float.parseFloat(rating) / 5);
-        } else  {
+        } else {
             holder.binding.ratingRxt.setText("0");
             holder.binding.ratingBar.setRating(0);
         }

@@ -73,11 +73,11 @@ public class ClassRepository {
     public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
         reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
             Notify notify = new Notify(context);
-            String classNmae = context.getString(R.string.class1)+" " + classModel.getClassName() + "\n";
-            String subject = context.getString(R.string.subject1)+" " + classModel.getSubject() + "\n";
+            String classNmae = context.getString(R.string.class1) + " " + classModel.getClassName() + "\n";
+            String subject = context.getString(R.string.subject1) + " " + classModel.getSubject() + "\n";
             String topic = context.getString(R.string.topic1) + classModel.getTopic() + "\n";
-            String schedule = context.getString(R.string.time1)+" " + classModel.getTime_slot() + "\n";
-            String teacher = context.getString(R.string.teacher1)+" " + teacherName;
+            String schedule = context.getString(R.string.time1) + " " + classModel.getTime_slot() + "\n";
+            String teacher = context.getString(R.string.teacher1) + " " + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
             notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
@@ -162,7 +162,7 @@ public class ClassRepository {
                         String username = snapshot.getValue(String.class);
                         if (username != null) {
                             Notify notify = new Notify(context);
-                            notify.classJoinPayload(context.getString(R.string.new_learner_title)+" ", username.concat(" "+context.getString(R.string.joined_class)), token, classID);
+                            notify.classJoinPayload(context.getString(R.string.new_learner_title) + " ", username.concat(" " + context.getString(R.string.joined_class)), token, classID);
                         }
                     }
                 }
@@ -181,7 +181,7 @@ public class ClassRepository {
                         String username = snapshot.getValue(String.class);
                         if (username != null) {
                             Notify notify = new Notify(context);
-                            notify.classJoinPayload(context.getString(R.string.left_class_title)+" ", username.concat(" "+context.getString(R.string.has_left_class)), token, classID);
+                            notify.classJoinPayload(context.getString(R.string.left_class_title) + " ", username.concat(" " + context.getString(R.string.has_left_class)), token, classID);
                         }
                     }
                 }
@@ -313,41 +313,41 @@ public class ClassRepository {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                        reference.collection("ClassInfo").document(snapshot1.getKey()).get().addOnSuccessListener(documentSnapshot -> {
-                            if (documentSnapshot.exists()) {
-                                com.reiserx.nimbleq.Models.classModel models = documentSnapshot.toObject(classModel.class);
-                                if (models != null) {
-                                    models.setClassID(documentSnapshot.getId());
+                            reference.collection("ClassInfo").document(snapshot1.getKey()).get().addOnSuccessListener(documentSnapshot -> {
+                                if (documentSnapshot.exists()) {
+                                    com.reiserx.nimbleq.Models.classModel models = documentSnapshot.toObject(classModel.class);
+                                    if (models != null) {
+                                        models.setClassID(documentSnapshot.getId());
 
-                                    reference.collection("Ratings").document("ClassRating").collection(models.getClassID()).get().addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            QuerySnapshot ratingSnapshot = task1.getResult();
-                                            if (ratingSnapshot != null) {
-                                                models.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
-                                            }
-                                        }
-                                        userDataReference.child(models.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.exists()) {
-                                                    String username = snapshot.getValue(String.class);
-                                                    if (username != null) {
-                                                        models.setTeacher_name(username);
-                                                        data.add(models);
-                                                    }
+                                        reference.collection("Ratings").document("ClassRating").collection(models.getClassID()).get().addOnCompleteListener(task1 -> {
+                                            if (task1.isSuccessful()) {
+                                                QuerySnapshot ratingSnapshot = task1.getResult();
+                                                if (ratingSnapshot != null) {
+                                                    models.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
                                                 }
-                                                OnGetClassListComplete.onSuccess(data);
                                             }
+                                            userDataReference.child(models.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if (snapshot.exists()) {
+                                                        String username = snapshot.getValue(String.class);
+                                                        if (username != null) {
+                                                            models.setTeacher_name(username);
+                                                            data.add(models);
+                                                        }
+                                                    }
+                                                    OnGetClassListComplete.onSuccess(data);
+                                                }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                OnGetClassListComplete.onGetClassListFailure(error.toString());
-                                            }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    OnGetClassListComplete.onGetClassListFailure(error.toString());
+                                                }
+                                            });
                                         });
-                                    });
+                                    }
                                 }
-                            }
-                        });
+                            });
                     }
                 } else
                     OnGetClassListComplete.onGetClassListFailure("You have not joined any class yet");
@@ -411,9 +411,9 @@ public class ClassRepository {
         reference.collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName() + " ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
             else
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating_with_feedback) + " " + ratingModel.getFeedback()), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName() + " ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating_with_feedback) + " " + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> onRatingSubmitted.onFailure(e.toString()));
     }
@@ -454,9 +454,9 @@ public class ClassRepository {
         reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName() + " ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
             else
-                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName()+" ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating_with_feedback) +" " + ratingModel.getFeedback()), token);
+                notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName() + " ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating_with_feedback) + " " + ratingModel.getFeedback()), token);
             onRatingSubmitted.onSuccess(null);
         }).addOnFailureListener(e -> onRatingSubmitted.onFailure(e.toString()));
     }

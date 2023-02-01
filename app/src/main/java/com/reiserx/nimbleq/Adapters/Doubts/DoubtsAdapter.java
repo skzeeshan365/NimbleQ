@@ -26,7 +26,7 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
 
     private List<DoubtsModel> doubtsModelList;
     Context context;
-    NavController  navHostFragment;
+    NavController navHostFragment;
     boolean loading;
 
     final int LOADING_ITEM = 1;
@@ -43,10 +43,10 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
     }
 
     public void addData(DoubtsModel doubtsModelList1) {
-        DoubtsModel doubtsModel = doubtsModelList.get(doubtsModelList.size()-1);
+        DoubtsModel doubtsModel = doubtsModelList.get(doubtsModelList.size() - 1);
         if (!doubtsModel.getId().equals(doubtsModelList1.getId())) {
             doubtsModelList.add(doubtsModelList1);
-            notifyItemInserted(doubtsModelList.size()-1);
+            notifyItemInserted(doubtsModelList.size() - 1);
             loading = false;
         } else
             loading = true;
@@ -75,7 +75,7 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
             viewHolder.binding.dSubject.setText(model.getSubject().concat(" • ").concat(model.getTopic()));
             viewHolder.binding.descOneLine.setText(model.getShort_desc());
             viewHolder.binding.dData.setText(model.getLong_desc());
-            viewHolder.binding.answerCountTxt.setText(model.getAnswerCount()+" "+context.getString(R.string.answers_lower));
+            viewHolder.binding.answerCountTxt.setText(model.getAnswerCount() + " " + context.getString(R.string.answers_lower));
 
             viewHolder.binding.elementHolder.setOnClickListener(view -> {
                 SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);
@@ -112,7 +112,7 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
             viewHolder.binding.dSubject.setText(model.getSubject().concat(" • ").concat(model.getTopic()));
             viewHolder.binding.descOneLine.setText(model.getShort_desc());
             viewHolder.binding.dData.setContent(model.getLong_desc());
-            viewHolder.binding.answerCountTxt.setText(model.getAnswerCount()+" "+context.getString(R.string.answers_lower));
+            viewHolder.binding.answerCountTxt.setText(model.getAnswerCount() + " " + context.getString(R.string.answers_lower));
 
             viewHolder.binding.elementHolder.setOnClickListener(view -> {
                 SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(context);
@@ -156,10 +156,10 @@ public class DoubtsAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         UserTypeClass userTypeClass = new UserTypeClass(context);
-            if (position == doubtsModelList.size() - 1 && !userTypeClass.isUserLearner())
-                return LOADING_ITEM;
-            else
-                return DATA_ITEM;
+        if (position == doubtsModelList.size() - 1 && !userTypeClass.isUserLearner())
+            return LOADING_ITEM;
+        else
+            return DATA_ITEM;
     }
 
     @Override

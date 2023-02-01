@@ -141,22 +141,22 @@ public class AnnouncementsActivity extends AppCompatActivity {
                     announcementsModel announcementsModel = new announcementsModel(binding.titile.getText().toString(), binding.message.getText().toString(), classID, currentTime);
                     String key = db_reference.push().getKey();
                     if (key != null)
-                    db_reference.child(key).setValue(announcementsModel).addOnSuccessListener(unused -> {
-                        for (int i = 0; i < links.size(); i++) {
-                            linkModel linkModel = links.get(i);
-                            linkModel.setId(key);
-                            FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Announcements").child(classID).child(key).child("AnnouncementLinks").push().setValue(linkModel);
-                        }
+                        db_reference.child(key).setValue(announcementsModel).addOnSuccessListener(unused -> {
+                            for (int i = 0; i < links.size(); i++) {
+                                linkModel linkModel = links.get(i);
+                                linkModel.setId(key);
+                                FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Announcements").child(classID).child(key).child("AnnouncementLinks").push().setValue(linkModel);
+                            }
 
-                        notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID);
+                            notify.announcementsPayload(binding.titile.getText().toString().trim(), binding.message.getText().toString().trim(), classID);
 
-                        AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
-                        alert.setTitle(getString(R.string.success));
-                        alert.setMessage(getString(R.string.announcement_uploaded));
-                        alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finish());
-                        alert.setCancelable(false);
-                        alert.show();
-                    });
+                            AlertDialog.Builder alert = new AlertDialog.Builder(AnnouncementsActivity.this);
+                            alert.setTitle(getString(R.string.success));
+                            alert.setMessage(getString(R.string.announcement_uploaded));
+                            alert.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finish());
+                            alert.setCancelable(false);
+                            alert.show();
+                        });
                 } else snackbarTop.showSnackBar(getString(R.string.files_not_uploaded), false);
             }
         });

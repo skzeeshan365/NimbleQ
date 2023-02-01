@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -116,7 +115,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 binding.button8.setOnClickListener(view -> {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle(getString(R.string.join_class_as_host));
-                    alert.setMessage(getString(R.string.join_class_msg_1)+" "+MEETING_ID+"\n"+getString(R.string.join_class_msg_2)+" "+MEETING_PASSWORD);
+                    alert.setMessage(getString(R.string.join_class_msg_1) + " " + MEETING_ID + "\n" + getString(R.string.join_class_msg_2) + " " + MEETING_PASSWORD);
                     alert.setPositiveButton(getString(R.string.open), (dialogInterface, i) -> {
                         PackageManager pm = requireContext().getPackageManager();
                         Intent intent = pm.getLaunchIntentForPackage("us.zoom.videomeetings");
@@ -233,7 +232,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
                     @SuppressLint("DefaultLocale") String rating = String.format("%.1f", classModel.getRating());
                     binding.ratingRxt.setText(rating);
                     binding.ratingBar.setRating(Float.parseFloat(rating) / 5);
-                } else  {
+                } else {
                     binding.ratingRxt.setText("0");
                     binding.ratingBar.setRating(0);
                 }
@@ -299,11 +298,11 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 Log.d(CONSTANTS.TAG2, String.valueOf(userDetails));
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                 alert.setTitle(teacherData.getUserName());
-                String grade = getString(R.string.grade2)+userDetails.getGrade();
-                String stateCity = "\n"+getString(R.string.lives_in_1)+" "+userDetails.getState()+", "+userDetails.getCity();
-                String gender = "\n"+getString(R.string.gender_2)+" "+userDetails.getGender();
-                String schoolname = "\n"+getString(R.string.school_2)+" "+userDetails.getSchoolName();
-                alert.setMessage(grade+schoolname+stateCity+gender);
+                String grade = getString(R.string.grade2) + userDetails.getGrade();
+                String stateCity = "\n" + getString(R.string.lives_in_1) + " " + userDetails.getState() + ", " + userDetails.getCity();
+                String gender = "\n" + getString(R.string.gender_2) + " " + userDetails.getGender();
+                String schoolname = "\n" + getString(R.string.school_2) + " " + userDetails.getSchoolName();
+                alert.setMessage(grade + schoolname + stateCity + gender);
                 alert.setPositiveButton(getString(R.string.rate), (dialogInterface, i) -> rateTeacher());
                 alert.setNegativeButton(getString(R.string.cancel), null);
                 alert.show();
@@ -374,12 +373,12 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
         op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, teacherData.getPhoneNumber())
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
                 .build());
 
-        try{
+        try {
             ContentProviderResult[] results = requireContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, op_list);
             androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
             alert.setTitle(getString(R.string.chat_with_teacher));
@@ -387,7 +386,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
             alert.setPositiveButton(getString(R.string.open_whatsapp), (dialogInterface, i) -> openWhatsappContact(teacherData.getPhoneNumber()));
             alert.setNegativeButton(getString(R.string.cancel), null);
             alert.show();
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.d(CONSTANTS.TAG2, e.toString());
             e.printStackTrace();
         }
@@ -396,7 +395,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
     public boolean contactExists(String number) {
         if (number != null) {
             Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-            String[] mPhoneNumberProjection = { ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME };
+            String[] mPhoneNumberProjection = {ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME};
             try (Cursor cur = requireContext().getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null)) {
                 if (cur.moveToFirst()) {
                     return true;

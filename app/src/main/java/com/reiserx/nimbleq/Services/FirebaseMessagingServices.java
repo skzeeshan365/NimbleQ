@@ -32,8 +32,8 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
-         auth = FirebaseAuth.getInstance();
-         user = auth.getCurrentUser();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         if (user != null) {
             Map<String, Object> map = new HashMap<>();
             map.put("FCM_TOKEN", s);
@@ -65,7 +65,7 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
                         if (snapshot.exists()) {
                             for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                 if (snapshot1.exists()) {
-                                        notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, getString(R.string.class_announcement), title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
+                                    notificationUtils.sendClassUpdates(FirebaseMessagingServices.this, getString(R.string.class_announcement), title, content, Integer.parseInt(Objects.requireNonNull(id)), snapshot1.getKey());
                                 }
                             }
                         }

@@ -15,7 +15,7 @@ public class DoubtsViewModel extends ViewModel implements DoubtsRepository.OnDou
         DoubtsRepository.OnGetDoubtsComplete,
         DoubtsRepository.OnAnswerSubmitted,
         DoubtsRepository.OnGetAnswersComplete,
-        DoubtsRepository.OnPaginationComplete{
+        DoubtsRepository.OnPaginationComplete {
 
     private final MutableLiveData<Void> fileSubmittedModelMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Void> answerSubmittedModelMutableLiveData = new MutableLiveData<>();
@@ -53,7 +53,7 @@ public class DoubtsViewModel extends ViewModel implements DoubtsRepository.OnDou
     }
 
     public DoubtsViewModel() {
-        doubtsRepository = new DoubtsRepository(this, this, this,this, this);
+        doubtsRepository = new DoubtsRepository(this, this, this, this, this);
     }
 
     public void submitDoubt(DoubtsModel doubtsModel, List<linkModel> linkModels) {
@@ -67,6 +67,7 @@ public class DoubtsViewModel extends ViewModel implements DoubtsRepository.OnDou
     public void getDoubtsForTeachers(String subeject) {
         doubtsRepository.getDoubtsForTeacher(subeject);
     }
+
     public void getDoubtsForStudents(String userID) {
         doubtsRepository.getDoubtsForStudent(userID);
     }

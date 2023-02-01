@@ -40,7 +40,6 @@ import com.reiserx.nimbleq.databinding.ItemSendImageBinding;
 import com.vdurmont.emoji.EmojiManager;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -536,6 +535,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
+
     private void checkFile(String file, ImageView imageView) {
 
         if (file.endsWith(".jpg") || file.endsWith(".jpeg") || file.endsWith(".png"))

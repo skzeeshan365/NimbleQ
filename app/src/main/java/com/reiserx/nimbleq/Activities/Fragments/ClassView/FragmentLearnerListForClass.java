@@ -169,15 +169,15 @@ public class FragmentLearnerListForClass extends Fragment implements MenuProvide
                 userData1.add(dataFromDataList);
             }
         }
-            if (userData1.isEmpty()) {
-                binding.textView9.setText(getString(R.string.users_not_avail));
-                binding.recycler.setVisibility(View.GONE);
-                binding.progHolder.setVisibility(View.VISIBLE);
-                binding.progressBar2.setVisibility(View.GONE);
-                binding.textView9.setVisibility(View.VISIBLE);
-            } else {
-                binding.recycler.setVisibility(View.VISIBLE);
-                binding.progHolder.setVisibility(View.GONE);
+        if (userData1.isEmpty()) {
+            binding.textView9.setText(getString(R.string.users_not_avail));
+            binding.recycler.setVisibility(View.GONE);
+            binding.progHolder.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
+            binding.textView9.setVisibility(View.VISIBLE);
+        } else {
+            binding.recycler.setVisibility(View.VISIBLE);
+            binding.progHolder.setVisibility(View.GONE);
         }
         return userData1;
     }

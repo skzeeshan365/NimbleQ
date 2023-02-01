@@ -204,12 +204,12 @@ public class ClassListActivity extends AppCompatActivity implements MenuProvider
 
                 classViewModel.getAllJoinedClasses(user.getUid());
                 classViewModel.getClassList().observe(this, classModelList -> {
-                        adapter.setClassList(classModelList);
-                        adapter.notifyDataSetChanged();
-                        if (binding.recycler.getVisibility() == View.GONE && binding.progHolder.getVisibility() == View.VISIBLE) {
-                            binding.recycler.setVisibility(View.VISIBLE);
-                            binding.progHolder.setVisibility(View.GONE);
-                        }
+                    adapter.setClassList(classModelList);
+                    adapter.notifyDataSetChanged();
+                    if (binding.recycler.getVisibility() == View.GONE && binding.progHolder.getVisibility() == View.VISIBLE) {
+                        binding.recycler.setVisibility(View.VISIBLE);
+                        binding.progHolder.setVisibility(View.GONE);
+                    }
                 });
                 classViewModel.getClassListErrorMutableLiveData().observe(this, s -> {
                     binding.textView9.setText(s);

@@ -72,7 +72,7 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     }
 
     public classViewModel() {
-        firebaseRepo = new ClassRepository(this, this,this, this, this, this, this);
+        firebaseRepo = new ClassRepository(this, this, this, this, this, this, this);
     }
 
     public void getClassData(String classID) {

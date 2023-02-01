@@ -36,29 +36,29 @@ public class SlotListRepository {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                        if (!snapshot1.getKey().equals(userID))
-                        slotReference.child(Objects.requireNonNull(snapshot1.getKey())).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (!snapshot1.getKey().equals(userID))
+                                slotReference.child(Objects.requireNonNull(snapshot1.getKey())).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                                if (snapshot.exists()) {
-                                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                                        subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
-                                        if (subjectAndTimeSlot != null) {
-                                            if (subjectAndTimeSlot.getSubject().equals(save.getString("subject", null)))
-                                                data.add(subjectAndTimeSlot);
+                                        if (snapshot.exists()) {
+                                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                                subjectAndTimeSlot subjectAndTimeSlot = snapshot1.getValue(com.reiserx.nimbleq.Models.subjectAndTimeSlot.class);
+                                                if (subjectAndTimeSlot != null) {
+                                                    if (subjectAndTimeSlot.getSubject().equals(save.getString("subject", null)))
+                                                        data.add(subjectAndTimeSlot);
 
+                                                }
+                                            }
+                                            onRealtimeDbTaskComplete.onSuccess(data);
                                         }
                                     }
-                                    onRealtimeDbTaskComplete.onSuccess(data);
-                                }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
 
-                            }
-                        });
+                                    }
+                                });
                     }
                 } else
                     onRealtimeDbTaskComplete.onFailure(context.getString(R.string.slot_not_avail));

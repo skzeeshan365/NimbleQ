@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
@@ -88,9 +87,9 @@ public class Notify {
                 Log.d(CONSTANTS.TAG, e.toString());
             }
             handler.post(() -> {
+            });
         });
-    });
-}
+    }
 
     void postNotificationWithCallBack(SnackbarTop snackbarTop) {
         status = false;

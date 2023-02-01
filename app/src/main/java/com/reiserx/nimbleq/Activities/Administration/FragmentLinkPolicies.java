@@ -2,22 +2,19 @@ package com.reiserx.nimbleq.Activities.Administration;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
-import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
-import com.reiserx.nimbleq.databinding.FragmentLimitsBinding;
 import com.reiserx.nimbleq.databinding.FragmentLinkPoliciesBinding;
 
 public class FragmentLinkPolicies extends Fragment {

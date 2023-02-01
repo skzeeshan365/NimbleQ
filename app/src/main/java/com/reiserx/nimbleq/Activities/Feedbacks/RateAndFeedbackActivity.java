@@ -60,13 +60,13 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance();
                 long currentTime = cal.getTimeInMillis();
                 buttonDesign.buttonFill(binding.button3);
-            if (binding.editTextTextPersonName3.getText().toString().trim().equals("")) {
-                RatingModel ratingModel = new RatingModel(rating, userID, currentTime);
-                updateRating(state, ratingModel);
-            } else {
-                RatingModel ratingModel = new RatingModel(rating, userID, binding.editTextTextPersonName3.getText().toString().trim(), currentTime);
-                updateRating(state, ratingModel);
-            }
+                if (binding.editTextTextPersonName3.getText().toString().trim().equals("")) {
+                    RatingModel ratingModel = new RatingModel(rating, userID, currentTime);
+                    updateRating(state, ratingModel);
+                } else {
+                    RatingModel ratingModel = new RatingModel(rating, userID, binding.editTextTextPersonName3.getText().toString().trim(), currentTime);
+                    updateRating(state, ratingModel);
+                }
             });
         });
 
@@ -74,7 +74,7 @@ public class RateAndFeedbackActivity extends AppCompatActivity {
 
         userDataViewModel.getUserData(userID);
         userDataViewModel.getUserData().observe(this, userData -> {
-            binding.usernameTxtRate.setText(getString(R.string.hey1)+" ".concat(userData.getUserName()));
+            binding.usernameTxtRate.setText(getString(R.string.hey1) + " ".concat(userData.getUserName()));
             this.userData = userData;
         });
         if (state == 1) {

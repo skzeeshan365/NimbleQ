@@ -91,7 +91,7 @@ public class NotificationUtils {
                 .setContentTitle(title)
                 .setContentInfo("info")
                 .setStyle(new NotificationCompat.BigTextStyle()
-                .bigText(title1.concat("\n".concat(content))));
+                        .bigText(title1.concat("\n".concat(content))));
 
 
         // Gets an instance of the NotificationManager service

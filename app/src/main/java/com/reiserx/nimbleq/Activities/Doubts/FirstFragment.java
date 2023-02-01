@@ -140,16 +140,17 @@ public class FirstFragment extends Fragment {
                     first_visible_item = layoutManager.getChildCount();
                     totalItemCount = layoutManager.getItemCount();
                     pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
-                        if ((first_visible_item + pastVisiblesItems) >= totalItemCount) {
-                            if (lastItem != totalItemCount) {
-                                paginate();
-                                lastItem = totalItemCount;
-                            }
+                    if ((first_visible_item + pastVisiblesItems) >= totalItemCount) {
+                        if (lastItem != totalItemCount) {
+                            paginate();
+                            lastItem = totalItemCount;
+                        }
                     }
                 }
             }
         });
     }
+
     public void paginate() {
         if (subject != null) {
             viewModel.paginateDoubts(subject, adapter);

@@ -15,7 +15,7 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         UserDataRepository.getUserTypeComplete,
         UserDataRepository.getUserDetailsComplete,
         UserDataRepository.getDataAsListString,
-        UserDataRepository.OnUpdateUsernameComplete{
+        UserDataRepository.OnUpdateUsernameComplete {
 
     private final MutableLiveData<UserData> userData = new MutableLiveData<>();
     private final MutableLiveData<String> username = new MutableLiveData<>();

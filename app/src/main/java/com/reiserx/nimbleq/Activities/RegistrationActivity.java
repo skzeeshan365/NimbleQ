@@ -71,7 +71,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
         if (user != null)
-        dialogs.selectStudentOrTeacherNormal(user.getUid());
+            dialogs.selectStudentOrTeacherNormal(user.getUid());
 
         initializeViews();
 

@@ -28,7 +28,7 @@ import java.util.List;
 
 public class ViewDoubtsFragment extends Fragment {
 
-   private FragmentViewDoubtsBinding binding;
+    private FragmentViewDoubtsBinding binding;
 
     AnswersAdapter adapter;
 
@@ -57,7 +57,7 @@ public class ViewDoubtsFragment extends Fragment {
 
         snackbarTop = new SnackbarTop(binding.getRoot());
 
-        
+
         return binding.getRoot();
     }
 

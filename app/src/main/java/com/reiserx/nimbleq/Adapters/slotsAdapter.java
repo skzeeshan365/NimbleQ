@@ -123,7 +123,7 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                 });
             });
         } else {
-            holder.binding.slotsSubTxt.setText(context.getString(R.string.slot2)+" ".concat(String.valueOf(position + 1)));
+            holder.binding.slotsSubTxt.setText(context.getString(R.string.slot2) + " ".concat(String.valueOf(position + 1)));
             if (model.getTimeSlot() != null)
                 holder.binding.slotsDescTxt.setText(model.getTimeSlot().concat(" • ".concat(model.getSubject().concat(" • ".concat(model.getTopic())))));
             else
@@ -148,7 +148,7 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                                             HashMap<String, Object> map = new HashMap<>();
                                             map.put("current", true);
                                             if (snapshot1.getKey() != null)
-                                            model.getReference().child(snapshot1.getKey()).updateChildren(map);
+                                                model.getReference().child(snapshot1.getKey()).updateChildren(map);
                                             if (model.getTimeSlot() == null) {
                                                 SharedPreferences save = context.getSharedPreferences("subjectSlots", MODE_PRIVATE);
                                                 SharedPreferences.Editor myEdit = save.edit();
@@ -192,7 +192,7 @@ public class slotsAdapter extends RecyclerView.Adapter<slotsAdapter.UsersViewHol
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("current", false);
                             if (snapshot1.getKey() != null)
-                            model.getReference().child(snapshot1.getKey()).updateChildren(map);
+                                model.getReference().child(snapshot1.getKey()).updateChildren(map);
                         }
                         HashMap<String, Object> map = new HashMap<>();
                         map.put("current", true);

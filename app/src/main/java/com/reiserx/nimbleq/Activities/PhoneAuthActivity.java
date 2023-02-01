@@ -22,13 +22,11 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.ButtonDesign;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.Utils.dialogs;
-import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.databinding.ActivityPhoneAuthBinding;
 
@@ -116,19 +114,19 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     } else {
                         snackbarTop.showSnackBar(getString(R.string.login_successful), true);
                         FirebaseUser user = auth.getCurrentUser();
-                            UserDataViewModel userDataViewModel = new ViewModelProvider(PhoneAuthActivity.this).get(UserDataViewModel.class);
-                            if (user != null) {
-                                userDataViewModel.updateFCMToken(user.getUid());
-                                binding.continueBtn.setOnClickListener(view -> {
-                                    Map<String, Object> map = new HashMap<>();
-                                    if (user.getMetadata() != null)
-                                        map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
-                                    FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
-                                    buttonDesign.buttonFill(binding.continueBtn);
-                                    dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
-                                    dialogs.selectStudentOrTeacherForLogin(auth.getUid());
-                                });
-                            }
+                        UserDataViewModel userDataViewModel = new ViewModelProvider(PhoneAuthActivity.this).get(UserDataViewModel.class);
+                        if (user != null) {
+                            userDataViewModel.updateFCMToken(user.getUid());
+                            binding.continueBtn.setOnClickListener(view -> {
+                                Map<String, Object> map = new HashMap<>();
+                                if (user.getMetadata() != null)
+                                    map.put("lastLogin_timestamp", user.getMetadata().getLastSignInTimestamp());
+                                FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(user.getUid()).updateChildren(map);
+                                buttonDesign.buttonFill(binding.continueBtn);
+                                dialogs dialogs = new dialogs(PhoneAuthActivity.this, findViewById(android.R.id.content));
+                                dialogs.selectStudentOrTeacherForLogin(auth.getUid());
+                            });
+                        }
                     }
                     TransitionManager.beginDelayedTransition(binding.cardHolder, new AutoTransition());
                     binding.continueBtn.setVisibility(View.VISIBLE);

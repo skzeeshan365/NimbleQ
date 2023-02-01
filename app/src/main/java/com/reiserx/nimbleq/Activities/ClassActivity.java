@@ -9,7 +9,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.downloader.PRDownloader;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.databinding.ActivityClassBinding;
 

@@ -2,7 +2,6 @@ package com.reiserx.nimbleq.Adapters.Doubts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Activities.Feedbacks.RateAndFeedbackActivity;
 import com.reiserx.nimbleq.Adapters.Announcements.announcementLinksAdapter;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;

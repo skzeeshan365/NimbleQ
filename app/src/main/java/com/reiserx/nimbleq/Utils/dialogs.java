@@ -4,12 +4,10 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -249,7 +247,7 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList  = new ArrayList<>();
+        subjectList = new ArrayList<>();
         subjectList.add("Select subject");
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -269,7 +267,7 @@ public class dialogs {
             }
         });
 
-        timeSlotsList  = new ArrayList<>();
+        timeSlotsList = new ArrayList<>();
         timeSlotsList.add("Select time slot");
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -345,7 +343,7 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList  = new ArrayList<>();
+        subjectList = new ArrayList<>();
         subjectList.add("Select subject");
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -365,7 +363,7 @@ public class dialogs {
             }
         });
 
-        timeSlotsList  = new ArrayList<>();
+        timeSlotsList = new ArrayList<>();
         timeSlotsList.add("Select time slot");
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -441,7 +439,7 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList  = new ArrayList<>();
+        subjectList = new ArrayList<>();
         subjectList.add(context.getString(R.string.select_subject));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -513,7 +511,7 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList  = new ArrayList<>();
+        subjectList = new ArrayList<>();
         subjectList.add("Select subject");
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -623,7 +621,7 @@ public class dialogs {
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("current", false);
                             if (snapshot1.getKey() != null)
-                            reference.child(snapshot1.getKey()).updateChildren(map);
+                                reference.child(snapshot1.getKey()).updateChildren(map);
                         }
                         FirebaseMessaging fcm = FirebaseMessaging.getInstance();
                         fcm.subscribeToTopic(TopicSubscription.getTopicForSlot(subjectAndTimeSlot)).addOnFailureListener(e -> snackbarTop.showSnackBar(context.getString(R.string.failed_to_subscribe_for_notification).concat(e.toString()), false));
@@ -696,7 +694,7 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList  = new ArrayList<>();
+        subjectList = new ArrayList<>();
         subjectList.add(context.getString(R.string.select_subject));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -716,7 +714,7 @@ public class dialogs {
             }
         });
 
-        timeSlotsList  = new ArrayList<>();
+        timeSlotsList = new ArrayList<>();
         timeSlotsList.add(context.getString(R.string.select_time_slot));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -797,7 +795,7 @@ public class dialogs {
         ButtonDesign buttonDesign = new ButtonDesign(context);
         buttonDesign.setButtonOutline(next_btn);
 
-        subjectList  = new ArrayList<>();
+        subjectList = new ArrayList<>();
         subjectList.add(context.getString(R.string.select_subject));
         FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
@@ -905,38 +903,38 @@ public class dialogs {
                         if (snapshot.exists()) {
                             for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                 if (snapshot1.getKey() != null)
-                                database.getReference().child("Data").child("UserData").child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if (snapshot.exists()) {
-                                            UserData UserData = snapshot.getValue(UserData.class);
-                                            if (UserData != null) {
-                                                firestore.collection("Main").document("Class").collection("Ratings").document("TeacherRating").collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
-                                                    if (task1.isSuccessful()) {
-                                                        QuerySnapshot ratingSnapshot = task1.getResult();
-                                                        if (ratingSnapshot != null) {
-                                                            UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
-                                                        } else
-                                                            UserData.setRating(0f);
-                                                        teacherList.add(UserData.getUserName());
-                                                        userData.add(UserData);
-                                                        Collections.sort(userData, (lhs, rhs) -> {
-                                                            if (rhs != null && lhs != null)
-                                                                return Double.compare(lhs.getRating(), rhs.getRating());
-                                                            else
-                                                                return 0;
-                                                        });
-                                                    }
-                                                });
+                                    database.getReference().child("Data").child("UserData").child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.exists()) {
+                                                UserData UserData = snapshot.getValue(UserData.class);
+                                                if (UserData != null) {
+                                                    firestore.collection("Main").document("Class").collection("Ratings").document("TeacherRating").collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
+                                                        if (task1.isSuccessful()) {
+                                                            QuerySnapshot ratingSnapshot = task1.getResult();
+                                                            if (ratingSnapshot != null) {
+                                                                UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                                                            } else
+                                                                UserData.setRating(0f);
+                                                            teacherList.add(UserData.getUserName());
+                                                            userData.add(UserData);
+                                                            Collections.sort(userData, (lhs, rhs) -> {
+                                                                if (rhs != null && lhs != null)
+                                                                    return Double.compare(lhs.getRating(), rhs.getRating());
+                                                                else
+                                                                    return 0;
+                                                            });
+                                                        }
+                                                    });
+                                                }
                                             }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
 
-                                    }
-                                });
+                                        }
+                                    });
                             }
                             TeacherListSpinnerAdapter adapter = new TeacherListSpinnerAdapter(context, teacherList, userData);
                             spinner.setAdapter(adapter);
@@ -971,10 +969,10 @@ public class dialogs {
                 else {
                     ClassRequestModel classRequestModel = new ClassRequestModel(subject, topic_edittext.getText().toString(), time_slot, requestTeacherData.getUid(), userID);
                     Notify notify = new Notify(context);
-                    String sb = context.getString(R.string.subject1)+subject+"\n";
-                    String tp = context.getString(R.string.topic1)+topic_edittext.getText().toString().trim()+"\n";
-                    String slot = context.getString(R.string.time1)+time_slot;
-                    notify.classRequestPayload(context.getString(R.string.a_student_has_requested_a_class_from_you), sb+tp+slot, requestTeacherData.getFCM_TOKEN());
+                    String sb = context.getString(R.string.subject1) + subject + "\n";
+                    String tp = context.getString(R.string.topic1) + topic_edittext.getText().toString().trim() + "\n";
+                    String slot = context.getString(R.string.time1) + time_slot;
+                    notify.classRequestPayload(context.getString(R.string.a_student_has_requested_a_class_from_you), sb + tp + slot, requestTeacherData.getFCM_TOKEN());
                     reference.add(classRequestModel).addOnSuccessListener(documentReference -> {
                         snackbarTop.showSnackBar(context.getString(R.string.request_submitted), true);
                         alert.dismiss();
@@ -1074,7 +1072,7 @@ public class dialogs {
         btn2.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (btn2.isChecked()) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("language","en");
+                editor.putString("language", "en");
                 editor.apply();
                 alert.dismiss();
                 snackbarTop.showSnackBar("Settings applied", true);
@@ -1086,7 +1084,7 @@ public class dialogs {
         btn3.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (btn3.isChecked()) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("language","hi");
+                editor.putString("language", "hi");
                 editor.apply();
                 alert.dismiss();
                 snackbarTop.showSnackBar("Settings applied", true);
@@ -1095,7 +1093,8 @@ public class dialogs {
         });
         alert.show();
     }
-    public void restart(Activity activity){
+
+    public void restart(Activity activity) {
         Intent intent = new Intent(context, MainActivity.class);
         activity.startActivity(intent);
         activity.finishAffinity();
@@ -1139,7 +1138,7 @@ public class dialogs {
         final EditText message = mView.findViewById(R.id.msg_text);
 
         alert.setTitle(context.getString(R.string.menu_send_notification));
-        alert.setMessage(context.getString(R.string.send_notification_to)+" ".concat(username));
+        alert.setMessage(context.getString(R.string.send_notification_to) + " ".concat(username));
         alert.setView(mView);
 
         alert.setPositiveButton(context.getString(R.string.send), (dialogInterface, i) -> {

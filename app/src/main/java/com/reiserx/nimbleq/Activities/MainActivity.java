@@ -2,7 +2,6 @@ package com.reiserx.nimbleq.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     UserTypeClass userTypeClass;
 
-    public static final String Default="en";
+    public static final String Default = "en";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel.getDatabaseErrorMutableLiveData().observe(this, error -> Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show());
     }
+
     void initializeFCM() {
         AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         viewModel.getFCMCredentials();

@@ -72,10 +72,10 @@ public class SlotsActivity extends AppCompatActivity {
             buttonDesign.buttonFill(binding.button4);
             dialogs dialogs = new dialogs(this, findViewById(android.R.id.content));
             if (user != null)
-            if (userTypeClass.isUserLearner())
-                dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
-            else if (!userTypeClass.isUserLearner())
-                dialogs.selectSubjectForTeacherNormal(user.getUid(), false);
+                if (userTypeClass.isUserLearner())
+                    dialogs.selectSubjectForLearnerNormal(user.getUid(), false);
+                else if (!userTypeClass.isUserLearner())
+                    dialogs.selectSubjectForTeacherNormal(user.getUid(), false);
         });
 
     }

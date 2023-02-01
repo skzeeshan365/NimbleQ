@@ -135,7 +135,7 @@ public class SubmitAnswerFragment extends Fragment {
                 doubtsViewModel.submitAnswer(answerModel, links);
                 doubtsViewModel.getAnswerSubmittedModelMutableLiveData().observe(getViewLifecycleOwner(), unused -> {
                     Notify notify = new Notify(getContext());
-                    notify.submitAnswerPayload(userName+" ".concat(getString(R.string.has_answered_doubt)), binding.answerDescTxt.getText().toString().trim(), userData.getFCM_TOKEN(), doubtsModel);
+                    notify.submitAnswerPayload(userName + " ".concat(getString(R.string.has_answered_doubt)), binding.answerDescTxt.getText().toString().trim(), userData.getFCM_TOKEN(), doubtsModel);
                     AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
                     alert.setTitle(getString(R.string.success));
                     alert.setMessage(getString(R.string.answer_has_been_submitted));

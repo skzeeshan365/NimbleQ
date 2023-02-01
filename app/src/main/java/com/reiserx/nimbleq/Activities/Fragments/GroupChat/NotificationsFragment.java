@@ -54,7 +54,6 @@ import com.sangcomz.fishbun.FishBun;
 import com.sangcomz.fishbun.MimeType;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -147,12 +146,12 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 alert.setMessage(getString(R.string.send_a_photo));
 
                 alert.setPositiveButton(getString(R.string.files), (dialogInterface, i) -> {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent.setType("*/*");
-                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
-                        FilesActivityResultLauncher.launch(intent);
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype);
+                    FilesActivityResultLauncher.launch(intent);
                 });
                 alert.setNegativeButton(getString(R.string.images), (dialogInterface, i) -> FishBun.with(NotificationsFragment.this)
                         .setImageAdapter(new GlideAdapter())
@@ -257,7 +256,8 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 if (adapter.getList().isEmpty())
                     getMessages();
             });
-        } else Toast.makeText(getContext(), getString(R.string.type_a_message), Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(getContext(), getString(R.string.type_a_message), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("NotifyDataSetChanged")

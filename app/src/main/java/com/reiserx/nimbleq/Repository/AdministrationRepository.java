@@ -322,29 +322,29 @@ public class AdministrationRepository {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                        userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    UserData UserData = snapshot.getValue(UserData.class);
-                                    if (UserData != null) {
-                                        userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
-                                            if (queryDocumentSnapshots.exists()) {
-                                                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
-                                                UserData.setUserDetails(userDetails);
-                                            }
-                                            data.add(UserData);
-                                            onGetUserListComplete.onGetUserListSuccess(data);
-                                        });
+                            userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        UserData UserData = snapshot.getValue(UserData.class);
+                                        if (UserData != null) {
+                                            userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                                if (queryDocumentSnapshots.exists()) {
+                                                    userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                                    UserData.setUserDetails(userDetails);
+                                                }
+                                                data.add(UserData);
+                                                onGetUserListComplete.onGetUserListSuccess(data);
+                                            });
+                                        }
                                     }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                onGetUserListComplete.onGetUserListFailure(error.toString());
-                            }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    onGetUserListComplete.onGetUserListFailure(error.toString());
+                                }
+                            });
                     }
                 }
             }
@@ -365,29 +365,29 @@ public class AdministrationRepository {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                        userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    UserData UserData = snapshot.getValue(UserData.class);
-                                    if (UserData != null) {
-                                        userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
-                                            if (queryDocumentSnapshots.exists()) {
-                                                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
-                                                UserData.setUserDetails(userDetails);
-                                            }
-                                            data.add(UserData);
-                                            onGetUserListComplete.onGetUserListSuccess(data);
-                                        });
+                            userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        UserData UserData = snapshot.getValue(UserData.class);
+                                        if (UserData != null) {
+                                            userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                                if (queryDocumentSnapshots.exists()) {
+                                                    userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                                    UserData.setUserDetails(userDetails);
+                                                }
+                                                data.add(UserData);
+                                                onGetUserListComplete.onGetUserListSuccess(data);
+                                            });
+                                        }
                                     }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                onGetUserListComplete.onGetUserListFailure(error.toString());
-                            }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    onGetUserListComplete.onGetUserListFailure(error.toString());
+                                }
+                            });
                     }
                 }
             }
@@ -407,38 +407,38 @@ public class AdministrationRepository {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                        userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    UserData UserData = snapshot.getValue(UserData.class);
-                                    if (UserData != null) {
-                                        userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
-                                            if (queryDocumentSnapshots.exists()) {
-                                                userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
-                                                UserData.setUserDetails(userDetails);
+                            userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        UserData UserData = snapshot.getValue(UserData.class);
+                                        if (UserData != null) {
+                                            userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                                if (queryDocumentSnapshots.exists()) {
+                                                    userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
+                                                    UserData.setUserDetails(userDetails);
 
-                                                teacherRatingReference.collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
-                                                    if (task1.isSuccessful()) {
-                                                        QuerySnapshot ratingSnapshot = task1.getResult();
-                                                        if (ratingSnapshot != null) {
-                                                            UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                                                    teacherRatingReference.collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
+                                                        if (task1.isSuccessful()) {
+                                                            QuerySnapshot ratingSnapshot = task1.getResult();
+                                                            if (ratingSnapshot != null) {
+                                                                UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                                                            }
                                                         }
-                                                    }
-                                                    data.add(UserData);
-                                                    onGetUserListComplete.onGetUserListSuccess(data);
-                                                });
-                                            }
-                                        });
+                                                        data.add(UserData);
+                                                        onGetUserListComplete.onGetUserListSuccess(data);
+                                                    });
+                                                }
+                                            });
+                                        }
                                     }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                onGetUserListComplete.onGetUserListFailure(error.toString());
-                            }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    onGetUserListComplete.onGetUserListFailure(error.toString());
+                                }
+                            });
                     }
                 }
             }
@@ -487,7 +487,7 @@ public class AdministrationRepository {
                 onGetClassCreateCountComplete.onGetClassCreateCountSuccess(snapshot1.getCount());
             } else {
                 if (task1.getException() != null)
-                onGetClassCreateCountComplete.onFailed(task1.getException().toString());
+                    onGetClassCreateCountComplete.onFailed(task1.getException().toString());
             }
         });
     }

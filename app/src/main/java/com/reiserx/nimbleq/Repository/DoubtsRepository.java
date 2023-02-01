@@ -101,33 +101,33 @@ public class DoubtsRepository {
                     DoubtsModel doubtsModel = documentSnapshot.toObject(DoubtsModel.class);
                     if (doubtsModel != null) {
                         if (user != null)
-                        if (!doubtsModel.getUserID().equals(user.getUid())) {
+                            if (!doubtsModel.getUserID().equals(user.getUid())) {
 
-                            reference.collection("DoubtList").document(documentSnapshot.getId()).collection("linkModels").get().addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    QuerySnapshot snapshot = task.getResult();
-                                    if (snapshot != null) {
-                                        List<linkModel> linkModels = snapshot.toObjects(linkModel.class);
-                                        Query query1 = reference.collection("AnswerList").whereEqualTo("doubt_ID", documentSnapshot.getId()).orderBy("timeStamp", Query.Direction.DESCENDING);
-                                        AggregateQuery countQuery = query1.count();
-                                        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
-                                            if (task1.isSuccessful()) {
-                                                AggregateQuerySnapshot snapshot1 = task1.getResult();
-                                                doubtsModel.setAnswerCount(snapshot1.getCount());
-                                                doubtsModel.setLinkModels(linkModels);
-                                                doubtsModel.setId(documentSnapshot.getId());
-                                                doubtsModelList.add(doubtsModel);
+                                reference.collection("DoubtList").document(documentSnapshot.getId()).collection("linkModels").get().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        QuerySnapshot snapshot = task.getResult();
+                                        if (snapshot != null) {
+                                            List<linkModel> linkModels = snapshot.toObjects(linkModel.class);
+                                            Query query1 = reference.collection("AnswerList").whereEqualTo("doubt_ID", documentSnapshot.getId()).orderBy("timeStamp", Query.Direction.DESCENDING);
+                                            AggregateQuery countQuery = query1.count();
+                                            countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
+                                                if (task1.isSuccessful()) {
+                                                    AggregateQuerySnapshot snapshot1 = task1.getResult();
+                                                    doubtsModel.setAnswerCount(snapshot1.getCount());
+                                                    doubtsModel.setLinkModels(linkModels);
+                                                    doubtsModel.setId(documentSnapshot.getId());
+                                                    doubtsModelList.add(doubtsModel);
 
-                                                onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
-                                            } else {
-                                                if (task1.getException() != null)
-                                                onGetDoubtsComplete.onFailure(task1.getException().toString());
-                                            }
-                                        });
+                                                    onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
+                                                } else {
+                                                    if (task1.getException() != null)
+                                                        onGetDoubtsComplete.onFailure(task1.getException().toString());
+                                                }
+                                            });
+                                        }
                                     }
-                                }
-                            });
-                        }
+                                });
+                            }
                     }
                 }
                 lastVisible = queryDocumentSnapshots.getResult().getDocuments().get(queryDocumentSnapshots.getResult().size() - 1);
@@ -165,7 +165,7 @@ public class DoubtsRepository {
                                             onGetDoubtsComplete.onGetDoubtsSuccess(doubtsModelList);
                                         } else {
                                             if (task1.getException() != null)
-                                            onGetDoubtsComplete.onFailure(task1.getException().toString());
+                                                onGetDoubtsComplete.onFailure(task1.getException().toString());
                                         }
                                     });
                                 }
@@ -256,7 +256,7 @@ public class DoubtsRepository {
                                                 adapter.addData(doubtsModel);
                                             } else {
                                                 if (task1.getException() != null)
-                                                onPaginationComplete.onPaginateFailure(task1.getException().toString());
+                                                    onPaginationComplete.onPaginateFailure(task1.getException().toString());
                                             }
                                             onPaginationComplete.onPaginateSuccess(doubtsModelList);
                                         });

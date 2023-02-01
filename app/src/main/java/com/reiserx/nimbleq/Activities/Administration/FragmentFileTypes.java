@@ -21,8 +21,6 @@ import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentFileTypesBinding;
 
-import java.util.Locale;
-
 public class FragmentFileTypes extends Fragment {
 
     private FragmentFileTypesBinding binding;

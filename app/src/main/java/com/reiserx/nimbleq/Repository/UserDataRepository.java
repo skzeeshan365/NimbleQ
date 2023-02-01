@@ -162,9 +162,9 @@ public class UserDataRepository {
     }
 
     public void updateUsername(String userID, String s) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("userName", s);
-            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).updateChildren(map).addOnSuccessListener(unused -> onUpdateUsernameComplete.onSuccess(null)).addOnFailureListener(e -> onUpdateUsernameComplete.onFailed(e.toString()));
+        Map<String, Object> map = new HashMap<>();
+        map.put("userName", s);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).updateChildren(map).addOnSuccessListener(unused -> onUpdateUsernameComplete.onSuccess(null)).addOnFailureListener(e -> onUpdateUsernameComplete.onFailed(e.toString()));
     }
 
     public interface OnRealtimeDbTaskComplete {
