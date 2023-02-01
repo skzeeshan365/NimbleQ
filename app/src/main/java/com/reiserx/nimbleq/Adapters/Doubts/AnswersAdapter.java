@@ -2,16 +2,22 @@ package com.reiserx.nimbleq.Adapters.Doubts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.marlonlom.utilities.timeago.TimeAgo;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.reiserx.nimbleq.Activities.Feedbacks.RateAndFeedbackActivity;
 import com.reiserx.nimbleq.Adapters.Announcements.announcementLinksAdapter;
 import com.reiserx.nimbleq.Models.Doubts.AnswerModel;
 import com.reiserx.nimbleq.R;
@@ -62,6 +68,19 @@ public class AnswersAdapter extends RecyclerView.Adapter<AnswersAdapter.UsersVie
         if (model.getLinkModels() != null) {
             childAdapter.setChildItemList(model.getLinkModels());
         }
+
+        if (!model.getTEACHER_UID().equals(FirebaseAuth.getInstance().getUid())) {
+            holder.binding.getRoot().setOnClickListener(view -> {
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                alert.setTitle(context.getString(R.string.rate_this_user));
+                alert.setMessage(context.getString(R.string.rate_this_user_msg));
+                alert.setPositiveButton(context.getString(R.string.rate), (dialogInterface, i) -> {
+                    rateTeacher(model.getTEACHER_UID(), model.getTeacherName());
+                });
+                alert.setNegativeButton(context.getString(R.string.cancel), null);
+                alert.show();
+            });
+        }
         holder.binding.recycler.setAdapter(childAdapter);
         childAdapter.notifyDataSetChanged();
     }
@@ -74,6 +93,16 @@ public class AnswersAdapter extends RecyclerView.Adapter<AnswersAdapter.UsersVie
             return 0;
         }
 
+    }
+
+    void rateTeacher(String uid, String token) {
+        Intent intent = new Intent(context, RateAndFeedbackActivity.class);
+        intent.putExtra("id", 2);
+        intent.putExtra("teacherID", uid);
+        intent.putExtra("Message", context.getString(R.string.feedback_msg_1));
+        intent.putExtra("userID", FirebaseAuth.getInstance().getUid());
+        intent.putExtra("token", token);
+        context.startActivity(intent);
     }
 
     public class UsersViewHolder extends RecyclerView.ViewHolder {

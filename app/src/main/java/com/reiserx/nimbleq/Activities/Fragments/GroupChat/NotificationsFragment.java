@@ -43,6 +43,7 @@ import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.Message;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.FileUtil;
+import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.ChatsViewModel;
@@ -131,6 +132,9 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
         adapter = new MessagesAdapter(getContext(), binding.recyclerView, classID, user.getUid(), chatsViewModel, data);
         adapter.setAdapter(adapter);
         binding.replyHolder.setVisibility(View.GONE);
+
+        SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+        adapter.setTeacherID(sharedPreferenceClass.getTeacherID());
 
         getMessages();
 
@@ -239,7 +243,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
             if (binding.replyMsg.getText().toString().trim().equals("")) {
                 message = new Message(MessageTxt, user.getUid(), senderName, currentTime);
             } else {
-                message = new Message(MessageTxt, user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                message = new Message(MessageTxt, user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxts.getText().toString(), replyUId, replyID, currentTime);
             }
 
             chatsViewModel.submitMessage(message, classID);
@@ -247,7 +251,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                 binding.messageBox.setText("");
                 binding.replyHolder.setVisibility(View.GONE);
                 binding.replyMsg.setText("");
-                binding.replyNameTxt.setText("");
+                binding.replyNameTxts.setText("");
                 replyID = null;
                 replyUId = null;
                 if (adapter.getList().isEmpty())
@@ -290,10 +294,10 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
             Message message = messages.get(position);
             replyID = message.getMessageId();
             if (message.getSenderId().equals(user.getUid())) {
-                binding.replyNameTxt.setText(getString(R.string.me));
+                binding.replyNameTxts.setText(getString(R.string.me));
                 replyUId = user.getUid();
             } else {
-                binding.replyNameTxt.setText(message.getReplyname());
+                binding.replyNameTxts.setText(message.getReplyname());
                 replyUId = message.getSenderId();
             }
             if (message.getImageUrl() != null) {
@@ -304,7 +308,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
             binding.imageView4.setOnClickListener(view -> {
                 binding.replyHolder.setVisibility(View.GONE);
                 binding.replyMsg.setText("");
-                binding.replyNameTxt.setText("");
+                binding.replyNameTxts.setText("");
                 replyID = null;
                 replyUId = null;
             });
@@ -355,7 +359,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                                 if (binding.replyMsg.getText().toString().trim().equals("")) {
                                     message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, currentTime);
                                 } else {
-                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxts.getText().toString(), replyUId, replyID, currentTime);
                                 }
 
                                 chatsViewModel.submitMessage(message, classID);
@@ -363,7 +367,7 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                                     binding.messageBox.setText("");
                                     binding.replyHolder.setVisibility(View.GONE);
                                     binding.replyMsg.setText("");
-                                    binding.replyNameTxt.setText("");
+                                    binding.replyNameTxts.setText("");
                                     replyID = null;
                                     replyUId = null;
                                 });
@@ -399,14 +403,14 @@ public class NotificationsFragment extends Fragment implements MenuProvider {
                                 if (binding.replyMsg.getText().toString().trim().equals("")) {
                                     message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, currentTime);
                                 } else {
-                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxt.getText().toString(), replyUId, replyID, currentTime);
+                                    message = new Message(remoteFileModel.getUrl(), remoteFileModel.getFilename(), user.getUid(), senderName, binding.replyMsg.getText().toString(), binding.replyNameTxts.getText().toString(), replyUId, replyID, currentTime);
                                 }
                                 chatsViewModel.submitMessage(message, classID);
                                 chatsViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), message1 -> {
                                     binding.messageBox.setText("");
                                     binding.replyHolder.setVisibility(View.GONE);
                                     binding.replyMsg.setText("");
-                                    binding.replyNameTxt.setText("");
+                                    binding.replyNameTxts.setText("");
                                     replyID = null;
                                     replyUId = null;
                                 });

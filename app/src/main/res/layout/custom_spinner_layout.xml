@@ -34,6 +34,7 @@
             app:srb_fillColor="@color/primaryColor"
             app:srb_numberOfStars="1"
             app:srb_rating="0.5"
+            app:srb_isIndicator="true"
             app:srb_starBackgroundColor="@color/PRIMARY_LIGHT"
             app:srb_starBorderWidth="2"
             app:srb_starSize="18dp"

@@ -5,10 +5,10 @@
     <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="Search"
+        android:title="@string/search_menu"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
     <item
         android:id="@+id/post_announcements"
-        android:title="Post Announcements" />
+        android:title="@string/post_announcements" />
 </menu>

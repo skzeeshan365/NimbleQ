@@ -123,7 +123,7 @@
     <string name="create_zoom_meeting">Create zoom meeting</string>
     <string name="create_zoom_meeting_msg">Please open zoom and create a recurring meeting for this class\nAnd paste the meeting info below</string>
     <string name="open">open</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="sign_in_with_phone">Sign in with phone</string>
     <string name="view_class">View class</string>
     <string name="view_class_msg">Click to view avaibale classes</string>
@@ -140,7 +140,7 @@
     <string name="view_your_class_msg">Click to view classes you have created</string>
     <string name="view_class_requests">View class requests</string>
     <string name="view_class_requests_msg">Click to view available class requests</string>
-    <string name="sending_otp">Sending OTP...</string>
+    <string name="sending_otp">Sending OTP…</string>
     <string name="account_created">Account created</string>
     <string name="login_successful">Login successful</string>
     <string name="registration">Registration</string>
@@ -233,7 +233,7 @@
     <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete </string>
     <string name="delete">Delete</string>
     <string name="answers_lower">answers</string>
-    <string name="ok">ok</string>
+    <string name="ok">OK</string>
     <string name="delete_message">Delete message</string>
     <string name="delete_message_msg">Are you sure you want to delete this message</string>
     <string name="class_alloted">Class allotted</string>
@@ -306,6 +306,23 @@
     <string name="has_left_class">has left your class</string>
     <string name="adminis_account">Admin account</string>
     <string name="adminis_account_msg">You can open admin panel</string>
+    <string name="search_menu">Search</string>
+    <string name="menu_rate_this_teacher">Rate this teacher</string>
+    <string name="menu_teacher_info">Teacher info</string>
+    <string name="menu_chat_with_teacher">Chat with teacher</string>
+    <string name="menu_leave_class">Leave class</string>
+    <string name="menu_send_notification">Send notification</string>
+    <string name="chat_with_learner">Chat with student</string>
+    <string name="chat_with_learner_msg">Chat with student on WhatsApp</string>
+    <string name="send_notification_to">Send notification to</string>
+    <string name="send_notification_to_all">Send notification to all users</string>
+    <string name="please_enter_title">Please enter title</string>
+    <string name="please_enter_message">Please enter message</string>
+    <string name="sending">Sending…</string>
+    <string name="enter_notification_message">Enter message</string>
+    <string name="enter_notification_title">Enter title</string>
+    <string name="rate_this_user">Rate this user</string>
+    <string name="rate_this_user_msg">Are you sure you want to rate this user</string>
     <!-- java strings -->
 
 </resources>

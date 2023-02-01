@@ -7,12 +7,15 @@
     tools:context=".Activities.Administration.FragmentLimits">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/slot_holder_lt"
+        android:id="@+id/privacy_holder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
         android:clickable="true"
         android:focusable="true"
+        android:autoLink="all"
+        android:linksClickable="true"
+        android:textIsSelectable="true"
         android:layout_marginEnd="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="?attr/selectableItemBackground"
@@ -26,23 +29,20 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:text="@string/slots"
+            android:text="@string/privacy_policy"
             android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView15"
+            android:id="@+id/privacy_link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:text="TextView"
-            android:autoLink="all"
-            android:linksClickable="true"
-            android:textIsSelectable="true"
             android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView13"
@@ -58,10 +58,10 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/slot_holder_lt" />
+        app:layout_constraintTop_toBottomOf="@+id/privacy_holder" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/file_size_holder_lt"
+        android:id="@+id/terms_holder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
@@ -76,17 +76,17 @@
         app:layout_constraintTop_toBottomOf="@+id/divider12">
 
         <TextView
-            android:id="@+id/textView19"
+            android:id="@+id/terms_link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:text="TextView"
+            android:textSize="16dp"
             android:autoLink="all"
             android:linksClickable="true"
             android:textIsSelectable="true"
-            android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView18"
             app:layout_constraintTop_toTopOf="parent" />
@@ -98,7 +98,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:text="@string/file_size"
+            android:text="@string/terms"
             android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

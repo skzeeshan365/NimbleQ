@@ -140,7 +140,7 @@
     <string name="view_your_class_msg">आपने बनाए हुए कक्षाओं को देखने के लिए क्लिक करें</string>
     <string name="view_class_requests">कक्षा अनुरोध देखें</string>
     <string name="view_class_requests_msg">उपलब्ध कक्षा अनुरोध देखने के लिए क्लिक करें</string>
-    <string name="sending_otp">OTP भेजा जा रहा है...</string>
+    <string name="sending_otp">OTP भेजा जा रहा है…</string>
     <string name="account_created">खाता बनाया गया</string>
     <string name="login_successful">लॉगिन सफल</string>
     <string name="registration">पंजीकरण</string>
@@ -163,7 +163,7 @@
     <string name="feedback_msg">कक्षा में आपकी अनुभव कैसी रही </string>
     <string name="are_you_sure_you_want_to_join_this_meeting">क्या आप वाकई इस बैठक में शामिल होना चाहते हैं?</string>
     <string name="join">शामिल हों</string>
-    <string name="fetching_details">विवरण प्राप्त कर रहे हैं...</string>
+    <string name="fetching_details">विवरण प्राप्त कर रहे हैं…</string>
     <string name="grade2">ग्रेड: </string>
     <string name="lives_in_1">जिस जगह पर रहता है: </string>
     <string name="gender_2">लिंग: </string>
@@ -304,8 +304,23 @@
     <string name="joined_class">अपने कक्षा में शामिल हुआ है</string>
     <string name="left_class_title">एक छात्र अपने कक्षा से चले गए</string>
     <string name="has_left_class">अपने कक्षा से छोड़ चुका है</string>
-    <string name="admin_account">व्यवस्थापक खाता</string>
-    <string name="admin_account_msg">आप व्यवस्थापक पैनल खोल सकते हैं</string>
+    <string name="adminis_account">व्यवस्थापक खाता</string>
+    <string name="adminis_account_msg">आप व्यवस्थापक पैनल खोल सकते हैं</string>
+    <string name="search_menu">खोज</string>
+    <string name="menu_rate_this_teacher">इस शिक्षक को रेट करें</string>
+    <string name="menu_teacher_info">शिक्षक जानकारी</string>
+    <string name="menu_chat_with_teacher">शिक्षक के साथ बातचीत करें</string>
+    <string name="menu_leave_class">वर्ग छोड़ें</string>
+    <string name="menu_send_notification">अधिसूचना भेजें</string>
+    <string name="chat_with_learner">छात्र के साथ बातचीत करें</string>
+    <string name="chat_with_learner_msg">WhatsApp पर छात्र के साथ बातचीत करें</string>
+    <string name="send_notification_to">को अधिसूचना भेजें</string>
+    <string name="send_notification_to_all">सभी उपयोगकर्ताओं को अधिसूचना भेजें</string>
+    <string name="please_enter_title">कृपया शीर्षक दर्ज करें</string>
+    <string name="please_enter_message">कृपया संदेश दर्ज करें</string>
+    <string name="sending">भेजा जा रहा है…</string>
+    <string name="enter_notification_message">संदेश दर्ज करें</string>
+    <string name="enter_notification_title">शीर्षक दर्ज करें</string>
     <!-- java strings -->
 
 </resources>

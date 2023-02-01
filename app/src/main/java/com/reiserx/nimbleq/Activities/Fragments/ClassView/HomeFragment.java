@@ -237,6 +237,9 @@ public class HomeFragment extends Fragment implements MenuProvider {
                     binding.ratingRxt.setText("0");
                     binding.ratingBar.setRating(0);
                 }
+
+                SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+                sharedPreferenceClass.setTeacherID(classModel.getTeacher_info());
                 setJoinMeeting();
                 binding.scrollView.setVisibility(View.VISIBLE);
                 binding.progHolder.setVisibility(View.GONE);

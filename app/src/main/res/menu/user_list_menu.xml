@@ -7,4 +7,7 @@
         android:title="@string/search_menu"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/send_notification"
+        android:title="@string/menu_send_notification" />
 </menu>

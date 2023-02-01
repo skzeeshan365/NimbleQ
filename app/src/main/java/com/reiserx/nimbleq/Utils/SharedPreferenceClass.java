@@ -99,4 +99,14 @@ public class SharedPreferenceClass {
     public Long getFileSizeLimit() {
         return save.getLong("FILE_SIZE_LIMIT", 50);
     }
+
+    public void setTeacherID(String teacherID) {
+        SharedPreferences.Editor myEdit = save.edit();
+        myEdit.putString("TEACHER_ID", teacherID);
+        myEdit.apply();
+    }
+
+    public String getTeacherID() {
+        return save.getString("TEACHER_ID", null);
+    }
 }

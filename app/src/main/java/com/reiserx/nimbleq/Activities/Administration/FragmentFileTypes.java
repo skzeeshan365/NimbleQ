@@ -16,9 +16,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.reiserx.nimbleq.Adapters.Administration.AdminListsAdapter;
+import com.reiserx.nimbleq.Models.mimeTypesModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentFileTypesBinding;
+
+import java.util.Locale;
 
 public class FragmentFileTypes extends Fragment {
 
@@ -96,7 +99,8 @@ public class FragmentFileTypes extends Fragment {
             if (editText.getText().toString().trim().equals(""))
                 Toast.makeText(getContext(), getString(R.string.enter_a_mime_type), Toast.LENGTH_SHORT).show();
             else {
-                viewModel.updateFIleModelList(editText.getText().toString().trim());
+                mimeTypesModel model = new mimeTypesModel(editText.getText().toString().trim());
+                viewModel.updateFIleModelList(model);
             }
         });
 

@@ -4,10 +4,12 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,6 +46,7 @@ import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -891,10 +894,6 @@ public class dialogs {
                 teacherList.add(context.getString(R.string.select_teacher));
                 userData.add(null);
 
-                TeacherListSpinnerAdapter adapter = new TeacherListSpinnerAdapter(context, teacherList, userData);
-                spinner.setAdapter(adapter);
-                spinner.setOnItemSelectedListener(new teacherListListener());
-
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -917,9 +916,16 @@ public class dialogs {
                                                         QuerySnapshot ratingSnapshot = task1.getResult();
                                                         if (ratingSnapshot != null) {
                                                             UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
-                                                        }
+                                                        } else
+                                                            UserData.setRating(0f);
                                                         teacherList.add(UserData.getUserName());
                                                         userData.add(UserData);
+                                                        Collections.sort(userData, (lhs, rhs) -> {
+                                                            if (rhs != null && lhs != null)
+                                                                return Double.compare(lhs.getRating(), rhs.getRating());
+                                                            else
+                                                                return 0;
+                                                        });
                                                     }
                                                 });
                                             }
@@ -932,6 +938,9 @@ public class dialogs {
                                     }
                                 });
                             }
+                            TeacherListSpinnerAdapter adapter = new TeacherListSpinnerAdapter(context, teacherList, userData);
+                            spinner.setAdapter(adapter);
+                            spinner.setOnItemSelectedListener(new teacherListListener());
                             spinner.setEnabled(true);
                             adapter.notifyDataSetChanged();
                         }
@@ -1090,5 +1099,63 @@ public class dialogs {
         Intent intent = new Intent(context, MainActivity.class);
         activity.startActivity(intent);
         activity.finishAffinity();
+    }
+
+    public void sendNotification() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.send_notification_dialog_lt, null);
+        final EditText title = mView.findViewById(R.id.title_text);
+        final EditText message = mView.findViewById(R.id.msg_text);
+
+        alert.setTitle(context.getString(R.string.menu_send_notification));
+        alert.setMessage(context.getString(R.string.send_notification_to_all));
+        alert.setView(mView);
+
+        alert.setPositiveButton(context.getString(R.string.send), (dialogInterface, i) -> {
+            if (title.getText().toString().trim().equals(""))
+                snackbarTop.showSnackBar(context.getString(R.string.please_enter_title), false);
+            else if (message.getText().toString().trim().equals(""))
+                snackbarTop.showSnackBar(context.getString(R.string.please_enter_message), false);
+            else {
+                Notify notify = new Notify(context);
+                notify.messageToAll(title.getText().toString().trim(), message.getText().toString().trim(), snackbarTop);
+                snackbarTop.showSnackBar(context.getString(R.string.sending), true);
+            }
+        });
+
+        alert.setNegativeButton(context.getString(R.string.cancel), null);
+
+        alert.show();
+    }
+
+    public void sendNotification(String token, String username) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.send_notification_dialog_lt, null);
+        final EditText title = mView.findViewById(R.id.title_text);
+        final EditText message = mView.findViewById(R.id.msg_text);
+
+        alert.setTitle(context.getString(R.string.menu_send_notification));
+        alert.setMessage(context.getString(R.string.send_notification_to)+" ".concat(username));
+        alert.setView(mView);
+
+        alert.setPositiveButton(context.getString(R.string.send), (dialogInterface, i) -> {
+            if (title.getText().toString().trim().equals(""))
+                snackbarTop.showSnackBar(context.getString(R.string.please_enter_title), false);
+            else if (message.getText().toString().trim().equals(""))
+                snackbarTop.showSnackBar(context.getString(R.string.please_enter_message), false);
+            else {
+                Notify notify = new Notify(context);
+                notify.messageToUser(title.getText().toString().trim(), message.getText().toString().trim(), snackbarTop, token);
+                snackbarTop.showSnackBar(context.getString(R.string.sending), true);
+            }
+        });
+
+        alert.setNegativeButton(context.getString(R.string.cancel), null);
+
+        alert.show();
     }
 }

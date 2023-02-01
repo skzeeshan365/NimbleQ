@@ -103,7 +103,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/reply_name_txt"
+                    android:id="@+id/reply_name_txts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -111,6 +111,9 @@
                     android:singleLine="true"
                     android:text="TextView"
                     android:textSize="14sp"
+                    android:autoLink="all"
+                    android:linksClickable="true"
+                    android:textIsSelectable="true"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -124,10 +127,13 @@
                     android:layout_marginBottom="8dp"
                     android:singleLine="false"
                     android:textSize="16sp"
+                    android:autoLink="all"
+                    android:linksClickable="true"
+                    android:textIsSelectable="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imageView4"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/reply_name_txt" />
+                    app:layout_constraintTop_toBottomOf="@+id/reply_name_txts" />
 
                 <ImageView
                     android:id="@+id/imageView4"

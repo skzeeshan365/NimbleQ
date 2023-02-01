@@ -52,11 +52,12 @@ public class ViewDoubtsFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         binding.recycler.setHasFixedSize(true);
         binding.recycler.setLayoutManager(layoutManager);
-        adapter = new AnswersAdapter(requireContext().getApplicationContext());
+        adapter = new AnswersAdapter(requireContext());
         binding.recycler.setAdapter(adapter);
 
         snackbarTop = new SnackbarTop(binding.getRoot());
 
+        
         return binding.getRoot();
     }
 

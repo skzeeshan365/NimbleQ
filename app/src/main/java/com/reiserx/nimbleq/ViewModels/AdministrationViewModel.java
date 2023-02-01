@@ -10,6 +10,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
 import com.reiserx.nimbleq.Models.UserData;
+import com.reiserx.nimbleq.Models.mimeTypesModel;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.zoomCredentials;
 import com.reiserx.nimbleq.Repository.AdministrationRepository;
@@ -198,7 +199,7 @@ public class AdministrationViewModel extends ViewModel implements
         firebaseRepo.getFileList();
     }
 
-    public void updateFIleModelList(String name) {
+    public void updateFIleModelList(mimeTypesModel name) {
         firebaseRepo.updateFileModelList(name);
     }
 

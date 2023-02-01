@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/learnerList_menuitem"
-        android:title="Learner list" />
+        android:title="@string/learners" />
     <item
         android:id="@+id/feedbacks_menuitem"
-        android:title="Feedbacks" />
+        android:title="@string/feedbacks" />
 </menu>

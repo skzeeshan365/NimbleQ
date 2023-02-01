@@ -53,7 +53,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     List<Message> messages;
     RecyclerView recyclerView;
     String room;
-    String uid;
+    String uid, teacherID;
     ChatsViewModel chatsViewModel;
     MessagesAdapter adapter;
 
@@ -66,6 +66,10 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
     public void setData(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public void setTeacherID(String teacherID) {
+        this.teacherID = teacherID;
     }
 
     public MessagesAdapter(Context context, RecyclerView recyclerView, String room, String uid, ChatsViewModel chatsViewModel, List<Message> data) {
@@ -207,6 +211,12 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             viewHolder.binding.timeRec.setText(TimeAgo.using(message.getQueryStamp()));
             viewHolder.binding.messageReceive.setContent(message.getMessage());
+
+            if (teacherID.equals(message.getSenderId()))
+                viewHolder.binding.username.setTextColor(context.getColor(R.color.primaryColor));
+            else
+                viewHolder.binding.username.setTextColor(viewHolder.binding.messageReceive.getCurrentTextColor());
+
             viewHolder.binding.username.setText(message.getSenderName());
 
             if (viewHolder.binding.messageReceive.getText().toString().equals("")) {
@@ -270,6 +280,13 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             viewHolder.binding.timeRec.setText(TimeAgo.using(message.getQueryStamp()));
 
+            if (teacherID.equals(message.getSenderId()))
+                viewHolder.binding.username2.setTextColor(context.getColor(R.color.primaryColor));
+            else
+                viewHolder.binding.username2.setTextColor(viewHolder.binding.replyName.getCurrentTextColor());
+
+            viewHolder.binding.username2.setText(message.getSenderName());
+
             Glide.with(context)
                     .load(message.getImageUrl())
                     .into(viewHolder.binding.imgRec);
@@ -329,6 +346,11 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
             viewHolder.binding.filenameTxt.setText(message.getFilename());
             viewHolder.binding.username.setText(message.getSenderName());
+
+            if (teacherID.equals(message.getSenderId()))
+                viewHolder.binding.username.setTextColor(context.getColor(R.color.primaryColor));
+            else
+                viewHolder.binding.username.setTextColor(viewHolder.binding.filenameTxt.getCurrentTextColor());
 
             checkFile(message.getFilename(), viewHolder.binding.fileIcon);
 

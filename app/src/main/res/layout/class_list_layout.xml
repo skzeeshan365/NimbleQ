@@ -97,6 +97,7 @@
                     app:srb_numberOfStars="1"
                     app:srb_rating="0.5"
                     app:srb_stepSize="0.1"
+                    app:srb_isIndicator="true"
                     app:srb_borderColor="@color/PRIMARY_LIGHT"
                     app:srb_starBorderWidth="2"
                     app:srb_starBackgroundColor="@color/PRIMARY_LIGHT"

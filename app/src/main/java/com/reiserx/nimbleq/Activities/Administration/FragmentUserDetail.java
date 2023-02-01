@@ -14,6 +14,7 @@ import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
+import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentUserDetailBinding;
 
@@ -70,6 +71,11 @@ public class FragmentUserDetail extends Fragment {
         binding.feedbacksBtn.setOnClickListener(view1 -> {
             NavHostFragment.findNavController(FragmentUserDetail.this).navigate(R.id.action_FragmentUserDetails_to_FragmentFeedbacksForTeacher);
             sharedPreferenceClass.setUserID(userData.getUid());
+        });
+
+        binding.notifyBtn.setOnClickListener(view1 -> {
+            dialogs dialogs = new dialogs(getContext(), binding.getRoot());
+            dialogs.sendNotification(userData.getFCM_TOKEN(), userData.getUserName());
         });
     }
 

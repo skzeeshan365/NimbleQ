@@ -24,6 +24,7 @@ import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.StateCityData;
+import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
@@ -60,11 +61,12 @@ public class FragmentLearnerListForClass extends Fragment implements MenuProvide
 
         initializeSpinners();
 
+        dialogs dialogs = new dialogs(requireContext(), binding.getRoot());
         userData = new ArrayList<>();
         userData1 = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.recycler.setLayoutManager(layoutManager);
-        adapter = new LearnerListAdapter(getContext());
+        adapter = new LearnerListAdapter(getContext(), dialogs);
 
         requireActivity().removeMenuProvider(this);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());

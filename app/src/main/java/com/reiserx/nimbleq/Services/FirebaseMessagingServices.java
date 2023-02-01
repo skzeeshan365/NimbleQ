@@ -78,6 +78,8 @@ public class FirebaseMessagingServices extends FirebaseMessagingService {
                 });
             } else if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_CREATE_CLASS_NOTIFICATION) {
                 notificationUtils.openClassNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(Objects.requireNonNull(id)), data.get("classID"));
+            } else if (Integer.parseInt(data.get("requestCode")) == Notify.TOPIC_BIG_TEXT_NOTIFICATION) {
+                notificationUtils.bigTextNotification(FirebaseMessagingServices.this, title, content, Integer.parseInt(id));
             }
         } else {
             if (Integer.parseInt(data.get("requestCode")) == Notify.NORMAL_SMALL_TEXT_NOTIFICATION)

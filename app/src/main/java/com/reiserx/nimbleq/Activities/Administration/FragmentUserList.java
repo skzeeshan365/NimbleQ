@@ -1,6 +1,7 @@
 package com.reiserx.nimbleq.Activities.Administration;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,10 +21,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.reiserx.nimbleq.Activities.AnnouncementsActivity;
 import com.reiserx.nimbleq.Adapters.Administration.UserListAdapter;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.StateCityData;
+import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
@@ -295,7 +298,7 @@ public class FragmentUserList extends Fragment implements MenuProvider {
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menu.clear();
-        menuInflater.inflate(R.menu.single_search_menu, menu);
+        menuInflater.inflate(R.menu.user_list_menu, menu);
 
         MenuItem searchViewItem
                 = menu.findItem(R.id.app_bar_search);
@@ -322,6 +325,10 @@ public class FragmentUserList extends Fragment implements MenuProvider {
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.send_notification) {
+            dialogs dialogs = new dialogs(requireContext(), binding.getRoot());
+            dialogs.sendNotification();
+        }
         return false;
     }
 

@@ -132,6 +132,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     }
                     TransitionManager.beginDelayedTransition(binding.cardHolder, new AutoTransition());
                     binding.continueBtn.setVisibility(View.VISIBLE);
+                    FirebaseMessaging fcm = FirebaseMessaging.getInstance();
+                    fcm.subscribeToTopic("All");
                 } else {
                     snackbarTop.showSnackBar("Failed ".concat(task.getException().toString()), false);
                     Toast.makeText(PhoneAuthActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();

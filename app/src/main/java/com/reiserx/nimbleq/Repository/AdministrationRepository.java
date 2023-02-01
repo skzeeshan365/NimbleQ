@@ -14,8 +14,10 @@ import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.reiserx.nimbleq.Models.AdminListModel;
 import com.reiserx.nimbleq.Models.FCMCREDENTIALS;
+import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.mimeTypesModel;
 import com.reiserx.nimbleq.Models.userDetails;
@@ -51,6 +53,9 @@ public class AdministrationRepository {
     CollectionReference userDetailsReference;
     DocumentReference classReference;
     CollectionReference credentialReference;
+    DocumentReference teacherRatingReference;
+
+    float rating1, rating2, rating3, rating4, rating5;
 
     public AdministrationRepository(AdministrationRepository.OnGetMimetypesCompleted onGetMimetypesCompleted,
                                     AdministrationRepository.OnGetFileEnabledComplete onGetFileEnabledComplete,
@@ -94,6 +99,7 @@ public class AdministrationRepository {
         userDetailsReference = FirebaseFirestore.getInstance().collection("UserData");
         classReference = FirebaseFirestore.getInstance().collection("Main").document("Class");
         credentialReference = FirebaseFirestore.getInstance().collection("CREDENTIALS");
+        teacherRatingReference = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("TeacherRating");
     }
 
     public void getMimeTypesForGroupChats() {
@@ -272,10 +278,10 @@ public class AdministrationRepository {
         reference.child("Lists").child("SlotList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SlotList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
-    public void updateFileModelList(String grade) {
+    public void updateFileModelList(mimeTypesModel model) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
+        reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime)).setValue(model).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(model.getMimetype(), reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void getAllUserList() {
@@ -411,9 +417,18 @@ public class AdministrationRepository {
                                             if (queryDocumentSnapshots.exists()) {
                                                 userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                                                 UserData.setUserDetails(userDetails);
+
+                                                teacherRatingReference.collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        QuerySnapshot ratingSnapshot = task1.getResult();
+                                                        if (ratingSnapshot != null) {
+                                                            UserData.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                                                        }
+                                                    }
+                                                    data.add(UserData);
+                                                    onGetUserListComplete.onGetUserListSuccess(data);
+                                                });
                                             }
-                                            data.add(UserData);
-                                            onGetUserListComplete.onGetUserListSuccess(data);
                                         });
                                     }
                                 }
@@ -600,6 +615,30 @@ public class AdministrationRepository {
 
     public void updateLinkTermsOfService(String link) {
         reference.child("Links").child("termsOfService").setValue(link);
+    }
+
+    float calculateRating(List<RatingModel> ratingModelList) {
+        rating1 = rating2 = rating3 = rating4 = rating5 = 0;
+        for (RatingModel ratingModel : ratingModelList) {
+            switch (ratingModel.getRating()) {
+                case 1:
+                    rating1++;
+                    break;
+                case 2:
+                    rating2++;
+                    break;
+                case 3:
+                    rating3++;
+                    break;
+                case 4:
+                    rating4++;
+                    break;
+                case 5:
+                    rating5++;
+                    break;
+            }
+        }
+        return (5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1) / (rating5 + rating4 + rating3 + rating2 + rating1);
     }
 
     public interface OnGetMimetypesCompleted {

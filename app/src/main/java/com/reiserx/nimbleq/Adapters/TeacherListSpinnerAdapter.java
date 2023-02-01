@@ -2,6 +2,7 @@ package com.reiserx.nimbleq.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.R;
 
@@ -51,20 +53,23 @@ public class TeacherListSpinnerAdapter extends BaseAdapter {
         SimpleRatingBar ratingBar = view.findViewById(R.id.ratingBar);
 
         names.setText(teacherList.get(i));
-        UserData userData = new UserData();
+        UserData userDatas = userData.get(i);
+        Log.d(CONSTANTS.TAG2, String.valueOf(userData.size()));
 
         if (i == 0) {
             rating.setVisibility(View.GONE);
             ratingBar.setVisibility(View.GONE);
         }
 
-        if (userData.getRating() > 0) {
-            @SuppressLint("DefaultLocale") String ratings = String.format("%.1f", userData.getRating());
-            rating.setText(ratings);
-            ratingBar.setRating(Float.parseFloat(ratings) / 5);
-        } else  {
-            rating.setText("0");
-            ratingBar.setRating(0);
+        if (userDatas != null) {
+            if (userDatas.getRating() > 0) {
+                @SuppressLint("DefaultLocale") String ratings = String.format("%.1f", userDatas.getRating());
+                rating.setText(ratings);
+                ratingBar.setRating(Float.parseFloat(ratings) / 5);
+            } else {
+                rating.setText("0");
+                ratingBar.setRating(0);
+            }
         }
         return view;
     }

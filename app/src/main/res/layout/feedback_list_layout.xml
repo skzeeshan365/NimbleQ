@@ -40,6 +40,7 @@
                     app:srb_fillColor="@color/primaryColor"
                     app:srb_numberOfStars="5"
                     app:srb_rating="1.5"
+                    app:srb_isIndicator="true"
                     app:srb_starBackgroundColor="#FFB6AE"
                     app:srb_starBorderWidth="2"
                     app:srb_starSize="20dp"
@@ -55,6 +56,9 @@
                     android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="18dp"
+                    android:autoLink="all"
+                    android:linksClickable="true"
+                    android:textIsSelectable="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,6 +69,9 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:textSize="16sp"
+                    android:autoLink="all"
+                    android:linksClickable="true"
+                    android:textIsSelectable="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"

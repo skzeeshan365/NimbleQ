@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
@@ -28,6 +29,7 @@ public class Notify {
     Context context;
     JSONObject json;
     SharedPreferenceClass sharedPreferenceClass;
+    boolean status = false;
 
     public static int NORMAL_SMALL_TEXT_NOTIFICATION = 1;
     public static int NORMAL_BIG_TEXT_NOTIFICATION = 3;
@@ -37,6 +39,7 @@ public class Notify {
 
     public static int TOPIC_ANNOUNCEMENT_UPDATE_NOTIFICATION = 1;
     public static int TOPIC_CREATE_CLASS_NOTIFICATION = 2;
+    public static int TOPIC_BIG_TEXT_NOTIFICATION = 3;
 
     public Notify(Context context) {
         this.context = context;
@@ -82,13 +85,43 @@ public class Notify {
                 Log.d(TAG, res);
                 json = null;
             } catch (Exception e) {
-                Log.d(TAG, e.toString());
-                Log.d(TAG, e.getMessage());
+                Log.d(CONSTANTS.TAG, e.toString());
             }
             handler.post(() -> {
         });
     });
 }
+
+    void postNotificationWithCallBack(SnackbarTop snackbarTop) {
+        status = false;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            try {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+                Request request = new Request.Builder()
+                        .header("Authorization", sharedPreferenceClass.getFCMKey().getKEY())
+                        .url("https://fcm.googleapis.com/fcm/send")
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                String res = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, res);
+                json = null;
+                status = true;
+            } catch (Exception e) {
+                snackbarTop.showSnackBar(e.toString(), false);
+            }
+            handler.post(() -> {
+                if (status)
+                    snackbarTop.showSnackBar("Notification sent", true);
+                else
+                    snackbarTop.showSnackBar("Failed to send notification", false);
+            });
+        });
+    }
 
     public static int getRandom(int min, int max) {
         Random random = new Random();
@@ -207,6 +240,42 @@ public class Notify {
             json.put("to", to);
 
             postNotification();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void messageToAll(String title, String msg, SnackbarTop snackbarTop) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", TOPIC_BIG_TEXT_NOTIFICATION);
+            dataJson.put("isTopic", true);
+            json.put("data", dataJson);
+            json.put("to", "/topics/".concat("All"));
+
+            postNotificationWithCallBack(snackbarTop);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void messageToUser(String title, String msg, SnackbarTop snackbarTop, String token) {
+        JSONObject dataJson = new JSONObject();
+        try {
+            json = new JSONObject();
+            dataJson.put("title", title);
+            dataJson.put("content", msg);
+            dataJson.put("id", String.valueOf(getRandom(0, 100)));
+            dataJson.put("requestCode", NORMAL_BIG_TEXT_NOTIFICATION);
+            dataJson.put("isTopic", false);
+            json.put("data", dataJson);
+            json.put("to", token);
+
+            postNotificationWithCallBack(snackbarTop);
         } catch (JSONException e) {
             e.printStackTrace();
         }
