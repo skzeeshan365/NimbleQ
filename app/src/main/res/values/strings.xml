@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Padhai madad</string>
     <string name="app_name_upper_case">PADHAI MADAD</string>
+    <string name="company_name">NimbleQ</string>
     <string name="class_not_avail">Class not available for your selected slot\nPlease change your slot and try again, or you can request a class</string>
     <string name="slot_not_avail">Slot not available for your selected subject\nPlease change it from settings and try again</string>
     <string name="title_activity_class">ClassActivity</string>
@@ -323,6 +324,14 @@
     <string name="enter_notification_title">Enter title</string>
     <string name="rate_this_user">Rate this user</string>
     <string name="rate_this_user_msg">Are you sure you want to rate this user</string>
+    <string name="Website">Website</string>
+    <string name="contact_us">Contact us</string>
+    <string name="Email">Email</string>
+    <string name="LinkedIn">LinkedIn</string>
+    <string name="Instagram">Instagram</string>
+    <string name="Facebook">Facebook</string>
+    <string name="developed_by">Developed by Navsrijan students</string>
+    <string name="Version">Version</string>
     <!-- java strings -->
 
 </resources>

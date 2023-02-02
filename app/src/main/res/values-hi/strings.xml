@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">पढ़ाई मदद</string>
     <string name="app_name_upper_case">पढ़ाई मदद</string>
+    <string name="company_name">NimbleQ</string>
     <string name="class_not_avail">आपके चयनित स्लॉट के लिए क्लास उपलब्ध नहीं है\nकृपया अपनी स्लॉट बदलें और पुन: प्रयास करें, या आप कक्षा की अनुरोध कर सकते हैं</string>
     <string name="slot_not_avail">आपके चयनित विषय के लिए स्लॉट उपलब्ध नहीं है\nकृपया सेटिंग्स से इसे बदलकर पुन: प्रयास करें</string>
     <string name="title_activity_class">क्लास की गतिविधि</string>
@@ -321,6 +322,16 @@
     <string name="sending">भेजा जा रहा है…</string>
     <string name="enter_notification_message">संदेश दर्ज करें</string>
     <string name="enter_notification_title">शीर्षक दर्ज करें</string>
+    <string name="rate_this_user">इस उपयोगकर्ता को रेट करें</string>
+    <string name="rate_this_user_msg">क्या आप वाकई इस उपयोगकर्ता को रेट करना चाहते हैं</string>
+    <string name="Website">वेबसाइट</string>
+    <string name="contact_us">संपर्क करें</string>
+    <string name="Email">ईमेल</string>
+    <string name="LinkedIn">LinkedIn</string>
+    <string name="Instagram">Instagram</string>
+    <string name="Facebook">फेसबुक</string>
+    <string name="developed_by">नवसृजन छात्रों द्वारा विकसित</string>
+    <string name="Version">संस्करण</string>
     <!-- java strings -->
 
 </resources>

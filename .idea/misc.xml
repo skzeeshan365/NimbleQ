@@ -36,6 +36,8 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/drawable/lt_gradient_3.xml" value="0.2255" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/drawable/lt_gradient_4.xml" value="0.2255" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/drawable/textbox_outline.xml" value="0.2255" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/about_data_holder.xml" value="0.24895833333333334" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/about_layout.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/activity_administration.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/activity_announcements.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/activity_class.xml" value="0.25" />
@@ -63,6 +65,7 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/doubts_list_layout.xml" value="0.4" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/feedback_list_layout.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/file_view_layout.xml" value="0.24895833333333334" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_about.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_admin_home.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_class_list.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_dashboard.xml" value="0.25" />
@@ -92,6 +95,7 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/item_send_image.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/layout_login.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/layout_signup.xml" value="0.25" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/list_header.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/list_loading_layout.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/lt_home_list_admin.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/number_edittext_dialog.xml" value="0.25" />
@@ -109,6 +113,7 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/time_slot_list.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/user_details_layout.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/zoom_login_layout.xml" value="0.25" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/menu/about_menu.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/menu/announcements_menu.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/menu/class_menu.xml" value="0.25" />

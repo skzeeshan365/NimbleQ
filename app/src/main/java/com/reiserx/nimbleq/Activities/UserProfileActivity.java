@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -186,5 +187,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 startActivity(browserIntent);
             });
         });
+
+        binding.aboutHolder.setOnClickListener(view ->  FragmentAbout.display(getSupportFragmentManager()));
     }
 }
