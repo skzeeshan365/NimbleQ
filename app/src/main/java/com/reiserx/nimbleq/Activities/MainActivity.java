@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        FirebaseApp.initializeApp(this);
 
         if (isNetworkAvailable(this)) {
             Thread thread = new Thread(() -> {
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog.setTitle(getString(R.string.no_internet));
                         alertDialog.setMessage(getString(R.string.no_internet_msg));
                         alertDialog.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finishAffinity());
+                        alertDialog.setCancelable(false);
                         alertDialog.show();
                     }
                 } catch (Exception e) {
@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.setTitle(getString(R.string.no_network));
             alertDialog.setMessage(getString(R.string.no_network_msg));
             alertDialog.setPositiveButton(getString(R.string.close), (dialogInterface, i) -> finishAffinity());
+            alertDialog.setCancelable(false);
             alertDialog.show();
         }
         auth = FirebaseAuth.getInstance();
