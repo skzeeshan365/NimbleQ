@@ -36,7 +36,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Activities.ClassActivity;
 import com.reiserx.nimbleq.Activities.MainActivity;
 import com.reiserx.nimbleq.Adapters.TeacherListSpinnerAdapter;
-import com.reiserx.nimbleq.BuildConfig;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
 import com.reiserx.nimbleq.Models.RatingModel;

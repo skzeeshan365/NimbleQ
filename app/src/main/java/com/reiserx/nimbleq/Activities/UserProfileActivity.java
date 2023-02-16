@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -101,9 +100,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 binding.langTxt.setText(getString(R.string.app_lang_default));
         }
 
-        binding.licenseHolder.setOnClickListener(view -> {
-            startActivity(new Intent(this, OssLicensesMenuActivity.class));
-        });
+        binding.licenseHolder.setOnClickListener(view -> startActivity(new Intent(this, OssLicensesMenuActivity.class)));
 
         updateLinks();
     }
@@ -174,19 +171,15 @@ public class UserProfileActivity extends AppCompatActivity {
         viewModel.getLinkPrivacyPolicy();
         viewModel.getLinkTermsOfService();
 
-        viewModel.getLinkPrivacyPolicyMutableLiveData().observe(this, s -> {
-            binding.privacyHolder.setOnClickListener(view -> {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
-                startActivity(browserIntent);
-            });
-        });
+        viewModel.getLinkPrivacyPolicyMutableLiveData().observe(this, s -> binding.privacyHolder.setOnClickListener(view -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
+            startActivity(browserIntent);
+        }));
 
-        viewModel.getLinkTermsOfServiceMutableLiveData().observe(this, s -> {
-            binding.licenseHolder.setOnClickListener(view -> {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
-                startActivity(browserIntent);
-            });
-        });
+        viewModel.getLinkTermsOfServiceMutableLiveData().observe(this, s -> binding.licenseHolder.setOnClickListener(view -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
+            startActivity(browserIntent);
+        }));
 
         binding.aboutHolder.setOnClickListener(view ->  FragmentAbout.display(getSupportFragmentManager()));
     }

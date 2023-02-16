@@ -2,27 +2,19 @@ package com.reiserx.nimbleq.Activities;
 
 import android.app.Dialog;
 import android.os.Bundle;
-
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toolbar;
 
-import com.reiserx.nimbleq.Activities.Administration.HomeFragment;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.reiserx.nimbleq.Adapters.AboutAdapter;
-import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
 import com.reiserx.nimbleq.BuildConfig;
 import com.reiserx.nimbleq.Models.AboutModelList;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.databinding.ActivityDoubtsBinding;
 import com.reiserx.nimbleq.databinding.FragmentAboutBinding;
-import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
 
 import java.util.ArrayList;
 import java.util.List;

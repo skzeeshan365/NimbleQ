@@ -9,21 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.marlonlom.utilities.timeago.TimeAgo;
-import com.reiserx.nimbleq.Adapters.Administration.HomeAdapter;
-import com.reiserx.nimbleq.Adapters.Announcements.announcementLinksAdapter;
-import com.reiserx.nimbleq.Adapters.Doubts.DoubtsAdapter;
 import com.reiserx.nimbleq.Models.AboutModelList;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
-import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.databinding.AboutDataHolderBinding;
 import com.reiserx.nimbleq.databinding.ListHeaderBinding;
-import com.reiserx.nimbleq.databinding.LtHomeListAdminBinding;
 
 import java.util.List;
 
