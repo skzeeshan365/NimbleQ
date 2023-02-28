@@ -7,13 +7,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,9 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListActivity;
-import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Repository.UserDataRepository;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.UserTypeClass;
 import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
@@ -34,7 +30,6 @@ import com.reiserx.nimbleq.databinding.ActivityMainBinding;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Locale;
 
 import us.zoom.sdk.ZoomSDK;

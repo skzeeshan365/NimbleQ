@@ -2,20 +2,18 @@ package com.reiserx.nimbleq.Activities.Administration;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.ViewModels.SharedViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentClassListBinding;

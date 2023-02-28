@@ -1,34 +1,21 @@
 package com.reiserx.nimbleq.Activities.Administration;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.marlonlom.utilities.timeago.TimeAgo;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.reiserx.nimbleq.Adapters.classListAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.UserData;
-import com.reiserx.nimbleq.R;
-import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
-import com.reiserx.nimbleq.Utils.dialogs;
-import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.SharedViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
-import com.reiserx.nimbleq.databinding.FragmentUserDetailBinding;
-
-import java.util.List;
 
 public class FragmentCCLLearner extends Fragment {
 

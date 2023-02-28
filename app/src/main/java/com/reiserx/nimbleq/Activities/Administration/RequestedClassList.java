@@ -2,29 +2,21 @@ package com.reiserx.nimbleq.Activities.Administration;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.reiserx.nimbleq.Adapters.classListAdapter;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.reiserx.nimbleq.Adapters.requestClassAdapter;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
-import com.reiserx.nimbleq.Models.ClassRequestModel;
-import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
-import com.reiserx.nimbleq.ViewModels.SharedViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentClassListBinding;
-
-import java.util.List;
 
 public class RequestedClassList extends Fragment {
 

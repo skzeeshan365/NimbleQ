@@ -13,8 +13,6 @@ import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Repository.ClassRepository;
 
-import org.checkerframework.checker.units.qual.C;
-
 import java.util.List;
 
 public class classViewModel extends ViewModel implements ClassRepository.OnRealtimeDbTaskComplete,

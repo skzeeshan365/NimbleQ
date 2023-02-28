@@ -2,38 +2,21 @@ package com.reiserx.nimbleq.Activities.Fragments.ClassView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.SearchView;
-
-import com.reiserx.nimbleq.Adapters.LearnerListAdapter;
 import com.reiserx.nimbleq.Adapters.LecturesAdapter;
-import com.reiserx.nimbleq.Adapters.slotsAdapter;
 import com.reiserx.nimbleq.Models.LecturesModel;
-import com.reiserx.nimbleq.Models.UserData;
-import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SharedPreferenceClass;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
-import com.reiserx.nimbleq.Utils.StateCityData;
-import com.reiserx.nimbleq.Utils.dialogs;
-import com.reiserx.nimbleq.ViewModels.AdministrationViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.FragmentLecturesBinding;
-import com.reiserx.nimbleq.databinding.FragmentUserlistAdminBinding;
 
 import java.util.ArrayList;
 import java.util.List;

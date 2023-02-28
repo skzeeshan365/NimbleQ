@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.reiserx.nimbleq.Models.LecturesModel;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SnackbarTop;

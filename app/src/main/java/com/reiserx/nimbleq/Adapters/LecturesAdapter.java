@@ -1,12 +1,7 @@
 package com.reiserx.nimbleq.Adapters;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,30 +9,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.reiserx.nimbleq.Activities.ClassActivity;
-import com.reiserx.nimbleq.Activities.CreateClass;
-import com.reiserx.nimbleq.Activities.Fragments.ClassView.LecturesFragment;
 import com.reiserx.nimbleq.Models.LecturesModel;
-import com.reiserx.nimbleq.Models.classModel;
-import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.R;
 import com.reiserx.nimbleq.Utils.SnackbarTop;
-import com.reiserx.nimbleq.Utils.TopicSubscription;
-import com.reiserx.nimbleq.Utils.UserTypeClass;
-import com.reiserx.nimbleq.Utils.dialogs;
 import com.reiserx.nimbleq.databinding.LecturesCustomListLayoutBinding;
-import com.reiserx.nimbleq.databinding.SlotsLayoutBinding;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
