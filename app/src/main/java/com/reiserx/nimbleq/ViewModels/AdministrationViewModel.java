@@ -29,7 +29,8 @@ public class AdministrationViewModel extends ViewModel implements
         AdministrationRepository.OnGetSlotLimitComplete,
         AdministrationRepository.OnGetFileSizeLimitComplete,
         AdministrationRepository.OnGetLinkPrivacyPolicyComplete,
-        AdministrationRepository.OnGetLinkTermsOfServiceComplete {
+        AdministrationRepository.OnGetLinkTermsOfServiceComplete,
+        AdministrationRepository.OnGetLecturesLimitComplete {
 
     private final MutableLiveData<List<String>> mimeTypesListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> fileEnabledMutableLiveData = new MutableLiveData<>();
@@ -46,6 +47,7 @@ public class AdministrationViewModel extends ViewModel implements
     private final MutableLiveData<Boolean> adminMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> slotLimitMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> fileSizeLimitMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> lecturesLimitMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> linkPrivacyPolicyMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> linkTermsOfServiceMutableLiveData = new MutableLiveData<>();
 
@@ -115,6 +117,10 @@ public class AdministrationViewModel extends ViewModel implements
         return linkTermsOfServiceMutableLiveData;
     }
 
+    public MutableLiveData<Long> getLecturesLimitMutableLiveData() {
+        return lecturesLimitMutableLiveData;
+    }
+
     public MutableLiveData<String> getDatabaseErrorMutableLiveData() {
         return databaseErrorMutableLiveData;
     }
@@ -128,7 +134,7 @@ public class AdministrationViewModel extends ViewModel implements
     }
 
     public AdministrationViewModel() {
-        firebaseRepo = new AdministrationRepository(this, this, this, this, this, this, this, this, this, this, this, this, this, this, this, this);
+        firebaseRepo = new AdministrationRepository(this,this, this, this, this, this, this, this, this, this, this, this, this, this, this, this, this);
     }
 
     public void getMimeTypesForGroupChats() {
@@ -251,6 +257,14 @@ public class AdministrationViewModel extends ViewModel implements
         firebaseRepo.updateLinkTermsOfService(link);
     }
 
+    public void getLecturesLimit() {
+        firebaseRepo.getLecturesLimit();
+    }
+
+    public void updateLecturesLimit(Long value) {
+        firebaseRepo.updateLecturesLimit(value);
+    }
+
     @Override
     public void onSuccess(List<String> mimetypes) {
         mimeTypesListMutableLiveData.setValue(mimetypes);
@@ -339,6 +353,11 @@ public class AdministrationViewModel extends ViewModel implements
     @Override
     public void onGetLinkTermsOfServiceSuccess(String Value) {
         linkTermsOfServiceMutableLiveData.setValue(Value);
+    }
+
+    @Override
+    public void onGetLecturesLimitSuccess(Long limit) {
+        lecturesLimitMutableLiveData.setValue(limit);
     }
 
     @Override

@@ -2,6 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/Rate_class_menu_item"
+        android:title="@string/rate_this_class" />
+    <item
         android:id="@+id/Rate_menu_item"
         android:title="@string/menu_rate_this_teacher" />
     <item

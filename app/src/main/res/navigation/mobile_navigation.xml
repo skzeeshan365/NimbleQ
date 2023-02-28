@@ -20,6 +20,12 @@
         <action
             android:id="@+id/action_navigation_home_to_FragmentLearnerListForClass"
             app:destination="@id/FragmentLearnerListForClass" />
+        <action
+            android:id="@+id/action_navigation_home_to_FragmentLecturesList"
+            app:destination="@id/FragmentLecturesList" />
+        <action
+            android:id="@+id/action_navigation_home_to_FragmentLecturesListForLearners"
+            app:destination="@id/FragmentLecturesListForLearners" />
     </fragment>
 
     <fragment
@@ -45,4 +51,16 @@
         android:name="com.reiserx.nimbleq.Activities.Fragments.ClassView.FragmentLearnerListForClass"
         android:label="@string/learners"
         tools:layout="@layout/fragment_userlist_admin" />
+
+    <fragment
+        android:id="@+id/FragmentLecturesList"
+        android:name="com.reiserx.nimbleq.Activities.Fragments.ClassView.LecturesFragment"
+        android:label="@string/lectures"
+        tools:layout="@layout/fragment_lectures" />
+
+    <fragment
+        android:id="@+id/FragmentLecturesListForLearners"
+        android:name="com.reiserx.nimbleq.Activities.Fragments.ClassView.FragmentLecturesForLearners"
+        android:label="@string/lectures"
+        tools:layout="@layout/fragment_lectures" />
 </navigation>

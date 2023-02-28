@@ -89,6 +89,18 @@
         <action
             android:id="@+id/action_FragmentUserDetails_to_FragmentFeedbacksForTeacher"
             app:destination="@id/FragmentFeedbacksForTeacher" />
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_FragmentCCLLearner"
+            app:destination="@id/FragmentCCLLearner" />
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_FragmentCCLTeacher"
+            app:destination="@id/FragmentCCLTeacher" />
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_RequestedClassList"
+            app:destination="@id/RequestedClassList" />
+        <action
+            android:id="@+id/action_FragmentUserDetails_to_FragmentAcceptedClassList"
+            app:destination="@id/FragmentAcceptedClassList" />
     </fragment>
 
     <fragment
@@ -166,5 +178,33 @@
         android:name="com.reiserx.nimbleq.Activities.Administration.FragmentLinkPolicies"
         android:label="@string/policy_links_title"
         tools:layout="@layout/fragment_link_policies">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentCCLLearner"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentCCLLearner"
+        android:label="@string/completed_classes_as_learner"
+        tools:layout="@layout/fragment_class_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentCCLTeacher"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentCCLTeacher"
+        android:label="@string/completed_classes_as_teacher"
+        tools:layout="@layout/fragment_class_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/RequestedClassList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.RequestedClassList"
+        android:label="@string/class_requests"
+        tools:layout="@layout/fragment_class_list">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FragmentAcceptedClassList"
+        android:name="com.reiserx.nimbleq.Activities.Administration.FragmentAcceptedClasses"
+        android:label="@string/accepted_requests"
+        tools:layout="@layout/fragment_class_list">
     </fragment>
 </navigation>

@@ -5,11 +5,19 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.util.Log;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateQuerySnapshot;
+import com.google.firebase.firestore.AggregateSource;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,6 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.nimbleq.Constants.CONSTANTS;
 import com.reiserx.nimbleq.Models.ClassRequestModel;
+import com.reiserx.nimbleq.Models.LecturesModel;
 import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.classModel;
@@ -29,7 +38,9 @@ import com.reiserx.nimbleq.Utils.TopicSubscription;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClassRepository {
 
@@ -40,6 +51,10 @@ public class ClassRepository {
     private final ClassRepository.OnRatingSubmitted onRatingSubmitted;
     private final ClassRepository.OnCreateClassComplete onCreateClassComplete;
     private final ClassRepository.OnGetRatingsComplete onGetRatingsComplete;
+    private final ClassRepository.OnGetLecturesComplete onGetLecturesComplete;
+    private final ClassRepository.OnGetLecturesCountComplete onGetLecturesCountComplete;
+    private final ClassRepository.OnGetClassRequestsCount onGetClassRequestsCount;
+    private final ClassRepository.OnGetClassAcceptCountComplete onGetClassAcceptCountComplete;
 
     private final DocumentReference reference;
     private final DatabaseReference classJoinReference;
@@ -54,7 +69,11 @@ public class ClassRepository {
                            ClassRepository.onGetClassRequestComplete onGetClassRequestComplete,
                            ClassRepository.OnRatingSubmitted onRatingSubmitted,
                            ClassRepository.OnCreateClassComplete onCreateClassComplete,
-                           ClassRepository.OnGetRatingsComplete onGetRatingsComplete) {
+                           ClassRepository.OnGetRatingsComplete onGetRatingsComplete,
+                           ClassRepository.OnGetLecturesComplete onGetLecturesComplete,
+                           ClassRepository.OnGetLecturesCountComplete onGetLecturesCountComplete,
+                           ClassRepository.OnGetClassRequestsCount onGetClassRequestsCount,
+                           ClassRepository.OnGetClassAcceptCountComplete onGetClassAcceptCountComplete) {
 
         this.onRealtimeDbTaskComplete = onRealtimeDbTaskComplete;
         this.OnClassJoinStateChanged = OnClassJoinStateChanged;
@@ -63,6 +82,10 @@ public class ClassRepository {
         this.onRatingSubmitted = onRatingSubmitted;
         this.onCreateClassComplete = onCreateClassComplete;
         this.onGetRatingsComplete = onGetRatingsComplete;
+        this.onGetLecturesComplete = onGetLecturesComplete;
+        this.onGetLecturesCountComplete = onGetLecturesCountComplete;
+        this.onGetClassRequestsCount = onGetClassRequestsCount;
+        this.onGetClassAcceptCountComplete = onGetClassAcceptCountComplete;
 
 
         reference = FirebaseFirestore.getInstance().collection("Main").document("Class");
@@ -70,8 +93,8 @@ public class ClassRepository {
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
     }
 
-    public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
-        reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
+    public void createClass(Context context, classModel classModel, String teacherName, int lectures, ClassRequestModel request) {
+        reference.collection("ClassInfo").add(classModel).addOnSuccessListener(documentRef -> {
             Notify notify = new Notify(context);
             String classNmae = context.getString(R.string.class1) + " " + classModel.getClassName() + "\n";
             String subject = context.getString(R.string.subject1) + " " + classModel.getSubject() + "\n";
@@ -80,8 +103,7 @@ public class ClassRepository {
             String teacher = context.getString(R.string.teacher1) + " " + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
-            notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
-            onCreateClassComplete.onClassCreated(reference.getId());
+            notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), documentRef.getId());
 
             userDataReference.child(request.getStudentID()).child("FCM_TOKEN").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -89,14 +111,19 @@ public class ClassRepository {
                     if (snapshot.exists()) {
                         String token = snapshot.getValue(String.class);
                         if (token != null)
-                            notify.createClassPayloadForSingleUser(context.getString(R.string.new_class_has_been_created_based_on_your_request), message, token, reference.getId());
+                            notify.createClassPayloadForSingleUser(context.getString(R.string.new_class_has_been_created_based_on_your_request), message, token, documentRef.getId());
                     }
 
-                    request.setAccepted(reference.getId());
+                    request.setAccepted(documentRef.getId());
 
                     FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests").document(request.getId()).set(request).addOnSuccessListener(unused -> {
                     }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
-                    onCreateClassComplete.onClassCreated(reference.getId());
+
+                    for (int i = 1; i <= lectures; i++) {
+                        LecturesModel lecturesModel = new LecturesModel(i, false);
+                        reference.collection("ClassInfo").document(documentRef.getId()).collection("Lectures").add(lecturesModel);
+                    }
+                    onCreateClassComplete.onClassCreated(documentRef.getId());
                 }
 
                 @Override
@@ -107,9 +134,9 @@ public class ClassRepository {
         }).addOnFailureListener(e -> onCreateClassComplete.onFailure(e.toString()));
     }
 
-    public void createClass(Context context, classModel classModel, String teacherName) {
+    public void createClass(Context context, classModel classModel, String teacherName, int lectures) {
 
-        reference.collection("ClassInfo").add(classModel).addOnSuccessListener(reference -> {
+        reference.collection("ClassInfo").add(classModel).addOnSuccessListener(references -> {
             Notify notify = new Notify(context);
             String classNmae = context.getString(R.string.class1) + " " + classModel.getClassName() + "\n";
             String subject = context.getString(R.string.subject1) + " " + classModel.getSubject() + "\n";
@@ -118,8 +145,14 @@ public class ClassRepository {
             String teacher = context.getString(R.string.teacher1) + " " + teacherName;
             String message = classNmae + subject + topic + schedule + teacher;
 
-            notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), reference.getId());
-            onCreateClassComplete.onClassCreated(reference.getId());
+            notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), references.getId());
+
+            for (int i = 1; i <= lectures; i++) {
+                LecturesModel lecturesModel = new LecturesModel(i, false);
+                reference.collection("ClassInfo").document(references.getId()).collection("Lectures").add(lecturesModel);
+            }
+
+            onCreateClassComplete.onClassCreated(references.getId());
         }).addOnFailureListener(e -> onCreateClassComplete.onFailure(e.toString()));
     }
 
@@ -148,7 +181,7 @@ public class ClassRepository {
         }).addOnFailureListener(e -> onRealtimeDbTaskComplete.onFailure(e.toString()));
     }
 
-    public void setClassJoinState(String userID, String classID, String token, boolean join, Context context) {
+    public void setClassJoinState(String userID, String classID, String token, boolean join, Context context, Long lectures) {
         if (join) {
             classJoinReference.child(classID).child(userID).setValue(userID).addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(1)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
 
@@ -171,6 +204,11 @@ public class ClassRepository {
                 public void onCancelled(@NonNull DatabaseError error) {
                 }
             });
+
+            for (int i = 1; i <= lectures; i++) {
+                LecturesModel lecturesModel = new LecturesModel(i, false);
+                FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Lectures").child(userID).child(classID).push().setValue(lecturesModel);
+            }
         } else {
             classJoinReference.child(classID).child(userID).removeValue().addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(3)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
 
@@ -190,6 +228,8 @@ public class ClassRepository {
                 public void onCancelled(@NonNull DatabaseError error) {
                 }
             });
+
+            FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Lectures").child(userID).child(classID).removeValue();
         }
     }
 
@@ -383,6 +423,43 @@ public class ClassRepository {
         }).addOnFailureListener(e -> onGetClassRequestComplete.onGetClassListFailure(e.toString()));
     }
 
+    public void getClassRequestsForStudents(String userID) {
+        List<ClassRequestModel> requestModelList = new ArrayList<>();
+        Query query = reference.collection("ClassRequests")
+                .whereEqualTo("studentID", userID);
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                requestModelList.clear();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    ClassRequestModel classModel = document.toObject(com.reiserx.nimbleq.Models.ClassRequestModel.class);
+                    classModel.setId(document.getId());
+                    requestModelList.add(classModel);
+                }
+                if (!requestModelList.isEmpty())
+                    onGetClassRequestComplete.onGetClassRequestsSuccess(requestModelList);
+                else
+                    onGetClassRequestComplete.onGetClassListFailure("No requests available");
+            } else
+                onGetClassRequestComplete.onGetClassListFailure("Failed to get class list");
+        }).addOnFailureListener(e -> onGetClassRequestComplete.onGetClassListFailure(e.toString()));
+    }
+
+    public void getClassRequestsCountForStudents(String userID) {
+        Query query = reference.collection("ClassRequests")
+                .whereEqualTo("studentID", userID);
+        AggregateQuery countQuery = query.count();
+        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                AggregateQuerySnapshot snapshot1 = task1.getResult();
+                onGetClassRequestsCount.onGetRequestsCountSuccess(snapshot1.getCount());
+            } else {
+                if (task1.getException() != null)
+                    onGetClassRequestsCount.onFailed(task1.getException().toString());
+            }
+        });
+    }
+
+
     public void getClassRequestsForTeachers(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
         Log.d(CONSTANTS.TAG, subjectAndTimeSlot.getSubject());
         List<ClassRequestModel> requestModelList = new ArrayList<>();
@@ -405,6 +482,44 @@ public class ClassRepository {
             } else
                 onGetClassRequestComplete.onGetClassListFailure("Failed to get class list");
         }).addOnFailureListener(e -> onGetClassRequestComplete.onGetClassListFailure(e.toString()));
+    }
+
+    public void getClassAcceptedForUsers(String userID) {
+        List<ClassRequestModel> requestModelList = new ArrayList<>();
+        Query query = reference.collection("ClassRequests")
+                .whereNotEqualTo("accepted", null);
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                requestModelList.clear();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    ClassRequestModel classModel = document.toObject(com.reiserx.nimbleq.Models.ClassRequestModel.class);
+                    if (classModel.isAccepted() != null) {
+                        classModel.setId(document.getId());
+                        requestModelList.add(classModel);
+                    }
+                }
+                if (!requestModelList.isEmpty())
+                    onGetClassRequestComplete.onGetClassRequestsSuccess(requestModelList);
+                else
+                    onGetClassRequestComplete.onGetClassListFailure("No requests available");
+            } else
+                onGetClassRequestComplete.onGetClassListFailure("Failed to get class list");
+        }).addOnFailureListener(e -> onGetClassRequestComplete.onGetClassListFailure(e.toString()));
+    }
+
+    public void getClassAcceptedCountForUsers(String userID) {
+        Query query = reference.collection("ClassRequests")
+                .whereNotEqualTo("accepted", null);
+        AggregateQuery countQuery = query.count();
+        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                AggregateQuerySnapshot snapshot1 = task1.getResult();
+                onGetClassAcceptCountComplete.onGetAcceptCountSuccess(snapshot1.getCount());
+            } else {
+                if (task1.getException() != null)
+                    onGetClassAcceptCountComplete.onFailed(task1.getException().toString());
+            }
+        });
     }
 
     public void setClassRating(String classID, String className, UserData userID, RatingModel ratingModel, String token, Context context) {
@@ -616,6 +731,100 @@ public class ClassRepository {
         });
     }
 
+    public void getClassLectures(String classID) {
+        CollectionReference collection = reference.collection("ClassInfo").document(classID).collection("Lectures");
+        List<LecturesModel> lecturesModelList = new ArrayList<>();
+
+        Query query = collection.orderBy("lecture");
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    LecturesModel lecturesModel = documentSnapshot.toObject(LecturesModel.class);
+                    if (lecturesModel != null) {
+                        lecturesModel.setReference(collection.document(documentSnapshot.getId()));
+                        lecturesModelList.add(lecturesModel);
+
+
+                    }
+                }
+                Map<String, Object> map = new HashMap<>();
+                map.put("Complete", isClassComplete(lecturesModelList));
+                reference.collection("ClassInfo").document(classID).update(map);
+
+                onGetLecturesComplete.onGetLecturesSuccess(lecturesModelList);
+            } else {
+                onGetLecturesComplete.onFailure("Class does not exist");
+            }
+        }).addOnFailureListener(e -> onGetLecturesComplete.onFailure(e.toString()));
+    }
+
+    public void getLecturesCount(String classID) {
+        Query query1 = reference.collection("ClassInfo").document(classID).collection("Lectures");
+        AggregateQuery countQuery = query1.count();
+        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                AggregateQuerySnapshot snapshot1 = task1.getResult();
+                onGetLecturesCountComplete.onGetLecturesCountSuccess(snapshot1.getCount());
+            } else {
+                if (task1.getException() != null)
+                    onGetLecturesCountComplete.onFailed(task1.getException().toString());
+            }
+        });
+    }
+
+    public void getClassListFromIDs(List<String> IDs) {
+        List<classModel> data = new ArrayList<>();
+
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+        for (String doc : IDs) {
+            tasks.add(reference.collection("ClassInfo").document(doc).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(list -> {
+            for (Object object : list) {
+                classModel classModel = ((DocumentSnapshot) object).toObject(classModel.class);
+                if (classModel != null) {
+                    classModel.setClassID(((DocumentSnapshot) object).getId());
+
+                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            QuerySnapshot ratingSnapshot = task1.getResult();
+                            if (ratingSnapshot != null) {
+                                classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
+                            }
+                        }
+                        userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String username = snapshot.getValue(String.class);
+                                    if (username != null) {
+                                        classModel.setTeacher_name(username);
+                                        data.add(classModel);
+                                    }
+                                }
+                                OnGetClassListComplete.onSuccess(data);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                OnGetClassListComplete.onGetClassListFailure(error.toString());
+                            }
+                        });
+                    });
+                }
+            }
+        }).addOnFailureListener(e -> OnGetClassListComplete.onGetClassListFailure(e.toString()));
+    }
+
+    boolean isClassComplete(List<LecturesModel> data)
+    {
+        for(LecturesModel lecturesModel : data)
+            if(!lecturesModel.isStatus())
+                return false;
+        return true;
+    }
+
     public interface OnRealtimeDbTaskComplete {
         void onSuccess(classModel classModel);
 
@@ -656,5 +865,29 @@ public class ClassRepository {
         void onGetRatingsSuccess(List<RatingModel> ratingModelList);
 
         void onFailure(String error);
+    }
+
+    public interface OnGetLecturesComplete {
+        void onGetLecturesSuccess(List<LecturesModel> lecturesModelList);
+
+        void onFailure(String error);
+    }
+
+    public interface OnGetLecturesCountComplete {
+        void onGetLecturesCountSuccess(Long count);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetClassRequestsCount {
+        void onGetRequestsCountSuccess(Long count);
+
+        void onFailed(String error);
+    }
+
+    public interface OnGetClassAcceptCountComplete {
+        void onGetAcceptCountSuccess(Long count);
+
+        void onFailed(String error);
     }
 }

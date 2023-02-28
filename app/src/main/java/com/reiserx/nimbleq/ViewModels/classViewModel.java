@@ -6,11 +6,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.reiserx.nimbleq.Models.ClassRequestModel;
+import com.reiserx.nimbleq.Models.LecturesModel;
 import com.reiserx.nimbleq.Models.RatingModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.classModel;
 import com.reiserx.nimbleq.Models.subjectAndTimeSlot;
 import com.reiserx.nimbleq.Repository.ClassRepository;
+
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.List;
 
@@ -20,7 +23,11 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         ClassRepository.onGetClassRequestComplete,
         ClassRepository.OnRatingSubmitted,
         ClassRepository.OnCreateClassComplete,
-        ClassRepository.OnGetRatingsComplete {
+        ClassRepository.OnGetRatingsComplete,
+        ClassRepository.OnGetLecturesComplete,
+        ClassRepository.OnGetLecturesCountComplete,
+        ClassRepository.OnGetClassRequestsCount,
+        ClassRepository.OnGetClassAcceptCountComplete {
 
     private final MutableLiveData<classModel> classData = new MutableLiveData<>();
     private final MutableLiveData<Integer> classState = new MutableLiveData<>();
@@ -29,6 +36,10 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     private final MutableLiveData<Void> ratingSubmittedMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createClassMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RatingModel>> ratingModelListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<LecturesModel>> lecturesModelListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> lecturesCountModelListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> requestsCountModelListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> acceptedCountModelListMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> classListErrorMutableLiveData = new MutableLiveData<>();
@@ -71,16 +82,32 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         return ratingModelListMutableLiveData;
     }
 
+    public MutableLiveData<List<LecturesModel>> getLecturesModelListMutableLiveData() {
+        return lecturesModelListMutableLiveData;
+    }
+
+    public MutableLiveData<Long> getLecturesCountModelListMutableLiveData() {
+        return lecturesCountModelListMutableLiveData;
+    }
+
+    public MutableLiveData<Long> getRequestsCountModelListMutableLiveData() {
+        return requestsCountModelListMutableLiveData;
+    }
+
+    public MutableLiveData<Long> getAcceptedCountModelListMutableLiveData() {
+        return acceptedCountModelListMutableLiveData;
+    }
+
     public classViewModel() {
-        firebaseRepo = new ClassRepository(this, this, this, this, this, this, this);
+        firebaseRepo = new ClassRepository(this,this,this,this, this, this, this, this, this, this, this);
     }
 
     public void getClassData(String classID) {
         firebaseRepo.getClassData(classID);
     }
 
-    public void setClassState(String userID, String classID, String token, boolean join, Context context) {
-        firebaseRepo.setClassJoinState(userID, classID, token, join, context);
+    public void setClassState(String userID, String classID, String token, boolean join, Context context, Long lectures) {
+        firebaseRepo.setClassJoinState(userID, classID, token, join, context, lectures);
     }
 
     public void getClassState(String userID, String classID) {
@@ -119,12 +146,12 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.setTeacherRating(teacherID, userID, ratingModel, token, context);
     }
 
-    public void createClass(Context context, classModel classModel, String teacherName, ClassRequestModel request) {
-        firebaseRepo.createClass(context, classModel, teacherName, request);
+    public void createClass(Context context, classModel classModel, String teacherName, int lectures, ClassRequestModel request) {
+        firebaseRepo.createClass(context, classModel, teacherName, lectures, request);
     }
 
-    public void createClass(Context context, classModel classModel, String teacherName) {
-        firebaseRepo.createClass(context, classModel, teacherName);
+    public void createClass(Context context, classModel classModel, String teacherName, int lectures) {
+        firebaseRepo.createClass(context, classModel, teacherName, lectures);
     }
 
     public void getAllJoinedClasses(String userID) {
@@ -137,6 +164,34 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
 
     public void getTeacherRatings(String userID) {
         firebaseRepo.getTeacherRating(userID);
+    }
+
+    public void getClassLectures(String classID) {
+        firebaseRepo.getClassLectures(classID);
+    }
+
+    public void getLecturesCount(String classID) {
+        firebaseRepo.getLecturesCount(classID);
+    }
+
+    public void getClassListFromIDs(List<String> list) {
+        firebaseRepo.getClassListFromIDs(list);
+    }
+
+    public void getClassRequestsForStudents(String userID) {
+        firebaseRepo.getClassRequestsForStudents(userID);
+    }
+
+    public void getClassRequestsCountForStudents(String userID) {
+        firebaseRepo.getClassRequestsCountForStudents(userID);
+    }
+
+    public void getClassAcceptedForUsers(String userID) {
+        firebaseRepo.getClassAcceptedForUsers(userID);
+    }
+
+    public void getClassAcceptedCountForUsers(String userID) {
+        firebaseRepo.getClassAcceptedCountForUsers(userID);
     }
 
     @Override
@@ -157,6 +212,11 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     @Override
     public void onGetRatingsSuccess(List<RatingModel> ratingModelList) {
         ratingModelListMutableLiveData.setValue(ratingModelList);
+    }
+
+    @Override
+    public void onGetLecturesSuccess(List<LecturesModel> lecturesModelList) {
+        lecturesModelListMutableLiveData.setValue(lecturesModelList);
     }
 
     @Override
@@ -188,5 +248,25 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
     @Override
     public void onGetClassListFailure(String error) {
         classListErrorMutableLiveData.setValue(error);
+    }
+
+    @Override
+    public void onGetLecturesCountSuccess(Long count) {
+        lecturesCountModelListMutableLiveData.setValue(count);
+    }
+
+    @Override
+    public void onGetRequestsCountSuccess(Long count) {
+        requestsCountModelListMutableLiveData.setValue(count);
+    }
+
+    @Override
+    public void onGetAcceptCountSuccess(Long count) {
+        acceptedCountModelListMutableLiveData.setValue(count);
+    }
+
+    @Override
+    public void onFailed(String error) {
+        databaseErrorMutableLiveData.setValue(error);
     }
 }

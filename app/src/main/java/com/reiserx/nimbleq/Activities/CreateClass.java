@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +29,7 @@ import com.reiserx.nimbleq.ViewModels.UserDataViewModel;
 import com.reiserx.nimbleq.ViewModels.classViewModel;
 import com.reiserx.nimbleq.databinding.ActivityCreateClassBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateClass extends AppCompatActivity {
@@ -35,6 +37,7 @@ public class CreateClass extends AppCompatActivity {
     ActivityCreateClassBinding binding;
 
     List<String> gradeList;
+    List<String> lectureList;
 
     FirebaseAuth auth;
     FirebaseFirestore firestore;
@@ -79,6 +82,19 @@ public class CreateClass extends AppCompatActivity {
             binding.gradeSpinnerCreateClass.setAdapter(gradesAdapter);
         });
 
+        viewModel.getLecturesLimit();
+        viewModel.getLecturesLimitMutableLiveData().observe(this, lectures -> {
+            lectureList = new ArrayList<>();
+            lectureList.add("Select lectures");
+            for (int i = 1; i <= lectures; i++) {
+                lectureList.add(String.valueOf(i));
+            }
+
+            ArrayAdapter<String> lecturesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lectureList);
+            lecturesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.lecturesSpinner.setAdapter(lecturesAdapter);
+        });
+
         binding.topicNameEdittext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -117,6 +133,8 @@ public class CreateClass extends AppCompatActivity {
                 binding.topicNameEdittext.setError(getString(R.string.please_enter_topic));
             else if (binding.topicInfoEdittext.getText().toString().trim().equals(""))
                 binding.topicInfoEdittext.setError(getString(R.string.field_required));
+            else if (binding.lecturesSpinner.getSelectedItemPosition() == 0)
+                snackbarTop.showSnackBar(getString(R.string.please_select_lectures), false);
             else if (binding.gradeSpinnerCreateClass.getSelectedItemPosition() == 0)
                 snackbarTop.showSnackBar(getString(R.string.please_select_grade), false);
             else if (binding.zoomMeetingId.getText().toString().trim().equals(""))
@@ -149,9 +167,9 @@ public class CreateClass extends AppCompatActivity {
                 userDataViewModel.getUsername(user.getUid());
                 userDataViewModel.getUserName().observe(this, s -> {
                     if (requestMode != null)
-                        classViewModel.createClass(CreateClass.this, classModel, s, requestMode);
+                        classViewModel.createClass(CreateClass.this, classModel, s, Integer.parseInt(binding.lecturesSpinner.getSelectedItem().toString()), requestMode);
                     else
-                        classViewModel.createClass(CreateClass.this, classModel, s);
+                        classViewModel.createClass(CreateClass.this, classModel, s, Integer.parseInt(binding.lecturesSpinner.getSelectedItem().toString()));
                 });
 
                 classViewModel.getCreateClassMutableLiveData().observe(this, s -> {

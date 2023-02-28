@@ -42,6 +42,7 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetAdministratorComplete onGetAdministratorComplete;
     private final AdministrationRepository.OnGetSlotLimitComplete onGetSlotLimitComplete;
     private final AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete;
+    private final AdministrationRepository.OnGetLecturesLimitComplete onGetLecturesLimitComplete;
     private final AdministrationRepository.OnGetLinkPrivacyPolicyComplete onGetLinkPrivacyPolicyComplete;
     private final AdministrationRepository.OnGetLinkTermsOfServiceComplete onGetLinkTermsOfServiceComplete;
 
@@ -72,7 +73,8 @@ public class AdministrationRepository {
                                     AdministrationRepository.OnGetSlotLimitComplete onGetSlotLimitComplete,
                                     AdministrationRepository.OnGetFileSizeLimitComplete onGetFileSizeLimitComplete,
                                     AdministrationRepository.OnGetLinkPrivacyPolicyComplete onGetLinkPrivacyPolicyComplete,
-                                    AdministrationRepository.OnGetLinkTermsOfServiceComplete onGetLinkTermsOfServiceComplete) {
+                                    AdministrationRepository.OnGetLinkTermsOfServiceComplete onGetLinkTermsOfServiceComplete,
+                                    AdministrationRepository.OnGetLecturesLimitComplete onGetLecturesLimitComplete) {
 
         this.onGetMimetypesCompleted = onGetMimetypesCompleted;
         this.onGetFileEnabledComplete = onGetFileEnabledComplete;
@@ -90,6 +92,7 @@ public class AdministrationRepository {
         this.onGetFileSizeLimitComplete = onGetFileSizeLimitComplete;
         this.onGetLinkPrivacyPolicyComplete = onGetLinkPrivacyPolicyComplete;
         this.onGetLinkTermsOfServiceComplete = onGetLinkTermsOfServiceComplete;
+        this.onGetLecturesLimitComplete = onGetLecturesLimitComplete;
 
         reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
         userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
@@ -573,6 +576,28 @@ public class AdministrationRepository {
         reference.child("Limits").child("fileSize").setValue(value);
     }
 
+    public void getLecturesLimit() {
+        reference.child("Limits").child("lectures").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Long limit = snapshot.getValue(Long.class);
+                    onGetLecturesLimitComplete.onGetLecturesLimitSuccess(limit);
+                } else
+                    onGetLecturesLimitComplete.onAdminFailed("Limit not available");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onGetLecturesLimitComplete.onAdminFailed(error.toString());
+            }
+        });
+    }
+
+    public void updateLecturesLimit(Long value) {
+        reference.child("Limits").child("lectures").setValue(value);
+    }
+
     public void getLinkPrivacyPolicy() {
         reference.child("Links").child("privacyPolicy").addValueEventListener(new ValueEventListener() {
             @Override
@@ -733,6 +758,12 @@ public class AdministrationRepository {
 
     public interface OnGetLinkTermsOfServiceComplete {
         void onGetLinkTermsOfServiceSuccess(String Value);
+
+        void onAdminFailed(String error);
+    }
+
+    public interface OnGetLecturesLimitComplete {
+        void onGetLecturesLimitSuccess(Long limit);
 
         void onAdminFailed(String error);
     }

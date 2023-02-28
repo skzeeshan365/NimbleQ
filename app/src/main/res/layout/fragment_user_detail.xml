@@ -6,203 +6,310 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Activities.Administration.FragmentUserDetail">
 
-    <TextView
-        android:id="@+id/user_name_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="0dp">
 
-    <TextView
-        android:id="@+id/user_phone_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/user_name_txt"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/user_name_txt"
-        app:layout_constraintTop_toBottomOf="@+id/userid_txt" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".Activities.CreateClass">
 
-    <TextView
-        android:id="@+id/user_school_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/user_phone_txt"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/user_phone_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_last_login_txt" />
+            <Button
+                android:id="@+id/accepted_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/accepted_requests"
+                app:layout_constraintEnd_toEndOf="@+id/class_requests_btn"
+                app:layout_constraintStart_toStartOf="@+id/class_requests_btn"
+                app:layout_constraintTop_toBottomOf="@+id/class_requests_btn" />
 
-    <TextView
-        android:id="@+id/user_grade_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="@+id/user_school_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_school_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_school_txt" />
+            <Button
+                android:id="@+id/class_requests_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/class_requests"
+                app:layout_constraintEnd_toEndOf="@+id/completed_teacher_btn"
+                app:layout_constraintStart_toStartOf="@+id/completed_teacher_btn"
+                app:layout_constraintTop_toBottomOf="@+id/completed_teacher_btn" />
 
-    <TextView
-        android:id="@+id/user_gender_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="@+id/user_grade_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_grade_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_grade_txt" />
+            <Button
+                android:id="@+id/completed_teacher_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/completed_classes_as_teacher"
+                app:layout_constraintEnd_toEndOf="@+id/completed_learner_btn"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/completed_learner_btn"
+                app:layout_constraintTop_toBottomOf="@+id/completed_learner_btn" />
 
-    <TextView
-        android:id="@+id/user_state_city_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="@+id/user_gender_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_gender_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_gender_txt" />
+            <Button
+                android:id="@+id/completed_learner_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/completed_classes_as_learner"
+                app:layout_constraintEnd_toEndOf="@+id/feedbacks_btn"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/feedbacks_btn"
+                app:layout_constraintTop_toBottomOf="@+id/feedbacks_btn" />
 
-    <TextView
-        android:id="@+id/user_classes_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="@+id/user_state_city_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_state_city_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_state_city_txt" />
+            <TextView
+                android:id="@+id/class_completed_teacher"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/class_completed_learner"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/class_completed_learner"
+                app:layout_constraintTop_toBottomOf="@+id/class_completed_learner" />
 
-    <TextView
-        android:id="@+id/user_classes_created_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="@+id/user_classes_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_classes_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_classes_txt" />
+            <TextView
+                android:id="@+id/user_classes_created_txt2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_classes_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_classes_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_classes_txt" />
 
-    <TextView
-        android:id="@+id/userid_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/user_name_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_name_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_name_txt" />
+            <TextView
+                android:id="@+id/user_name_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/joined_class_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/joined_class_list"
-        app:layout_constraintEnd_toEndOf="@+id/user_classes_created_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_classes_created_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_classes_created_txt" />
+            <TextView
+                android:id="@+id/user_phone_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_name_txt"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/user_name_txt"
+                app:layout_constraintTop_toBottomOf="@+id/userid_txt" />
 
-    <Button
-        android:id="@+id/created_class_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/created_class_list"
-        app:layout_constraintEnd_toEndOf="@+id/joined_class_btn"
-        app:layout_constraintStart_toStartOf="@+id/joined_class_btn"
-        app:layout_constraintTop_toBottomOf="@+id/joined_class_btn" />
+            <TextView
+                android:id="@+id/user_school_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_phone_txt"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/user_phone_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_last_login_txt" />
 
-    <TextView
-        android:id="@+id/user_created_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/user_phone_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_phone_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_phone_txt" />
+            <TextView
+                android:id="@+id/user_grade_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_school_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_school_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_school_txt" />
 
-    <TextView
-        android:id="@+id/user_last_login_txt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textIsSelectable="true"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/user_created_txt"
-        app:layout_constraintStart_toStartOf="@+id/user_created_txt"
-        app:layout_constraintTop_toBottomOf="@+id/user_created_txt" />
+            <TextView
+                android:id="@+id/user_gender_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_grade_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_grade_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_grade_txt" />
 
-    <Button
-        android:id="@+id/feedbacks_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/feedbacks"
-        app:layout_constraintEnd_toEndOf="@+id/notify_btn"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="@+id/notify_btn"
-        app:layout_constraintTop_toBottomOf="@+id/notify_btn" />
+            <TextView
+                android:id="@+id/user_state_city_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_gender_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_gender_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_gender_txt" />
 
-    <Button
-        android:id="@+id/notify_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/menu_send_notification"
-        app:layout_constraintEnd_toEndOf="@+id/created_class_btn"
-        app:layout_constraintStart_toStartOf="@+id/created_class_btn"
-        app:layout_constraintTop_toBottomOf="@+id/created_class_btn" />
+            <TextView
+                android:id="@+id/user_classes_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_state_city_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_state_city_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_state_city_txt" />
 
+            <TextView
+                android:id="@+id/class_completed_learner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_classes_created_txt2"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/user_classes_created_txt2"
+                app:layout_constraintTop_toBottomOf="@+id/user_classes_created_txt2" />
+
+            <TextView
+                android:id="@+id/userid_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_name_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_name_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_name_txt" />
+
+            <Button
+                android:id="@+id/joined_class_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/joined_class_list"
+                app:layout_constraintEnd_toEndOf="@+id/class_requests"
+                app:layout_constraintStart_toStartOf="@+id/class_requests"
+                app:layout_constraintTop_toBottomOf="@+id/accepted_txt" />
+
+            <Button
+                android:id="@+id/created_class_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/created_class_list"
+                app:layout_constraintEnd_toEndOf="@+id/joined_class_btn"
+                app:layout_constraintStart_toStartOf="@+id/joined_class_btn"
+                app:layout_constraintTop_toBottomOf="@+id/joined_class_btn" />
+
+            <TextView
+                android:id="@+id/user_created_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_phone_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_phone_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_phone_txt" />
+
+            <TextView
+                android:id="@+id/user_last_login_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
+                android:text="TextView"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/user_created_txt"
+                app:layout_constraintStart_toStartOf="@+id/user_created_txt"
+                app:layout_constraintTop_toBottomOf="@+id/user_created_txt" />
+
+            <Button
+                android:id="@+id/feedbacks_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/feedbacks"
+                app:layout_constraintEnd_toEndOf="@+id/notify_btn"
+                app:layout_constraintHorizontal_bias="0.493"
+                app:layout_constraintStart_toStartOf="@+id/notify_btn"
+                app:layout_constraintTop_toBottomOf="@+id/notify_btn" />
+
+            <Button
+                android:id="@+id/notify_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/menu_send_notification"
+                app:layout_constraintEnd_toEndOf="@+id/created_class_btn"
+                app:layout_constraintStart_toStartOf="@+id/created_class_btn"
+                app:layout_constraintTop_toBottomOf="@+id/created_class_btn" />
+
+            <TextView
+                android:id="@+id/class_requests"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="TextView"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/class_completed_teacher"
+                app:layout_constraintStart_toStartOf="@+id/class_completed_teacher"
+                app:layout_constraintTop_toBottomOf="@+id/class_completed_teacher" />
+
+            <TextView
+                android:id="@+id/accepted_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="TextView"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/class_requests"
+                app:layout_constraintStart_toStartOf="@+id/class_requests"
+                app:layout_constraintTop_toBottomOf="@+id/class_requests" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.reiserx.nimbleq.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.reiserx.nimbleq.Models.LecturesModel;
 import com.reiserx.nimbleq.Models.UserData;
 import com.reiserx.nimbleq.Models.userDetails;
 import com.reiserx.nimbleq.Models.userType;
@@ -10,12 +11,16 @@ import com.reiserx.nimbleq.Repository.UserDataRepository;
 
 import java.util.List;
 
-public class UserDataViewModel extends ViewModel implements UserDataRepository.OnRealtimeDbTaskComplete,
+public class UserDataViewModel extends ViewModel implements
+        UserDataRepository.OnRealtimeDbTaskComplete,
         UserDataRepository.getUsernameComplete,
         UserDataRepository.getUserTypeComplete,
         UserDataRepository.getUserDetailsComplete,
         UserDataRepository.getDataAsListString,
-        UserDataRepository.OnUpdateUsernameComplete {
+        UserDataRepository.OnUpdateUsernameComplete,
+        UserDataRepository.OnGetLecturesComplete,
+        UserDataRepository.OnGetCompletedClassesComplete,
+        UserDataRepository.OnGetCompletedClasses1Complete{
 
     private final MutableLiveData<UserData> userData = new MutableLiveData<>();
     private final MutableLiveData<String> username = new MutableLiveData<>();
@@ -23,9 +28,14 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
     private final MutableLiveData<userDetails> userDetailsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> LisStringMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Void> updateUsernameMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<LecturesModel>> lecturesMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> completedClassesMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> completedClasses1MutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> databaseErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> userNameError = new MutableLiveData<>();
+    private final MutableLiveData<String> task1Error = new MutableLiveData<>();
+    private final MutableLiveData<String> task2Error = new MutableLiveData<>();
     private final UserDataRepository firebaseRepo;
 
     public MutableLiveData<UserData> getUserData() {
@@ -52,8 +62,28 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
         return updateUsernameMutableLiveData;
     }
 
+    public MutableLiveData<List<LecturesModel>> getLecturesMutableLiveData() {
+        return lecturesMutableLiveData;
+    }
+
+    public MutableLiveData<List<String>> getCompletedClassesMutableLiveData() {
+        return completedClassesMutableLiveData;
+    }
+
+    public MutableLiveData<List<String>> getCompletedClasses1MutableLiveData() {
+        return completedClasses1MutableLiveData;
+    }
+
+    public MutableLiveData<String> getTask1Error() {
+        return task1Error;
+    }
+
+    public MutableLiveData<String> getTask2Error() {
+        return task2Error;
+    }
+
     public UserDataViewModel() {
-        firebaseRepo = new UserDataRepository(this, this, this, this, this, this);
+        firebaseRepo = new UserDataRepository(this,this,this,this, this, this, this, this, this);
     }
 
     public void getUserData(String userID) {
@@ -78,6 +108,18 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
 
     public void updateUsername(String userID, String username) {
         firebaseRepo.updateUsername(userID, username);
+    }
+
+    public void getClassLectures(String classID, String userID) {
+        firebaseRepo.getClassLectures(classID, userID);
+    }
+
+    public void getClassCompleteCount(String userID) {
+        firebaseRepo.getClassCompleteCount(userID);
+    }
+
+    public void getClassComplete1Count(String userID) {
+        firebaseRepo.getClassCompleteCount1(userID);
     }
 
     @Override
@@ -113,6 +155,31 @@ public class UserDataViewModel extends ViewModel implements UserDataRepository.O
     @Override
     public void onFailed(String error) {
         userNameError.setValue(error);
+    }
+
+    @Override
+    public void onGetLecturesSuccess(List<LecturesModel> lecturesModelList) {
+        lecturesMutableLiveData.setValue(lecturesModelList);
+    }
+
+    @Override
+    public void onGetCompletedClassesSuccess(List<String> classIDList) {
+        completedClassesMutableLiveData.setValue(classIDList);
+    }
+
+    @Override
+    public void onTask1Failure(String error) {
+        task1Error.setValue(error);
+    }
+
+    @Override
+    public void onGetCompletedClasses1Success(List<String> classIDList) {
+        completedClasses1MutableLiveData.setValue(classIDList);
+    }
+
+    @Override
+    public void onTask2Failure(String error) {
+        task2Error.setValue(error);
     }
 
     @Override

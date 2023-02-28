@@ -72,6 +72,8 @@ public class HomeFragment extends Fragment implements MenuProvider {
 
     UserData teacherData;
 
+    long lectures;
+
     private static String MEETING_ID, MEETING_PASSWORD;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,11 +94,17 @@ public class HomeFragment extends Fragment implements MenuProvider {
         binding.textView9.setVisibility(View.GONE);
         binding.progButton.setVisibility(View.GONE);
 
+        id = requireActivity().getIntent().getExtras().getString("classID");
+
+        classViewModel.getLecturesCount(id);
+        classViewModel.getLecturesCountModelListMutableLiveData().observe(getViewLifecycleOwner(), count -> {
+            lectures = count;
+        });
+
         buttonDesign = new ButtonDesign(getContext());
         buttonDesign.setButtonOutline(binding.button8);
 
-        buttonDesign.setButtonOutline(binding.rateClassBtn);
-        binding.rateClassBtn.setVisibility(View.GONE);
+        buttonDesign.setButtonOutline(binding.lecturesBtn);
 
         requireActivity().removeMenuProvider(this);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
@@ -107,8 +115,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
             this.teacherData = userData;
 
             if (user.getUid().equals(userData.getUid())) {
-
-                binding.rateClassBtn.setVisibility(View.GONE);
 
                 binding.button8.setText(getString(R.string.join_meeting));
                 buttonDesign.setButtonOutline(binding.button8);
@@ -126,6 +132,12 @@ public class HomeFragment extends Fragment implements MenuProvider {
                     alert.setNegativeButton(getString(R.string.cancel), null);
                     alert.show();
                 });
+                binding.lecturesBtn.setOnClickListener(view -> {
+                    buttonDesign.buttonFill(binding.lecturesBtn);
+                    SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+                    sharedPreferenceClass.setClassID(id);
+                    NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_navigation_home_to_FragmentLecturesList);
+                });
             } else {
                 classViewModel.getClassState(user.getUid(), id);
                 classViewModel.getClassState().observe(getViewLifecycleOwner(), state -> {
@@ -133,26 +145,29 @@ public class HomeFragment extends Fragment implements MenuProvider {
                         binding.button8.setText(getString(R.string.join_meeting));
                         buttonDesign.setButtonOutline(binding.button8);
                         setJoinMeeting();
-                        binding.rateClassBtn.setVisibility(View.VISIBLE);
+                        binding.lecturesBtn.setVisibility(View.VISIBLE);
                     } else if (state == 3) {
                         binding.button8.setText(getString(R.string.join_class));
                         buttonDesign.setButtonOutline(binding.button8);
                         binding.button8.setOnClickListener(view -> {
                             buttonDesign.buttonFill(binding.button8);
-                            classViewModel.setClassState(user.getUid(), id, userData.getFCM_TOKEN(), true, getContext());
+                            classViewModel.setClassState(user.getUid(), id, userData.getFCM_TOKEN(), true, getContext(), lectures);
                         });
-                        binding.rateClassBtn.setVisibility(View.GONE);
+                        binding.lecturesBtn.setVisibility(View.GONE);
                     } else if (state == 1) {
                         snackbarTop.showSnackBar(getString(R.string.class_joined), true);
                         binding.button8.setText(getString(R.string.join_meeting));
                         buttonDesign.setButtonOutline(binding.button8);
                         setJoinMeeting();
-                        binding.rateClassBtn.setVisibility(View.VISIBLE);
+                        binding.lecturesBtn.setVisibility(View.VISIBLE);
                     }
                 });
-                binding.rateClassBtn.setOnClickListener(view -> {
-                    buttonDesign.buttonFill(binding.rateClassBtn);
-                    rateClass();
+                binding.lecturesBtn.setOnClickListener(view -> {
+                    buttonDesign.buttonFill(binding.lecturesBtn);
+                    SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+                    sharedPreferenceClass.setClassID(id);
+                    sharedPreferenceClass.setUserID(user.getUid());
+                    NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_navigation_home_to_FragmentLecturesListForLearners);
                 });
             }
         });
@@ -160,8 +175,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
         userDataViewModel.getDatabaseErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> snackbarTop.showSnackBar(error, false));
 
         snackbarTop = new SnackbarTop(binding.getRoot());
-
-        id = requireActivity().getIntent().getExtras().getString("classID");
 
         fetchClass();
 
@@ -228,6 +241,12 @@ public class HomeFragment extends Fragment implements MenuProvider {
                 binding.timeSlot.setText(classModel.getTime_slot());
                 binding.gradeTxt.setText(classModel.getGrade());
                 userDataViewModel.getUserData(classModel.getTeacher_info());
+
+                if (classModel.isComplete())
+                    binding.statusTxt.setText(getString(R.string.completed));
+                else
+                    binding.statusTxt.setText(getString(R.string.in_progress));
+
                 if (classModel.getRating() > 0) {
                     @SuppressLint("DefaultLocale") String rating = String.format("%.1f", classModel.getRating());
                     binding.ratingRxt.setText(rating);
@@ -276,7 +295,6 @@ public class HomeFragment extends Fragment implements MenuProvider {
             menu.clear();
             menuInflater.inflate(R.menu.class_menu_teacher, menu);
             binding.button8.setVisibility(View.INVISIBLE);
-            binding.rateClassBtn.setVisibility(View.GONE);
         });
         viewModel.getAdminErrorMutableLiveData().observe(this, s -> {
             menu.clear();
@@ -312,7 +330,7 @@ public class HomeFragment extends Fragment implements MenuProvider {
             AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
             alert.setTitle(getString(R.string.leave_class));
             alert.setMessage(getString(R.string.leave_class_msg));
-            alert.setPositiveButton(getString(R.string.leave), (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, teacherData.getFCM_TOKEN(), false, getContext()));
+            alert.setPositiveButton(getString(R.string.leave), (dialogInterface, i) -> classViewModel.setClassState(user.getUid(), id, teacherData.getFCM_TOKEN(), false, getContext(), lectures));
             alert.setNegativeButton(getString(R.string.cancel), null);
             alert.show();
         } else if (menuItem.getItemId() == R.id.feedbacks_menuitem) {
@@ -337,6 +355,8 @@ public class HomeFragment extends Fragment implements MenuProvider {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(requireContext());
             sharedPreferenceClass.setClassID(id);
             NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_navigation_home_to_FragmentLearnerListForClass);
+        } else if (menuItem.getItemId() == R.id.Rate_class_menu_item) {
+            rateClass();
         }
         return false;
     }

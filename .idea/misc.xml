@@ -74,6 +74,7 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_first.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_home.xml" value="0.264" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_learner_list_for_class.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_lectures.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_limits.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_link_policies.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_notifications.xml" value="0.264" />
@@ -83,7 +84,7 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_submit_answer.xml" value="0.2" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_teacher_list.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_update_grade_list.xml" value="0.25" />
-        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_user_detail.xml" value="0.25" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_user_detail.xml" value="0.264" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_user_details.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_userlist_admin.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/fragment_view_doubts.xml" value="0.25" />
@@ -95,6 +96,7 @@
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/item_send_image.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/layout_login.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/layout_signup.xml" value="0.25" />
+        <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/lectures_custom_list_layout.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/list_header.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/list_loading_layout.xml" value="0.25" />
         <entry key="..\:/Users/zeeshan/AndroidStudioProjects/NimbleQ/app/src/main/res/layout/lt_home_list_admin.xml" value="0.24895833333333334" />
