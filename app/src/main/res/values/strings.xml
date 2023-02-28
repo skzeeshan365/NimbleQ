@@ -36,7 +36,7 @@
     <string name="phone_number">Phone number</string>
     <string name="current_slot">Current slot</string>
     <string name="verify_your_phone_number">Verify your phone number</string>
-    <string name="app_will_send_a_message_with_otp">Padhai madad will send you a messege with OTP</string>
+    <string name="app_will_send_a_message_with_otp">Padhai madad will send you a message with OTP</string>
     <string name="feedback">Feedback</string>
     <string name="fill_details">Please fill the details</string>
     <string name="enter_user_name">Please enter your name</string>
@@ -60,7 +60,7 @@
     <string name="grade1">Grade:</string>
     <string name="rate_this_class">Rate this class</string>
     <string name="basic_info">Basic info</string>
-    <string name="type_a_msg">Type a messege</string>
+    <string name="type_a_msg">Type a message</string>
     <string name="topic">Topic</string>
     <string name="doubt_in_one_line">Doubt in one line</string>
     <string name="describe_your_doubt">Describe your doubt</string>
@@ -127,7 +127,7 @@
     <string name="cancel">Cancel</string>
     <string name="sign_in_with_phone">Sign in with phone</string>
     <string name="view_class">View class</string>
-    <string name="view_class_msg">Click to view avaibale classes</string>
+    <string name="view_class_msg">Click to view available classes</string>
     <string name="solve_doubts">Solve doubts</string>
     <string name="solve_doubts_msg">Click to solve your doubts</string>
     <string name="view_joined_class">View joined classes</string>
@@ -341,7 +341,6 @@
     <string name="completed_classes_as_learner">Completed classes as Learner</string>
     <string name="completed_classes_as_teacher">Completed classes as Teacher</string>
     <string name="accepted_requests">Accepted requests</string>
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- java strings -->
 
 </resources>

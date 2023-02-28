@@ -332,6 +332,15 @@
     <string name="Facebook">फेसबुक</string>
     <string name="developed_by">नवसृजन छात्रों द्वारा विकसित</string>
     <string name="Version">संस्करण</string>
+    <string name="please_select_lectures">कृपया व्याख्यान चुनें</string>
+    <string name="lectures">व्याख्यान</string>
+    <string name="lecture">व्याख्यान</string>
+    <string name="status">स्थिति</string>
+    <string name="in_progress">प्रगति में</string>
+    <string name="completed">पूरा</string>
+    <string name="completed_classes_as_learner">शिक्षार्थी के रूप में पूर्ण कक्षाएं</string>
+    <string name="completed_classes_as_teacher">शिक्षक के रूप में पूर्ण कक्षाएं</string>
+    <string name="accepted_requests">स्वीकृत अनुरोध</string>
     <!-- java strings -->
 
 </resources>

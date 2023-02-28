@@ -176,7 +176,7 @@ public class UserProfileActivity extends AppCompatActivity {
             startActivity(browserIntent);
         }));
 
-        viewModel.getLinkTermsOfServiceMutableLiveData().observe(this, s -> binding.licenseHolder.setOnClickListener(view -> {
+        viewModel.getLinkTermsOfServiceMutableLiveData().observe(this, s -> binding.termsHolder.setOnClickListener(view -> {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
             startActivity(browserIntent);
         }));
