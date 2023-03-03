@@ -144,8 +144,8 @@ public class classViewModel extends ViewModel implements ClassRepository.OnRealt
         firebaseRepo.setTeacherRating(teacherID, userID, ratingModel, token, context);
     }
 
-    public void createClass(Context context, classModel classModel, String teacherName, int lectures, ClassRequestModel request) {
-        firebaseRepo.createClass(context, classModel, teacherName, lectures, request);
+    public void createClass(Context context, classModel classModel, String teacherName, int lectures, ClassRequestModel request, String acceptorUID) {
+        firebaseRepo.createClass(context, classModel, teacherName, lectures, request, acceptorUID);
     }
 
     public void createClass(Context context, classModel classModel, String teacherName, int lectures) {

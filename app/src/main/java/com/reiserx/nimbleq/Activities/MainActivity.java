@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.reiserx.nimbleq.Activities.Administration.AdministrationActivity;
 import com.reiserx.nimbleq.Activities.Doubts.DoubtsActivity;
 import com.reiserx.nimbleq.Activities.Feedbacks.FeedbackListActivity;
@@ -41,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
 
     FirebaseAuth auth;
-    FirebaseDatabase database;
     FirebaseUser user;
 
     SharedPreferences save;
@@ -49,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     UserTypeClass userTypeClass;
 
     public static final String Default = "en";
+
+    UserDataViewModel userDataViewModel;
+    AdministrationViewModel viewModel;
+    slotsViewModel slotsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
         }
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
         user = auth.getCurrentUser();
 
         save = getSharedPreferences("Utils", MODE_PRIVATE);
@@ -96,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
             //Main logic starts
             userTypeClass = new UserTypeClass(this);
 
-            checkAdmin(user.getUid());
+            viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+            slotsViewModel = new ViewModelProvider(this).get(slotsViewModel.class);
 
             getUserType();
 
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             });
 
-            UserDataViewModel userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
+            userDataViewModel = new ViewModelProvider(this).get(UserDataViewModel.class);
             userDataViewModel.updateFCMToken(user.getUid());
 
             binding.viewClass.setOnClickListener(view -> {
@@ -146,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, DoubtsActivity.class);
                 startActivity(intent);
             });
+
+            checkAdmin(user.getUid());
         }
     }
 
@@ -217,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializeZoomSdk(Context context) {
-        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         viewModel.getZoomCredentials();
         viewModel.getZoomCredentialsMutableLiveData().observe(this, zoomCredentials -> {
             ZoomSDK sdk = ZoomSDK.getInstance();
@@ -243,14 +246,12 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     void initializeSlot() {
 
-        slotsViewModel viewModel = new ViewModelProvider(this).get(slotsViewModel.class);
-
         if (save.getInt("userType", 0) == 1) {
-            viewModel.getSubjectForStudents(user.getUid());
+            slotsViewModel.getSubjectForStudents(user.getUid());
         } else if (save.getInt("userType", 0) == 2) {
-            viewModel.getSubjectForTeachers(user.getUid());
+            slotsViewModel.getSubjectForTeachers(user.getUid());
         }
-        viewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
+        slotsViewModel.getParentItemMutableLiveData().observe(this, subjectAndTimeSlot -> {
             if (subjectAndTimeSlot != null && subjectAndTimeSlot.isCurrent()) {
                 if (subjectAndTimeSlot.getTimeSlot() != null) {
                     if (binding.slotTimeTxt.getVisibility() == View.GONE && binding.slotSubTxt.getVisibility() == View.GONE) {
@@ -278,7 +279,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void initializeFCM() {
-        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         viewModel.getFCMCredentials();
         viewModel.getFCMCredentialsMutableLiveData().observe(this, fcmcredentials -> {
             SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(MainActivity.this);
@@ -288,7 +288,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkAdmin(String userID) {
-        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         viewModel.getAdministrator(userID);
         viewModel.getAdminMutableLiveData().observe(this, aBoolean -> {
             AlertDialog.Builder alerts = new AlertDialog.Builder(MainActivity.this);
@@ -319,7 +318,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void initializeLimits() {
-        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
         SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(this);
 
         viewModel.getSlotLimit();

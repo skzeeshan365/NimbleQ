@@ -166,7 +166,7 @@ public class CreateClass extends AppCompatActivity {
                 userDataViewModel.getUsername(user.getUid());
                 userDataViewModel.getUserName().observe(this, s -> {
                     if (requestMode != null)
-                        classViewModel.createClass(CreateClass.this, classModel, s, Integer.parseInt(binding.lecturesSpinner.getSelectedItem().toString()), requestMode);
+                        classViewModel.createClass(CreateClass.this, classModel, s, Integer.parseInt(binding.lecturesSpinner.getSelectedItem().toString()), requestMode, user.getUid());
                     else
                         classViewModel.createClass(CreateClass.this, classModel, s, Integer.parseInt(binding.lecturesSpinner.getSelectedItem().toString()));
                 });

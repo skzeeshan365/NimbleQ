@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.google.android.exoplayer2.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -37,12 +36,6 @@ public class UserDataRepository {
     private final UserDataRepository.OnGetCompletedClassesComplete onGetCompletedClassesComplete;
     private final UserDataRepository.OnGetCompletedClasses1Complete onGetCompletedClasses1Complete;
 
-    private final DatabaseReference userTypeReference;
-    private final DatabaseReference databaseReference;
-    private final DatabaseReference classJoinReference;
-    private final DatabaseReference classReference;
-    private final CollectionReference collectionReference;
-
     public UserDataRepository(UserDataRepository.OnRealtimeDbTaskComplete onRealtimeDbTaskComplete,
                               UserDataRepository.getUsernameComplete getUsernameComplete,
                               UserDataRepository.getUserTypeComplete getUserTypeComplete,
@@ -62,18 +55,10 @@ public class UserDataRepository {
         this.onGetLecturesComplete = onGetLecturesComplete;
         this.onGetCompletedClassesComplete = onGetCompletedClassesComplete;
         this.onGetCompletedClasses1Complete = onGetCompletedClasses1Complete;
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference().child("Data").child("UserData");
-        userTypeReference = database.getReference().child("Data").child("Main").child("UserType");
-        classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
-        classReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes");
-
-        collectionReference = FirebaseFirestore.getInstance().collection("UserData");
     }
 
     public void getUserData(String userID) {
-        databaseReference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -94,7 +79,7 @@ public class UserDataRepository {
     }
 
     public void getUsername(String userID) {
-        databaseReference.child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -113,7 +98,7 @@ public class UserDataRepository {
     }
 
     public void getUserType(String userID) {
-        userTypeReference.child(userID).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("UserType").child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -132,7 +117,7 @@ public class UserDataRepository {
     }
 
     public void getUserDetails(String userID) {
-        collectionReference.document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        FirebaseFirestore.getInstance().collection("UserData").document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (queryDocumentSnapshots.exists()) {
                 userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                 getUserDetailsComplete.onSuccess(userDetails);
@@ -164,7 +149,7 @@ public class UserDataRepository {
 
     public void getClassLectures(String classID, String userID) {
         List<LecturesModel> data = new ArrayList<>();
-        classReference.child("Lectures").child(userID).child(classID).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Lectures").child(userID).child(classID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 data.clear();
@@ -172,7 +157,7 @@ public class UserDataRepository {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         LecturesModel lecturesModel = snapshot1.getValue(LecturesModel.class);
                         if (lecturesModel != null && snapshot1.getKey() != null) {
-                            lecturesModel.setDatabaseReference(classReference.child("Lectures").child(userID).child(classID).child(snapshot1.getKey()));
+                            lecturesModel.setDatabaseReference(FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Lectures").child(userID).child(classID).child(snapshot1.getKey()));
                             data.add(lecturesModel);
                         }
                     }
@@ -190,7 +175,7 @@ public class UserDataRepository {
 
     public void getClassCompleteCount(String userID) {
         List<String> data = new ArrayList<>();
-        Query query = classReference.child("Lectures").child(userID);
+        Query query = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Lectures").child(userID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

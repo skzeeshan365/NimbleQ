@@ -9,7 +9,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.AggregateQuery;
@@ -54,9 +53,6 @@ public class ClassRepository {
     private final ClassRepository.OnGetClassRequestsCount onGetClassRequestsCount;
     private final ClassRepository.OnGetClassAcceptCountComplete onGetClassAcceptCountComplete;
 
-    private final DocumentReference reference;
-    private final DatabaseReference classJoinReference;
-    private final DatabaseReference userDataReference;
     Query query;
 
     float rating1, rating2, rating3, rating4, rating5;
@@ -84,15 +80,10 @@ public class ClassRepository {
         this.onGetLecturesCountComplete = onGetLecturesCountComplete;
         this.onGetClassRequestsCount = onGetClassRequestsCount;
         this.onGetClassAcceptCountComplete = onGetClassAcceptCountComplete;
-
-
-        reference = FirebaseFirestore.getInstance().collection("Main").document("Class");
-        classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
-        userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
     }
 
-    public void createClass(Context context, classModel classModel, String teacherName, int lectures, ClassRequestModel request) {
-        reference.collection("ClassInfo").add(classModel).addOnSuccessListener(documentRef -> {
+    public void createClass(Context context, classModel classModel, String teacherName, int lectures, ClassRequestModel request, String acceptorUID) {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").add(classModel).addOnSuccessListener(documentRef -> {
             Notify notify = new Notify(context);
             String classNmae = context.getString(R.string.class1) + " " + classModel.getClassName() + "\n";
             String subject = context.getString(R.string.subject1) + " " + classModel.getSubject() + "\n";
@@ -103,7 +94,7 @@ public class ClassRepository {
 
             notify.createClassPayload(context.getString(R.string.new_class_has_been_created_based_on_your_slot), message, TopicSubscription.getTopicForSlot(classModel), documentRef.getId());
 
-            userDataReference.child(request.getStudentID()).child("FCM_TOKEN").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(request.getStudentID()).child("FCM_TOKEN").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
@@ -113,13 +104,14 @@ public class ClassRepository {
                     }
 
                     request.setAccepted(documentRef.getId());
+                    request.setAcceptedID(acceptorUID);
 
                     FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests").document(request.getId()).set(request).addOnSuccessListener(unused -> {
                     }).addOnFailureListener(e -> Log.d(CONSTANTS.TAG2, e.toString()));
 
                     for (int i = 1; i <= lectures; i++) {
                         LecturesModel lecturesModel = new LecturesModel(i, false);
-                        reference.collection("ClassInfo").document(documentRef.getId()).collection("Lectures").add(lecturesModel);
+                        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(documentRef.getId()).collection("Lectures").add(lecturesModel);
                     }
                     onCreateClassComplete.onClassCreated(documentRef.getId());
                 }
@@ -134,7 +126,7 @@ public class ClassRepository {
 
     public void createClass(Context context, classModel classModel, String teacherName, int lectures) {
 
-        reference.collection("ClassInfo").add(classModel).addOnSuccessListener(references -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").add(classModel).addOnSuccessListener(references -> {
             Notify notify = new Notify(context);
             String classNmae = context.getString(R.string.class1) + " " + classModel.getClassName() + "\n";
             String subject = context.getString(R.string.subject1) + " " + classModel.getSubject() + "\n";
@@ -147,7 +139,7 @@ public class ClassRepository {
 
             for (int i = 1; i <= lectures; i++) {
                 LecturesModel lecturesModel = new LecturesModel(i, false);
-                reference.collection("ClassInfo").document(references.getId()).collection("Lectures").add(lecturesModel);
+                FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(references.getId()).collection("Lectures").add(lecturesModel);
             }
 
             onCreateClassComplete.onClassCreated(references.getId());
@@ -155,7 +147,7 @@ public class ClassRepository {
     }
 
     public void getClassData(String classID) {
-        DocumentReference documentReference = reference.collection("ClassInfo").document(classID);
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(classID);
 
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -163,7 +155,7 @@ public class ClassRepository {
                 if (models != null) {
                     models.setClassID(classID);
 
-                    reference.collection("Ratings").document("ClassRating").collection(models.getClassID()).get().addOnCompleteListener(task1 -> {
+                    FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(models.getClassID()).get().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             QuerySnapshot snapshot = task1.getResult();
                             if (snapshot != null) {
@@ -181,12 +173,12 @@ public class ClassRepository {
 
     public void setClassJoinState(String userID, String classID, String token, boolean join, Context context, Long lectures) {
         if (join) {
-            classJoinReference.child(classID).child(userID).setValue(userID).addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(1)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
+            FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").child(classID).child(userID).setValue(userID).addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(1)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
 
             FirebaseMessaging fm = FirebaseMessaging.getInstance();
             fm.subscribeToTopic(classID);
 
-            userDataReference.child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
@@ -208,9 +200,9 @@ public class ClassRepository {
                 FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("Lectures").child(userID).child(classID).push().setValue(lecturesModel);
             }
         } else {
-            classJoinReference.child(classID).child(userID).removeValue().addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(3)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
+            FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").child(classID).child(userID).removeValue().addOnSuccessListener(unused -> OnClassJoinStateChanged.onSuccess(3)).addOnFailureListener(e -> OnClassJoinStateChanged.onGetClassStateFailure(e.toString()));
 
-            userDataReference.child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(userID).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
@@ -232,7 +224,7 @@ public class ClassRepository {
     }
 
     public void getClassJoinState(String userID, String classID) {
-        classJoinReference.child(classID).child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").child(classID).child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists())
@@ -249,7 +241,7 @@ public class ClassRepository {
 
     public void getClassList(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
         List<classModel> data = new ArrayList<>();
-        query = reference.collection("ClassInfo")
+        query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo")
                 .whereEqualTo("subject", subjectAndTimeSlot.getSubject())
                 .whereEqualTo("time_slot", subjectAndTimeSlot.getTimeSlot());
 
@@ -262,14 +254,14 @@ public class ClassRepository {
                             classModel.setClassID(document.getId());
                             if (!classModel.getTeacher_info().equals(userID)) {
 
-                                reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                                FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
                                         QuerySnapshot snapshot = task1.getResult();
                                         if (snapshot != null) {
                                             classModel.setRating(calculateRating(snapshot.toObjects(RatingModel.class)));
                                         }
                                     }
-                                    userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             if (snapshot.exists()) {
@@ -299,7 +291,7 @@ public class ClassRepository {
 
     public void getClassListForTeacher(String userID) {
         List<classModel> data = new ArrayList<>();
-        query = reference.collection("ClassInfo")
+        query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo")
                 .whereEqualTo("teacher_info", userID);
 
         query.get().addOnCompleteListener(task -> {
@@ -309,14 +301,14 @@ public class ClassRepository {
                     classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                     classModel.setClassID(document.getId());
 
-                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                    FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             QuerySnapshot ratingSnapshot = task1.getResult();
                             if (ratingSnapshot != null) {
                                 classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
                             }
                         }
-                        userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -344,27 +336,27 @@ public class ClassRepository {
 
     public void getAllJoinedClasses(String userID) {
         List<classModel> data = new ArrayList<>();
-        com.google.firebase.database.Query query = classJoinReference.orderByChild(userID).equalTo(userID);
+        com.google.firebase.database.Query query = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").orderByChild(userID).equalTo(userID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                            reference.collection("ClassInfo").document(snapshot1.getKey()).get().addOnSuccessListener(documentSnapshot -> {
+                            FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(snapshot1.getKey()).get().addOnSuccessListener(documentSnapshot -> {
                                 if (documentSnapshot.exists()) {
                                     com.reiserx.nimbleq.Models.classModel models = documentSnapshot.toObject(classModel.class);
                                     if (models != null) {
                                         models.setClassID(documentSnapshot.getId());
 
-                                        reference.collection("Ratings").document("ClassRating").collection(models.getClassID()).get().addOnCompleteListener(task1 -> {
+                                        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(models.getClassID()).get().addOnCompleteListener(task1 -> {
                                             if (task1.isSuccessful()) {
                                                 QuerySnapshot ratingSnapshot = task1.getResult();
                                                 if (ratingSnapshot != null) {
                                                     models.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
                                                 }
                                             }
-                                            userDataReference.child(models.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(models.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                     if (snapshot.exists()) {
@@ -401,7 +393,7 @@ public class ClassRepository {
     public void getClassRequestsForStudents(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
         Log.d(CONSTANTS.TAG, subjectAndTimeSlot.getSubject());
         List<ClassRequestModel> requestModelList = new ArrayList<>();
-        Query query = reference.collection("ClassRequests")
+        Query query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests")
                 .whereEqualTo("subject", subjectAndTimeSlot.getSubject())
                 .whereEqualTo("studentID", userID);
         query.get().addOnCompleteListener(task -> {
@@ -423,7 +415,7 @@ public class ClassRepository {
 
     public void getClassRequestsForStudents(String userID) {
         List<ClassRequestModel> requestModelList = new ArrayList<>();
-        Query query = reference.collection("ClassRequests")
+        Query query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests")
                 .whereEqualTo("studentID", userID);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -443,7 +435,7 @@ public class ClassRepository {
     }
 
     public void getClassRequestsCountForStudents(String userID) {
-        Query query = reference.collection("ClassRequests")
+        Query query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests")
                 .whereEqualTo("studentID", userID);
         AggregateQuery countQuery = query.count();
         countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
@@ -461,7 +453,7 @@ public class ClassRepository {
     public void getClassRequestsForTeachers(subjectAndTimeSlot subjectAndTimeSlot, String userID) {
         Log.d(CONSTANTS.TAG, subjectAndTimeSlot.getSubject());
         List<ClassRequestModel> requestModelList = new ArrayList<>();
-        Query query = reference.collection("ClassRequests")
+        Query query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests")
                 .whereEqualTo("subject", subjectAndTimeSlot.getSubject());
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -484,8 +476,8 @@ public class ClassRepository {
 
     public void getClassAcceptedForUsers(String userID) {
         List<ClassRequestModel> requestModelList = new ArrayList<>();
-        Query query = reference.collection("ClassRequests")
-                .whereNotEqualTo("accepted", null);
+        Query query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests")
+                .whereEqualTo("acceptedID", userID);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 requestModelList.clear();
@@ -506,8 +498,8 @@ public class ClassRepository {
     }
 
     public void getClassAcceptedCountForUsers(String userID) {
-        Query query = reference.collection("ClassRequests")
-                .whereNotEqualTo("accepted", null);
+        Query query = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassRequests")
+                .whereEqualTo("acceptedID", userID);
         AggregateQuery countQuery = query.count();
         countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
@@ -521,7 +513,7 @@ public class ClassRepository {
     }
 
     public void setClassRating(String classID, String className, UserData userID, RatingModel ratingModel, String token, Context context) {
-        reference.collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
                 notify.classReviewPayload(context.getString(R.string.new_feedback_for_your_class).concat(className), userID.getUserName() + " ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
@@ -533,12 +525,12 @@ public class ClassRepository {
 
     public void getClassRating(String classID) {
         List<RatingModel> ratingModelList = new ArrayList<>();
-        reference.collection("Ratings").document("ClassRating").collection(classID).get().addOnSuccessListener(task1 -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classID).get().addOnSuccessListener(task1 -> {
             if (!task1.isEmpty()) {
                 for (DocumentSnapshot documentSnapshot : task1.getDocuments()) {
                     RatingModel ratingModel = documentSnapshot.toObject(RatingModel.class);
                     if (ratingModel != null) {
-                        userDataReference.child(ratingModel.getUserID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(ratingModel.getUserID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -564,7 +556,7 @@ public class ClassRepository {
     }
 
     public void setTeacherRating(String teacherID, UserData userID, RatingModel ratingModel, String token, Context context) {
-        reference.collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("TeacherRating").collection(teacherID).document(userID.getUid()).set(ratingModel).addOnSuccessListener(unused -> {
             Notify notify = new Notify(context);
             if (ratingModel.getFeedback() == null)
                 notify.classReviewPayload(context.getString(R.string.new_feedback_for_you), userID.getUserName() + " ".concat(context.getString(R.string.has_given) + " " + ratingModel.getRating() + " " + context.getString(R.string.star_rating)), token);
@@ -576,12 +568,12 @@ public class ClassRepository {
 
     public void getTeacherRating(String userID) {
         List<RatingModel> ratingModelList = new ArrayList<>();
-        reference.collection("Ratings").document("TeacherRating").collection(userID).get().addOnSuccessListener(task1 -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("TeacherRating").collection(userID).get().addOnSuccessListener(task1 -> {
             if (!task1.isEmpty()) {
                 for (DocumentSnapshot documentSnapshot : task1.getDocuments()) {
                     RatingModel ratingModel = documentSnapshot.toObject(RatingModel.class);
                     if (ratingModel != null) {
-                        userDataReference.child(ratingModel.getUserID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(ratingModel.getUserID()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -632,27 +624,27 @@ public class ClassRepository {
 
     public void getClassListByDemand() {
         List<classModel> data = new ArrayList<>();
-        reference.collection("ClassInfo").get().addOnCompleteListener(task -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && !task.getResult().isEmpty()) {
                 data.clear();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                     classModel.setClassID(document.getId());
 
-                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                    FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             QuerySnapshot ratingSnapshot = task1.getResult();
                             if (ratingSnapshot != null) {
                                 classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
                             }
                         }
-                        classJoinReference.child(classModel.getClassID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").child(classModel.getClassID()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
                                     classModel.setStudent_count(snapshot.getChildrenCount());
                                 }
-                                userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                                FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot.exists()) {
@@ -688,21 +680,21 @@ public class ClassRepository {
 
     public void getClassListByRating() {
         List<classModel> data = new ArrayList<>();
-        reference.collection("ClassInfo").get().addOnCompleteListener(task -> {
+        FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && !task.getResult().isEmpty()) {
                 data.clear();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     classModel classModel = document.toObject(com.reiserx.nimbleq.Models.classModel.class);
                     classModel.setClassID(document.getId());
 
-                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                    FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             QuerySnapshot ratingSnapshot = task1.getResult();
                             if (ratingSnapshot != null) {
                                 classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
                             }
                         }
-                        userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -730,7 +722,7 @@ public class ClassRepository {
     }
 
     public void getClassLectures(String classID) {
-        CollectionReference collection = reference.collection("ClassInfo").document(classID).collection("Lectures");
+        CollectionReference collection = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(classID).collection("Lectures");
         List<LecturesModel> lecturesModelList = new ArrayList<>();
 
         Query query = collection.orderBy("lecture");
@@ -747,7 +739,7 @@ public class ClassRepository {
                 }
                 Map<String, Object> map = new HashMap<>();
                 map.put("Complete", isClassComplete(lecturesModelList));
-                reference.collection("ClassInfo").document(classID).update(map);
+                FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(classID).update(map);
 
                 onGetLecturesComplete.onGetLecturesSuccess(lecturesModelList);
             } else {
@@ -757,7 +749,7 @@ public class ClassRepository {
     }
 
     public void getLecturesCount(String classID) {
-        Query query1 = reference.collection("ClassInfo").document(classID).collection("Lectures");
+        Query query1 = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(classID).collection("Lectures");
         AggregateQuery countQuery = query1.count();
         countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
@@ -775,7 +767,7 @@ public class ClassRepository {
 
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
         for (String doc : IDs) {
-            tasks.add(reference.collection("ClassInfo").document(doc).get());
+            tasks.add(FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").document(doc).get());
         }
 
         Tasks.whenAllSuccess(tasks).addOnSuccessListener(list -> {
@@ -784,14 +776,14 @@ public class ClassRepository {
                 if (classModel != null) {
                     classModel.setClassID(((DocumentSnapshot) object).getId());
 
-                    reference.collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
+                    FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("ClassRating").collection(classModel.getClassID()).get().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             QuerySnapshot ratingSnapshot = task1.getResult();
                             if (ratingSnapshot != null) {
                                 classModel.setRating(calculateRating(ratingSnapshot.toObjects(RatingModel.class)));
                             }
                         }
-                        userDataReference.child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(classModel.getTeacher_info()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {

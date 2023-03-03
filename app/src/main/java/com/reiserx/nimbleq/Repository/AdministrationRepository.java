@@ -4,15 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.reiserx.nimbleq.Models.AdminListModel;
@@ -45,16 +42,6 @@ public class AdministrationRepository {
     private final AdministrationRepository.OnGetLecturesLimitComplete onGetLecturesLimitComplete;
     private final AdministrationRepository.OnGetLinkPrivacyPolicyComplete onGetLinkPrivacyPolicyComplete;
     private final AdministrationRepository.OnGetLinkTermsOfServiceComplete onGetLinkTermsOfServiceComplete;
-
-    DatabaseReference reference;
-    DatabaseReference userDataReference;
-    DatabaseReference userTypeReference;
-    DatabaseReference classJoinReference;
-
-    CollectionReference userDetailsReference;
-    DocumentReference classReference;
-    CollectionReference credentialReference;
-    DocumentReference teacherRatingReference;
 
     float rating1, rating2, rating3, rating4, rating5;
 
@@ -93,21 +80,11 @@ public class AdministrationRepository {
         this.onGetLinkPrivacyPolicyComplete = onGetLinkPrivacyPolicyComplete;
         this.onGetLinkTermsOfServiceComplete = onGetLinkTermsOfServiceComplete;
         this.onGetLecturesLimitComplete = onGetLecturesLimitComplete;
-
-        reference = FirebaseDatabase.getInstance().getReference().child("Data").child("Administration");
-        userDataReference = FirebaseDatabase.getInstance().getReference().child("Data").child("UserData");
-        userTypeReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("UserType");
-        classJoinReference = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState");
-
-        userDetailsReference = FirebaseFirestore.getInstance().collection("UserData");
-        classReference = FirebaseFirestore.getInstance().collection("Main").document("Class");
-        credentialReference = FirebaseFirestore.getInstance().collection("CREDENTIALS");
-        teacherRatingReference = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("TeacherRating");
     }
 
     public void getMimeTypesForGroupChats() {
         List<String> mimeTypes = new ArrayList<>();
-        reference.child("Filetypes").child("GroupChats").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("GroupChats").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -128,7 +105,7 @@ public class AdministrationRepository {
     }
 
     public void getFilesEnabled() {
-        reference.child("Filetypes").child("ImagesOnly").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("ImagesOnly").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -145,13 +122,13 @@ public class AdministrationRepository {
     }
 
     public void updateFilesEnabled(boolean value) {
-        reference.child("Filetypes").child("ImagesOnly").setValue(value);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("ImagesOnly").setValue(value);
     }
 
     public void getGradeList() {
         List<String> gradeList = new ArrayList<>();
         gradeList.add("Select grade");
-        reference.child("Lists").child("GradeList").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("GradeList").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -173,7 +150,7 @@ public class AdministrationRepository {
 
     public void getGradeModelList() {
         List<AdminListModel> gradeList = new ArrayList<>();
-        reference.child("Lists").child("GradeList").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("GradeList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -181,7 +158,7 @@ public class AdministrationRepository {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         String value = snapshot1.getValue(String.class);
                         if (value != null && snapshot1.getKey() != null)
-                            gradeList.add(new AdminListModel(value, reference.child("Lists").child("GradeList").child(snapshot1.getKey())));
+                            gradeList.add(new AdminListModel(value, FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("GradeList").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
                 }
@@ -196,7 +173,7 @@ public class AdministrationRepository {
 
     public void getSubjectModelList() {
         List<AdminListModel> gradeList = new ArrayList<>();
-        reference.child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -204,7 +181,7 @@ public class AdministrationRepository {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         String value = snapshot1.getValue(String.class);
                         if (value != null && snapshot1.getKey() != null)
-                            gradeList.add(new AdminListModel(value, reference.child("Lists").child("SubjectList").child(snapshot1.getKey())));
+                            gradeList.add(new AdminListModel(value, FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
                 }
@@ -219,7 +196,7 @@ public class AdministrationRepository {
 
     public void getSlotModelList() {
         List<AdminListModel> gradeList = new ArrayList<>();
-        reference.child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -227,7 +204,7 @@ public class AdministrationRepository {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         String value = snapshot1.getValue(String.class);
                         if (value != null && snapshot1.getKey() != null)
-                            gradeList.add(new AdminListModel(value, reference.child("Lists").child("SlotList").child(snapshot1.getKey())));
+                            gradeList.add(new AdminListModel(value, FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
                 }
@@ -242,7 +219,7 @@ public class AdministrationRepository {
 
     public void getFileList() {
         List<AdminListModel> gradeList = new ArrayList<>();
-        reference.child("Filetypes").child("GroupChats").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("GroupChats").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -250,7 +227,7 @@ public class AdministrationRepository {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         mimeTypesModel value = snapshot1.getValue(mimeTypesModel.class);
                         if (value != null && snapshot1.getKey() != null)
-                            gradeList.add(new AdminListModel(value.getMimetype(), reference.child("Filetypes").child("GroupChats").child(snapshot1.getKey())));
+                            gradeList.add(new AdminListModel(value.getMimetype(), FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("GroupChats").child(snapshot1.getKey())));
                     }
                     onGetAdminModelListComplete.onGetAdminModelListSuccess(gradeList);
                 }
@@ -266,37 +243,37 @@ public class AdministrationRepository {
     public void updateGradeModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Lists").child("GradeList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("GradeList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("GradeList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("GradeList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void updateSubjectModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SubjectList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SubjectList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void updateSlotModelList(String grade) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Lists").child("SlotList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, reference.child("Lists").child("SlotList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").child(String.valueOf(currentTime)).setValue(grade).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(grade, FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Lists").child("SlotList").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void updateFileModelList(mimeTypesModel model) {
         Calendar cal = Calendar.getInstance();
         long currentTime = cal.getTimeInMillis();
-        reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime)).setValue(model).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(model.getMimetype(), reference.child("Filetypes").child("GroupChats").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("GroupChats").child(String.valueOf(currentTime)).setValue(model).addOnSuccessListener(unused -> onUpdateModelListComplete.onUpdateModelListSuccess(new AdminListModel(model.getMimetype(), FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Filetypes").child("GroupChats").child(String.valueOf(currentTime))))).addOnFailureListener(e -> onUpdateModelListComplete.onFailed(e.toString()));
     }
 
     public void getAllUserList() {
         List<UserData> data = new ArrayList<>();
-        userDataReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         UserData userData = snapshot1.getValue(UserData.class);
                         if (userData != null) {
-                            userDetailsReference.document(userData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                            FirebaseFirestore.getInstance().collection("UserData").document(userData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
                                 if (queryDocumentSnapshots.exists()) {
                                     userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                                     userData.setUserDetails(userDetails);
@@ -318,20 +295,20 @@ public class AdministrationRepository {
 
     public void getTeacherList() {
         List<UserData> data = new ArrayList<>();
-        Query query = userTypeReference.orderByChild("teacher").equalTo(true);
+        Query query = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("UserType").orderByChild("teacher").equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                            userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot.exists()) {
                                         UserData UserData = snapshot.getValue(UserData.class);
                                         if (UserData != null) {
-                                            userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                            FirebaseFirestore.getInstance().collection("UserData").document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
                                                 if (queryDocumentSnapshots.exists()) {
                                                     userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                                                     UserData.setUserDetails(userDetails);
@@ -361,20 +338,20 @@ public class AdministrationRepository {
 
     public void getStudentList() {
         List<UserData> data = new ArrayList<>();
-        Query query = userTypeReference.orderByChild("learner").equalTo(true);
+        Query query = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("UserType").orderByChild("learner").equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                            userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot.exists()) {
                                         UserData UserData = snapshot.getValue(UserData.class);
                                         if (UserData != null) {
-                                            userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                            FirebaseFirestore.getInstance().collection("UserData").document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
                                                 if (queryDocumentSnapshots.exists()) {
                                                     userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                                                     UserData.setUserDetails(userDetails);
@@ -404,24 +381,24 @@ public class AdministrationRepository {
 
     public void getLearnerListForClass(String classID) {
         List<UserData> data = new ArrayList<>();
-        classJoinReference.child(classID).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").child(classID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         if (snapshot1.getKey() != null)
-                            userDataReference.child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            FirebaseDatabase.getInstance().getReference().child("Data").child("UserData").child(snapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot.exists()) {
                                         UserData UserData = snapshot.getValue(UserData.class);
                                         if (UserData != null) {
-                                            userDetailsReference.document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                                            FirebaseFirestore.getInstance().collection("UserData").document(UserData.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
                                                 if (queryDocumentSnapshots.exists()) {
                                                     userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                                                     UserData.setUserDetails(userDetails);
 
-                                                    teacherRatingReference.collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
+                                                    FirebaseFirestore.getInstance().collection("Main").document("Class").collection("Ratings").document("TeacherRating").collection(UserData.getUid()).get().addOnCompleteListener(task1 -> {
                                                         if (task1.isSuccessful()) {
                                                             QuerySnapshot ratingSnapshot = task1.getResult();
                                                             if (ratingSnapshot != null) {
@@ -454,7 +431,7 @@ public class AdministrationRepository {
     }
 
     public void getUserDetails(String userID) {
-        userDetailsReference.document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        FirebaseFirestore.getInstance().collection("UserData").document(userID).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (queryDocumentSnapshots.exists()) {
                 userDetails userDetails = queryDocumentSnapshots.toObject(com.reiserx.nimbleq.Models.userDetails.class);
                 onGetUserDetailsComplete.onGetUserDetailsSuccess(userDetails);
@@ -465,7 +442,7 @@ public class AdministrationRepository {
     }
 
     public void getClassJoinCount(String userID) {
-        com.google.firebase.database.Query query = classJoinReference.orderByChild(userID).equalTo(userID);
+        com.google.firebase.database.Query query = FirebaseDatabase.getInstance().getReference().child("Data").child("Main").child("Classes").child("ClassJoinState").orderByChild(userID).equalTo(userID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -482,7 +459,7 @@ public class AdministrationRepository {
     }
 
     public void getCreatedClassCount(String userID) {
-        com.google.firebase.firestore.Query query1 = classReference.collection("ClassInfo").whereEqualTo("teacher_info", userID);
+        com.google.firebase.firestore.Query query1 = FirebaseFirestore.getInstance().collection("Main").document("Class").collection("ClassInfo").whereEqualTo("teacher_info", userID);
         AggregateQuery countQuery = query1.count();
         countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
@@ -496,7 +473,7 @@ public class AdministrationRepository {
     }
 
     public void getZoomCredentials() {
-        credentialReference.document("ZoomCredentials").get().addOnSuccessListener(snapshot -> {
+        FirebaseFirestore.getInstance().collection("CREDENTIALS").document("ZoomCredentials").get().addOnSuccessListener(snapshot -> {
             if (snapshot.exists()) {
                 zoomCredentials zoomCredentials = snapshot.toObject(com.reiserx.nimbleq.Models.zoomCredentials.class);
                 onGetZoomCredentialsComplete.onGetZoomCredentialsSuccess(zoomCredentials);
@@ -506,7 +483,7 @@ public class AdministrationRepository {
     }
 
     public void getFCMCredentials() {
-        credentialReference.document("FCMCREDENTIALS").get().addOnSuccessListener(snapshot -> {
+        FirebaseFirestore.getInstance().collection("CREDENTIALS").document("FCMCREDENTIALS").get().addOnSuccessListener(snapshot -> {
             if (snapshot.exists()) {
                 FCMCREDENTIALS fcmcredentials = snapshot.toObject(com.reiserx.nimbleq.Models.FCMCREDENTIALS.class);
                 onGetFCMCredentialsComplete.onGetFCMCredentialsSuccess(fcmcredentials);
@@ -516,7 +493,7 @@ public class AdministrationRepository {
     }
 
     public void getAdministrator(String userID) {
-        reference.child("Administrators").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Administrators").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists())
@@ -533,7 +510,7 @@ public class AdministrationRepository {
     }
 
     public void getSlotLimit() {
-        reference.child("Limits").child("slotLimit").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Limits").child("slotLimit").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -551,11 +528,11 @@ public class AdministrationRepository {
     }
 
     public void updateSlotLimit(Long value) {
-        reference.child("Limits").child("slotLimit").setValue(value);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Limits").child("slotLimit").setValue(value);
     }
 
     public void getFileSizeLimit() {
-        reference.child("Limits").child("fileSize").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Limits").child("fileSize").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -573,11 +550,11 @@ public class AdministrationRepository {
     }
 
     public void updateFileSizeLimit(Long value) {
-        reference.child("Limits").child("fileSize").setValue(value);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Limits").child("fileSize").setValue(value);
     }
 
     public void getLecturesLimit() {
-        reference.child("Limits").child("lectures").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Limits").child("lectures").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -595,11 +572,11 @@ public class AdministrationRepository {
     }
 
     public void updateLecturesLimit(Long value) {
-        reference.child("Limits").child("lectures").setValue(value);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Limits").child("lectures").setValue(value);
     }
 
     public void getLinkPrivacyPolicy() {
-        reference.child("Links").child("privacyPolicy").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Links").child("privacyPolicy").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -617,11 +594,11 @@ public class AdministrationRepository {
     }
 
     public void updateLinkPrivacyPolicy(String link) {
-        reference.child("Links").child("privacyPolicy").setValue(link);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Links").child("privacyPolicy").setValue(link);
     }
 
     public void getLinkTermsOfService() {
-        reference.child("Links").child("termsOfService").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Links").child("termsOfService").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -639,7 +616,7 @@ public class AdministrationRepository {
     }
 
     public void updateLinkTermsOfService(String link) {
-        reference.child("Links").child("termsOfService").setValue(link);
+        FirebaseDatabase.getInstance().getReference().child("Data").child("Administration").child("Links").child("termsOfService").setValue(link);
     }
 
     float calculateRating(List<RatingModel> ratingModelList) {

@@ -44,7 +44,7 @@ public class FragmentUserDetail extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        AdministrationViewModel viewModel = new ViewModelProvider(this).get(AdministrationViewModel.class);
+        AdministrationViewModel viewModel = new ViewModelProvider(requireActivity()).get(AdministrationViewModel.class);
 
         viewModel.getUserDetails(userData.getUid());
         viewModel.getUserDetailsMutableLiveData().observe(getViewLifecycleOwner(), userDetails -> {

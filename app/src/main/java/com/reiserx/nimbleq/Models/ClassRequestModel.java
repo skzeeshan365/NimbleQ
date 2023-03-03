@@ -2,7 +2,7 @@ package com.reiserx.nimbleq.Models;
 
 public class ClassRequestModel {
     String subject, topic, timeSlot, id, studentID, teacherID;
-    String accepted;
+    String accepted, acceptedID;
     String teacherName;
 
     public ClassRequestModel(String subject, String topic, String timeSlot, String teacher, String studentID) {
@@ -85,5 +85,13 @@ public class ClassRequestModel {
 
     public void setTeacherName(String teacherName) {
         this.teacherName = teacherName;
+    }
+
+    public String getAcceptedID() {
+        return acceptedID;
+    }
+
+    public void setAcceptedID(String acceptedID) {
+        this.acceptedID = acceptedID;
     }
 }
